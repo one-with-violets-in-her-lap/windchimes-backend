@@ -1,3 +1,4 @@
+from typing import Literal
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -36,6 +37,8 @@ class AppConfig(BaseSettings):
         env_prefix="WINDCHIMES__",
         extra="ignore",
     )
+
+    mode: Literal["DEV", "PROD"]
 
     database: DatabaseSettings
 
