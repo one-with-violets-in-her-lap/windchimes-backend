@@ -75,6 +75,7 @@ async def add_playlists(database_session: AsyncSession):
                 if playlist.artwork_url is not None
                 else None
             ),
+            publicly_available=True,
             owner_user_id=random.choice(FAKE_USERS_IDS),
             track_references=random.sample(
                 database_track_references, k=random.randint(200, 300)

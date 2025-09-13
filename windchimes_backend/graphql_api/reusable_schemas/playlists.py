@@ -16,7 +16,7 @@ class PlaylistToReadGraphQL:
     description: Optional[str]
     picture_url: Optional[str]
     owner_user_id: str
-    publiclyAvailable: bool
+    publicly_available: bool
 
     track_count: int
 

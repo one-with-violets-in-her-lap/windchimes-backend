@@ -36,7 +36,7 @@ class PlaylistsAccessManagementService:
         return [
             playlist
             for playlist in playlists
-            if playlist.publiclyAvailable
+            if playlist.publicly_available
             or (
                 self.current_user is not None
                 and playlist.owner_user_id == self.current_user.sub
