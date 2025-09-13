@@ -1,0 +1,6 @@
+services:
+  graphql_api:
+    build: .
+    env_file: ${ENV_FILE:-.env}
+    ports:
+      - "7000:8000"
