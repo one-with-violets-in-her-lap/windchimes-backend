@@ -30,7 +30,8 @@ class ExternalPlaylistInfo(BaseModel):
     """Playlist page on a platform the playlist is hosted on
 
     Examples:
-        - Soundcloud playlist original page url: `https://soundcloud.com/username/sets/playlist`
+        - Soundcloud playlist original page url:
+        `https://soundcloud.com/username/sets/playlist`
         - Youtube playlist original page url:
         `https://www.youtube.com/playlist?list=PLFV2KydlgVPrzJLyCYHLiDE38Z4tconON`
     """
