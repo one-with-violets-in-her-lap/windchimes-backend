@@ -1,4 +1,4 @@
-from windchimes_backend.external_api_clients.imagekit_api_client import (
+from windchimes_backend.common.api_clients.imagekit_api_client import (
     ImagekitApiClient,
     ImagekitApiError,
 )

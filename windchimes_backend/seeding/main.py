@@ -6,7 +6,7 @@ import random
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from windchimes_backend.external_api_clients.soundcloud import SoundcloudApiClient
+from windchimes_backend.common.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.core.database import database
 from windchimes_backend.core.database.models.playlist import Playlist
 from windchimes_backend.core.database.models.track_reference import TrackReference

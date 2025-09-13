@@ -1,8 +1,8 @@
 import logging
 
-from windchimes_backend.external_api_clients.platform_api_error import PlatformApiError
-from windchimes_backend.external_api_clients.soundcloud import SoundcloudApiClient
-from windchimes_backend.external_api_clients.soundcloud.models import SoundcloudTrack
+from windchimes_backend.common.api_clients.platform_api_error import PlatformApiError
+from windchimes_backend.common.api_clients.soundcloud import SoundcloudApiClient
+from windchimes_backend.common.api_clients.soundcloud.models import SoundcloudTrack
 from windchimes_backend.core.errors.external_platforms import (
     ExternalPlatformAudioFetchingError,
 )
