@@ -1,3 +1,4 @@
+import random
 from typing import Optional
 
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
@@ -81,4 +82,5 @@ class PlatformAggregatorService:
         for _, platform_service in self.platform_services.items():
             tracks.extend(await platform_service.search_tracks(search_query))
 
+        random.shuffle(tracks)
         return tracks
