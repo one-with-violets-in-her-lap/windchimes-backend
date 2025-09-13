@@ -2,9 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from windchimes_backend.core.database import database
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # use/open some resources
     yield
-    # close some resources
+    await database.close()
