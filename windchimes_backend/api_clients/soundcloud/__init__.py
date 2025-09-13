@@ -5,8 +5,8 @@ from typing import Optional
 import aiohttp
 
 from windchimes_backend.config import app_config
-from windchimes_backend.core.api_clients.platform_api_error import PlatformApiError
-from windchimes_backend.core.api_clients.soundcloud.models import (
+from windchimes_backend.api_clients.platform_api_error import PlatformApiError
+from windchimes_backend.api_clients.soundcloud.models import (
     SoundcloudPlaylist,
     SoundcloudTrack,
 )

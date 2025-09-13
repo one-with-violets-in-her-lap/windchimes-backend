@@ -1,8 +1,8 @@
 import logging
 
-from windchimes_backend.core.api_clients.platform_api_error import PlatformApiError
-from windchimes_backend.core.api_clients.soundcloud import SoundcloudApiClient
-from windchimes_backend.core.api_clients.soundcloud.models import SoundcloudTrack
+from windchimes_backend.api_clients.platform_api_error import PlatformApiError
+from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
+from windchimes_backend.api_clients.soundcloud.models import SoundcloudTrack
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
