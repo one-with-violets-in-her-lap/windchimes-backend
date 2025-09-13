@@ -24,9 +24,5 @@ class Database:
         logger.info("closing sqlalchemy engine")
         await self._engine.dispose()
 
-    async def get_session(self):
-        async with self.create_session() as session:
-            yield session
-
 
 database = Database(url=str(app_config.database.url))
