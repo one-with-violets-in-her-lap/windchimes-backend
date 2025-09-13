@@ -12,7 +12,7 @@ from windchimes_backend.core.services.external_platforms.platform_aggregator imp
 from windchimes_backend.core.services.playlists import (
     PlaylistDetailed,
 )
-from windchimes_backend.utils.lists import find_item
+from windchimes_backend.common.utils.lists import find_item
 
 
 class TracksService:

@@ -5,7 +5,7 @@ from windchimes_backend.core.models.platform_specific_params import (
     PlatformSpecificParams,
 )
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
-from windchimes_backend.utils.lists import set_items_order
+from windchimes_backend.common.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
     ExternalPlaylistInfo,

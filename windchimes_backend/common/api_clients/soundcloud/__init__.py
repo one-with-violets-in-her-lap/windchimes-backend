@@ -11,7 +11,7 @@ from windchimes_backend.common.api_clients.soundcloud.models import (
     SoundcloudPlaylist,
     SoundcloudTrack,
 )
-from windchimes_backend.utils.lists import set_items_order
+from windchimes_backend.common.utils.lists import set_items_order
 
 
 _SOUNDCLOUD_API_BASE_URL = "https://api-v2.soundcloud.com"

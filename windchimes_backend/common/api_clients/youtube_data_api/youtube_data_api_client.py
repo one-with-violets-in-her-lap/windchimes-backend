@@ -10,7 +10,7 @@ from windchimes_backend.common.api_clients.youtube_data_api.models import (
     YoutubePlaylistVideo,
     YoutubeVideo,
 )
-from windchimes_backend.utils.dictionaries import convert_keys_to_snake_case
+from windchimes_backend.common.utils.dictionaries import convert_keys_to_snake_case
 
 
 MAX_YOUTUBE_TRACKS_PER_REQUEST = 50

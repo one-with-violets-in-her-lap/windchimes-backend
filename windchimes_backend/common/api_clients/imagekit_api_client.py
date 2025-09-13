@@ -6,7 +6,7 @@ from typing import Optional
 import aiohttp
 from pydantic import BaseModel
 
-from windchimes_backend.utils.dictionaries import convert_keys_to_snake_case
+from windchimes_backend.common.utils.dictionaries import convert_keys_to_snake_case
 
 
 _IMAGEKIT_API_BASE_URL = "https://upload.imagekit.io"

@@ -1,7 +1,7 @@
 from typing import Any, TypeVar
 from copy import deepcopy
 
-from windchimes_backend.utils.strings import convert_to_snake_case
+from windchimes_backend.common.utils.strings import convert_to_snake_case
 
 
 DictT = TypeVar("DictT", dict[str, Any], list)
