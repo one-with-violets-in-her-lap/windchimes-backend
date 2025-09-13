@@ -64,3 +64,26 @@ async def _get_loaded_tracks(
 
 
 loaded_tracks_query = strawberry.field(resolver=_get_loaded_tracks)
+
+
+async def _get_one_loaded_track(
+    info: GraphQLRequestInfo, track_reference: TrackReferenceToLoadGraphQL
+) -> Optional[LoadedTrackGraphQL]:
+    platform_aggregator_service = info.context.platform_aggregator_service
+
+    loaded_tracks = await platform_aggregator_service.load_tracks(
+        [TrackReferenceSchema(**vars(track_reference))]
+    )
+
+    loaded_track = loaded_tracks[0]
+
+    if loaded_track is None:
+        return None
+
+    return LoadedTrackGraphQL(
+        **loaded_track.model_dump(exclude={"owner"}),
+        owner=TrackOwnerGraphQL(**loaded_track.owner.model_dump()),
+    )
+
+
+one_loaded_track_query = strawberry.field(resolver=_get_one_loaded_track)
