@@ -1,16 +1,15 @@
 from functools import reduce
 import logging
-from typing import Optional
 
 import aiohttp
 
-from windchimes_backend.config import app_config
+from windchimes_backend.core.config import app_config
 from windchimes_backend.api_clients.platform_api_error import PlatformApiError
 from windchimes_backend.api_clients.soundcloud.models import (
     SoundcloudPlaylist,
     SoundcloudTrack,
 )
-from windchimes_backend.core.utils.lists import set_items_order
+from windchimes_backend.utils.lists import set_items_order
 
 
 _SOUNDCLOUD_API_BASE_URL = "https://api-v2.soundcloud.com"
@@ -24,13 +23,17 @@ logger = logging.getLogger(__name__)
 
 
 class SoundcloudApiClient:
-    client_id = app_config.soundcloud_api.fallback_client_id
-    """API key to use for Soundcloud API access
+    def __init__(self, client_id: str):
+        """
+        Creates soundcloud api client object for interacting
+        with private SoundCloud API v2
 
-    Scraped from soundcloud website regularly (check
-    `windchimes_backend.core.regular_tasks.soundcloud_client_id_obtaining`
-    module)
-    """
+        Args:
+            client_id: API key to use for Soundcloud API access. Can be scraped
+                from soundcloud website
+        """
+
+        self.client_id = client_id
 
     async def get_tracks_by_ids(self, ids: list[int]):
         """Fetches soundcloud tracks by list of ids
@@ -38,6 +41,7 @@ class SoundcloudApiClient:
         Returns:
             list of tracks in soundcloud's format
         """
+
         async with aiohttp.ClientSession() as aiohttp_session:
             if len(ids) == 0:
                 return []

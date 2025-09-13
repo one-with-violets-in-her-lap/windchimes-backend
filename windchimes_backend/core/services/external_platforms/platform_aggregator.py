@@ -6,7 +6,7 @@ from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSche
 from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
 )
-from windchimes_backend.core.utils.lists import set_items_order
+from windchimes_backend.utils.lists import set_items_order
 
 
 class PlatformAggregatorService:

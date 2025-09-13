@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from windchimes_backend.core.database.models import BaseDatabaseModel
-from windchimes_backend.config import app_config
+from windchimes_backend.core.config import app_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

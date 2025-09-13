@@ -3,7 +3,7 @@ from strawberry.fastapi import GraphQLRouter
 from strawberry.extensions import MaxAliasesLimiter, MaxTokensLimiter
 from graphql import NoDeprecatedCustomRule, NoSchemaIntrospectionCustomRule
 
-from windchimes_backend.config import app_config
+from windchimes_backend.core.config import app_config
 from windchimes_backend.graphql_api.strawberry_graphql_setup.context import (
     GraphQLRequestContext,
 )

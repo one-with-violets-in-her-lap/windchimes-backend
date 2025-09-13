@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from windchimes_backend.logging_setup import root_logger
-from windchimes_backend.config import app_config
+from windchimes_backend.core.config import app_config
 from windchimes_backend.graphql_api.lifespan import lifespan
 from windchimes_backend.graphql_api.strawberry_graphql_setup import graphql_router
 

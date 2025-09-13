@@ -6,7 +6,7 @@ from auth0.authentication.token_verifier import (
     TokenValidationError,
 )
 
-from windchimes_backend.config import app_config
+from windchimes_backend.core.config import app_config
 from windchimes_backend.core.models.user import User
 
 

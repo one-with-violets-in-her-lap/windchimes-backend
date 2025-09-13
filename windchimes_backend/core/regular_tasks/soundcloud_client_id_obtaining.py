@@ -2,7 +2,7 @@ import logging
 
 import aiohttp
 
-from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
+from windchimes_backend.core.stores.soundcloud_api_client_id import set_soundcloud_api_client_id
 
 
 MOBILE_SOUNDCLOUD_WEBSITE_URL = "https://m.soundcloud.com"
@@ -47,7 +47,7 @@ async def obtain_soundcloud_client_id():
                         "Successfully scraped the soundcloud client id: %s", client_id
                     )
 
-                    SoundcloudApiClient.client_id = client_id
+                    set_soundcloud_api_client_id(client_id)
 
                     # Finishes execution after client id was found
                     return

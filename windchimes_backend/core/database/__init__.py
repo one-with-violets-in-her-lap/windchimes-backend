@@ -1,7 +1,7 @@
 import logging
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
-from windchimes_backend.config import app_config
+from windchimes_backend.core.config import app_config
 
 
 logger = logging.getLogger(__name__)

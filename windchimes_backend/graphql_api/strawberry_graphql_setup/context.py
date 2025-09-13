@@ -20,6 +20,9 @@ from windchimes_backend.core.services.playlists.playlists_access_management impo
     PlaylistsAccessManagementService,
 )
 from windchimes_backend.core.services.tracks_service import TracksService
+from windchimes_backend.core.stores.soundcloud_api_client_id import (
+    get_soundcloud_api_client_id,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -50,7 +53,7 @@ class GraphQLRequestContext(BaseContext):
 
     @cached_property
     def soundcloud_integration(self):
-        soundcloud_api_client = SoundcloudApiClient()
+        soundcloud_api_client = SoundcloudApiClient(get_soundcloud_api_client_id())
         soundcloud_service = SoundcloudService(soundcloud_api_client)
 
         return {"api_client": soundcloud_api_client, "service": soundcloud_service}
