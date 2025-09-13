@@ -3,7 +3,6 @@ from typing import Any, Optional
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database.models.base import BaseDatabaseModel
 from windchimes_backend.core.models.platform import Platform

@@ -94,6 +94,12 @@ class YoutubeService(ExternalPlatformService):
         )
 
     async def get_playlist_by_id(self, playlist_id, platform_specific_params):
+        logger.info(
+            "Fetching Youtube playlist with id %s. Platform-specific params: %s",
+            playlist_id,
+            str(platform_specific_params),
+        )
+
         youtube_playlist = await self.youtube_data_api_client.get_playlist_by_id(
             playlist_id
         )

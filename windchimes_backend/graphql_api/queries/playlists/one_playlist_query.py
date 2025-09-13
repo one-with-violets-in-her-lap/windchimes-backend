@@ -5,7 +5,6 @@ import strawberry
 from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
     ExternalPlaylistReferenceGraphQL,
-    ExternalPlaylistToReadGraphQL,
     PlaylistDetailedGraphQL,
 )
 from windchimes_backend.graphql_api.reusable_schemas.track_reference import (

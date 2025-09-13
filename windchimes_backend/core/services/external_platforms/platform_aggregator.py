@@ -4,7 +4,6 @@ from typing import Optional
 from windchimes_backend.core.models.platform_specific_params import (
     PlatformSpecificParams,
 )
-from windchimes_backend.core.models.playlist import PlaylistToImport
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
 from windchimes_backend.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform

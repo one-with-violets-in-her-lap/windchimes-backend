@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Sequence
 
-from windchimes_backend.core.models.platform_specific_params import PlatformSpecificParams
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
+)
 from windchimes_backend.core.models.external_playlist import ExternalPlaylistToSyncWith
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 

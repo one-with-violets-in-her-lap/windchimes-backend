@@ -10,7 +10,6 @@ from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
     ExternalPlaylistToSyncWith,
 )
-from windchimes_backend.core.models.playlist import PlaylistToImport
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
 from windchimes_backend.core.services.external_platforms.no_suitable_format_error import (

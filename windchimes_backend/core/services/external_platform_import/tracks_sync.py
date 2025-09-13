@@ -145,12 +145,18 @@ class TracksSyncService:
             if external_playlist_reference is None:
                 return None
 
-            external_playlist_data = await self.platform_aggregator_service.get_playlist_by_id(
-                external_playlist_reference.platform,
-                external_playlist_reference.platform_id,
-                platform_specific_params=PlatformSpecificParams(
-                    soundcloud_secret_token=external_playlist_reference.soundcloud_secret_token
-                ),
+            soundcloud_secret_token = (
+                external_playlist_reference.soundcloud_secret_token
+            )
+
+            external_playlist_data = (
+                await self.platform_aggregator_service.get_playlist_by_id(
+                    external_playlist_reference.platform,
+                    external_playlist_reference.platform_id,
+                    platform_specific_params=PlatformSpecificParams(
+                        soundcloud_secret_token=soundcloud_secret_token
+                    ),
+                )
             )
 
             return external_playlist_data

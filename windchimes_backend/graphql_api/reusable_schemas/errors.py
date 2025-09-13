@@ -33,7 +33,8 @@ class GraphQLApiError:
     def __post_init__(self):
         if not self.is_error_response:
             raise ValueError(
-                'Field `is_error_response` is an utility for usage "+"on the client-side and must not be overridden to `False`'
+                "Field `is_error_response` is an utility for usage on the "
+                + "client-side and must not be overridden to `False`"
             )
 
 
