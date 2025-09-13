@@ -9,7 +9,7 @@ from windchimes_backend.core.database.models.external_playlist_reference import 
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
-from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
+from windchimes_backend.core.models.playlist import ExternalPlaylistToLink
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
@@ -44,7 +44,7 @@ class TracksSyncService:
     async def link_external_playlist_for_sync(
         self,
         playlist_to_link_to_id: int,
-        external_playlist_to_link: ExternalPlaylistReferenceSchema,
+        external_playlist_to_link: ExternalPlaylistToLink,
     ):
         logger.info(
             "Sync setup: starting setup for playlist %s with external %s playlist - %s",

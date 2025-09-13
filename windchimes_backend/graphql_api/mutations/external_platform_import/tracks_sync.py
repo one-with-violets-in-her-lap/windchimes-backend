@@ -5,7 +5,7 @@ from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
+from windchimes_backend.core.models.playlist import ExternalPlaylistToLink
 from windchimes_backend.core.services.external_platform_import.tracks_sync import (
     ExternalPlaylistNotLinkedError,
 )
@@ -60,7 +60,7 @@ async def _set_playlist_for_tracks_sync(
     )
 
     try:
-        external_playlist_reference = ExternalPlaylistReferenceSchema.model_validate(
+        external_playlist_reference = ExternalPlaylistToLink.model_validate(
             {"platform": external_playlist_platform, "url": external_playlist_url}
         )
     except ValidationError as validation_error:

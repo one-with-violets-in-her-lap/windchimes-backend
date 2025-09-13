@@ -2,10 +2,12 @@ from typing import Optional, Sequence
 
 from pydantic import BaseModel
 
-from windchimes_backend.core.models.user import User
-from windchimes_backend.core.services.playlists import (
+from windchimes_backend.core.models.playlist import (
     PlaylistToRead,
     PlaylistToReadWithTrackCount,
+)
+from windchimes_backend.core.models.user import User
+from windchimes_backend.core.services.playlists import (
     PlaylistsFilters,
     PlaylistsService,
 )

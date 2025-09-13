@@ -12,7 +12,7 @@ from windchimes_backend.graphql_api.reusable_schemas.errors import (
     UnauthorizedErrorGraphQL,
 )
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
-    PlaylistToReadWithTracksGraphQL,
+    PlaylistDetailedGraphQL,
 )
 from windchimes_backend.graphql_api.utils.dataclasses import convert_to_dataclass
 from windchimes_backend.graphql_api.utils.graphql import (
@@ -42,7 +42,7 @@ class TrackToAddGraphQL:
 
 async def _create_playlist(
     info: GraphQLRequestInfo, playlist: PlaylistToCreateGraphQL
-) -> PlaylistToReadWithTracksGraphQL | UnauthorizedErrorGraphQL:
+) -> PlaylistDetailedGraphQL | UnauthorizedErrorGraphQL:
     playlists_service = info.context.playlists_service
     current_user = info.context.current_user
 
@@ -53,7 +53,7 @@ async def _create_playlist(
         PlaylistToCreate(**vars(playlist)), owner_user_id=current_user.sub
     )
 
-    return convert_to_dataclass(vars(created_playlist), PlaylistToReadWithTracksGraphQL)
+    return convert_to_dataclass(vars(created_playlist), PlaylistDetailedGraphQL)
 
 
 create_playlist_mutation = strawberry.mutation(
