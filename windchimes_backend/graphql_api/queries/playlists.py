@@ -2,9 +2,11 @@ from datetime import datetime
 from typing import Optional
 
 import strawberry
-from strawberry import UNSET
 
 from windchimes_backend.core.services.playlists import PlaylistsFilters
+from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
+    TrackReferenceToRead,
+)
 from windchimes_backend.graphql_api.utils.graphql import (
     GraphQLRequestInfo,
 )
@@ -21,6 +23,11 @@ class PlaylistToRead:
     owner_user_id: str
 
     track_count: int
+
+
+@strawberry.type
+class PlaylistToReadWithTracks(PlaylistToRead):
+    track_references: list[TrackReferenceToRead]
 
 
 @strawberry.input
@@ -43,4 +50,14 @@ async def get_playlists(info: GraphQLRequestInfo, filters: PlaylistsQueryFilters
 
 playlists_query = strawberry.field(
     resolver=get_playlists, graphql_type=list[PlaylistToRead]
+)
+
+
+async def get_one_playlist(info: GraphQLRequestInfo, playlist_id: int):
+    playlists_service = info.context.playlists_service
+    return await playlists_service.get_playlist_with_track_references(playlist_id)
+
+
+playlist_query = strawberry.field(
+    resolver=get_one_playlist, graphql_type=PlaylistToReadWithTracks
 )

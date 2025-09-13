@@ -3,10 +3,12 @@ from typing import Optional
 
 from pydantic import BaseModel
 from sqlalchemy import func, select
+from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.playlist import Playlist
 from windchimes_backend.core.database.models.track_reference import TrackReference
+from windchimes_backend.core.models.track_reference import TrackReferenceSchema
 
 
 class PlaylistsFilters(BaseModel):
@@ -24,6 +26,10 @@ class PlaylistWithTrackCount(BaseModel):
     owner_user_id: str
 
     track_count: int
+
+
+class PlaylistWithTrackReferences(PlaylistWithTrackCount):
+    track_references: list[TrackReferenceSchema]
 
 
 class PlaylistsService:
@@ -59,3 +65,23 @@ class PlaylistsService:
                 )
                 for playlist_and_track_count in playlists_with_track_count
             ]
+
+    async def get_playlist_with_track_references(self, playlist_id: int):
+        async with self._database.create_session() as database_session:
+            playlist = await database_session.get(
+                Playlist, playlist_id, options=[joinedload(Playlist.track_references)]
+            )
+
+            if playlist is None:
+                return None
+
+            return PlaylistWithTrackReferences.model_validate(
+                {
+                    **vars(playlist),
+                    "track_count": len(playlist.track_references),
+                    "track_references": [
+                        TrackReferenceSchema.model_validate(vars(track_reference))
+                        for track_reference in playlist.track_references
+                    ],
+                }
+            )
