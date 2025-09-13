@@ -43,18 +43,27 @@ async def _get_one_playlist(
     playlist_id: int,
     tracks_to_load_ids: Optional[list[str]] = None,
     load_first_tracks: bool = False,
-):
+) -> Optional[PlaylistWithLoadedTracksGraphQL] | GraphQLApiError:
     tracks_service = info.context.tracks_service
     playlists_service = info.context.playlists_service
     platform_aggregator_service = info.context.platform_aggregator_service
 
     playlist = await playlists_service.get_playlist_with_track_references(playlist_id)
 
-    if tracks_to_load_ids is None and not load_first_tracks:
-        return playlist
-
     if playlist is None:
         return None
+
+    if tracks_to_load_ids is None and not load_first_tracks:
+        # TODO: refactor duplicate code when converting playlist pydantic model
+        # to graphql
+        return PlaylistWithLoadedTracksGraphQL(
+            **playlist.model_dump(exclude={"track_references"}),
+            track_references=[
+                TrackReferenceToReadGraphQL(**track_reference.model_dump())
+                for track_reference in playlist.track_references
+            ],
+            loaded_tracks=[],
+        )
 
     track_references_to_load: Sequence = tracks_service.get_track_references_to_load(
         playlist, tracks_to_load_ids, load_first_tracks
@@ -99,7 +108,6 @@ async def _get_one_playlist(
 
 playlist_query = strawberry.field(
     resolver=_get_one_playlist,
-    graphql_type=Optional[PlaylistWithLoadedTracksGraphQL] | GraphQLApiError,
     description="""
         Get a single playlist with a maximum of 30 loaded tracks from
         external platforms
