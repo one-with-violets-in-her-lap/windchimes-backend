@@ -3,10 +3,10 @@ from typing import Optional
 import strawberry
 
 from windchimes_backend.core.services.playlists import PlaylistsFilters
-from windchimes_backend.graphql_api.reusable_schemas.playlists import (
+from windchimes_backend.api.reusable_schemas.playlists import (
     PlaylistToReadGraphQL,
 )
-from windchimes_backend.graphql_api.utils.graphql import (
+from windchimes_backend.api.utils.graphql import (
     GraphQLRequestInfo,
 )
 

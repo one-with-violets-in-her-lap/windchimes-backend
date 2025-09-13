@@ -5,7 +5,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from windchimes_backend.graphql_api.config import GraphQLApiSettings
+from windchimes_backend.api.config import ApiSettings
 
 
 ENV_FILE_PATH = os.environ.get("WINDCHIMES__ENV_FILE") or "./.env"
@@ -58,7 +58,7 @@ class AppConfig(BaseSettings):
 
     database: DatabaseSettings
 
-    graphql_api: GraphQLApiSettings
+    api: ApiSettings
 
     auth0: Auth0Settings
 

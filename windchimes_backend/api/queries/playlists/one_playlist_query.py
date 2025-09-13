@@ -2,15 +2,15 @@ from typing import Optional, Sequence
 
 import strawberry
 
-from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
-from windchimes_backend.graphql_api.reusable_schemas.playlists import (
+from windchimes_backend.api.reusable_schemas.errors import GraphQLApiError
+from windchimes_backend.api.reusable_schemas.playlists import (
     ExternalPlaylistReferenceGraphQL,
     PlaylistDetailedGraphQL,
 )
-from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
+from windchimes_backend.api.reusable_schemas.track_reference import (
     TrackReferenceToReadGraphQL,
 )
-from windchimes_backend.graphql_api.utils.graphql import (
+from windchimes_backend.api.utils.graphql import (
     GraphQLRequestInfo,
 )
 

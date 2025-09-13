@@ -7,15 +7,15 @@ from windchimes_backend.core.services.playlists import (
     PlaylistToCreate,
     PlaylistUpdate,
 )
-from windchimes_backend.graphql_api.reusable_schemas.errors import (
+from windchimes_backend.api.reusable_schemas.errors import (
     GraphQLApiError,
     UnauthorizedErrorGraphQL,
 )
-from windchimes_backend.graphql_api.reusable_schemas.playlists import (
+from windchimes_backend.api.reusable_schemas.playlists import (
     PlaylistDetailedGraphQL,
 )
-from windchimes_backend.graphql_api.utils.dataclasses import convert_to_dataclass
-from windchimes_backend.graphql_api.utils.graphql import (
+from windchimes_backend.api.utils.dataclasses import convert_to_dataclass
+from windchimes_backend.api.utils.graphql import (
     GraphQLRequestInfo,
 )
 

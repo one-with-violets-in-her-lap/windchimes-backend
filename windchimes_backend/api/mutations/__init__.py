@@ -1,22 +1,22 @@
 import strawberry
 
-from windchimes_backend.graphql_api.mutations.playlists import (
+from windchimes_backend.api.mutations.playlists import (
     create_playlist_mutation,
     delete_playlist_mutation,
     update_playlist_mutation,
 )
-from windchimes_backend.graphql_api.mutations.playlists.playlist_picture_mutations import (
+from windchimes_backend.api.mutations.playlists.playlist_picture_mutations import (
     update_playlist_picture_mutation,
     delete_playlist_picture_mutation,
 )
-from windchimes_backend.graphql_api.mutations.playlists.playlist_tracks import (
+from windchimes_backend.api.mutations.playlists.playlist_tracks import (
     delete_track_from_playlists_mutation,
     add_tracks_to_playlists_mutation,
 )
-from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_import import (
+from windchimes_backend.api.mutations.external_platform_import.tracks_import import (
     import_external_playlist_tracks_mutation,
 )
-from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_sync import (
+from windchimes_backend.api.mutations.external_platform_import.tracks_sync import (
     set_playlist_for_tracks_sync_mutation,
     disable_playlist_sync_mutation,
     sync_playlist_tracks_with_external_playlist_mutation,

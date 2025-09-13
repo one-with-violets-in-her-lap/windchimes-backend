@@ -5,11 +5,11 @@ from strawberry.file_uploads import Upload
 from fastapi import UploadFile
 
 from windchimes_backend.core.config import app_config
-from windchimes_backend.graphql_api.strawberry_graphql_setup.context import (
+from windchimes_backend.api.strawberry_graphql_setup.context import (
     GraphQLRequestContext,
 )
-from windchimes_backend.graphql_api.mutations import Mutation
-from windchimes_backend.graphql_api.queries import Query
+from windchimes_backend.api.mutations import Mutation
+from windchimes_backend.api.queries import Query
 
 
 security_extensions = []

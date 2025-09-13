@@ -6,17 +6,17 @@ from windchimes_backend.core.constants.external_api_usage_limits import (
     MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
-from windchimes_backend.graphql_api.queries.playlists.one_playlist_query import (
+from windchimes_backend.api.queries.playlists.one_playlist_query import (
     LoadedTrackGraphQL,
     TrackOwnerGraphQL,
 )
-from windchimes_backend.graphql_api.queries.tracks.loaded_tracks.models import (
+from windchimes_backend.api.queries.tracks.loaded_tracks.models import (
     LoadedTracksFilter,
     LoadedTracksWrapper,
     TrackReferenceToLoadGraphQL,
 )
-from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
-from windchimes_backend.graphql_api.utils.graphql import GraphQLRequestInfo
+from windchimes_backend.api.reusable_schemas.errors import GraphQLApiError
+from windchimes_backend.api.utils.graphql import GraphQLRequestInfo
 
 
 async def _get_loaded_tracks(

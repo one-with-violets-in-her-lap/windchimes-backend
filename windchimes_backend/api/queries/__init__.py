@@ -1,18 +1,18 @@
 import strawberry
 
-from windchimes_backend.graphql_api.queries.playlists.playlists_query import (
+from windchimes_backend.api.queries.playlists.playlists_query import (
     playlists_query,
 )
-from windchimes_backend.graphql_api.queries.playlists.one_playlist_query import (
+from windchimes_backend.api.queries.playlists.one_playlist_query import (
     playlist_query,
 )
-from windchimes_backend.graphql_api.queries.playlists.external_playlist_query import (
+from windchimes_backend.api.queries.playlists.external_playlist_query import (
     external_playlist_linked_query,
 )
-from windchimes_backend.graphql_api.queries.tracks.track_audio_file_query import (
+from windchimes_backend.api.queries.tracks.track_audio_file_query import (
     track_audio_file_query,
 )
-from windchimes_backend.graphql_api.queries.tracks.loaded_tracks.queries import (
+from windchimes_backend.api.queries.tracks.loaded_tracks.queries import (
     loaded_tracks_query,
     one_loaded_track_query,
 )

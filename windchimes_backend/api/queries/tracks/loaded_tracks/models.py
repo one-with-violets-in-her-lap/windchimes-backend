@@ -2,10 +2,10 @@ from typing import Optional
 
 import strawberry
 
-from windchimes_backend.graphql_api.queries.playlists.one_playlist_query import (
+from windchimes_backend.api.queries.playlists.one_playlist_query import (
     LoadedTrackGraphQL,
 )
-from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
+from windchimes_backend.api.reusable_schemas.track_reference import (
     TrackReferenceToReadGraphQL,
 )
 

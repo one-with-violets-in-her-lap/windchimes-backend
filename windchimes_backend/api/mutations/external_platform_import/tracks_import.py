@@ -3,18 +3,18 @@ import strawberry
 
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
-from windchimes_backend.graphql_api.reusable_schemas.errors import (
+from windchimes_backend.api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
     ValidationErrorGraphQL,
 )
-from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
+from windchimes_backend.api.reusable_schemas.track_reference import (
     TrackReferenceToReadGraphQL,
 )
-from windchimes_backend.graphql_api.strawberry_graphql_setup.auth import (
+from windchimes_backend.api.strawberry_graphql_setup.auth import (
     AuthorizedOnlyExtension,
 )
-from windchimes_backend.graphql_api.utils.graphql import (
+from windchimes_backend.api.utils.graphql import (
     GraphQLRequestInfo,
 )
 

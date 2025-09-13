@@ -3,8 +3,8 @@ from typing import Optional
 import strawberry
 
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
-from windchimes_backend.graphql_api.utils.graphql import GraphQLRequestInfo
+from windchimes_backend.api.reusable_schemas.errors import GraphQLApiError
+from windchimes_backend.api.utils.graphql import GraphQLRequestInfo
 
 
 @strawberry.type

@@ -1,6 +1,6 @@
 import strawberry
 
-from windchimes_backend.graphql_api.strawberry_graphql_setup.context import (
+from windchimes_backend.api.strawberry_graphql_setup.context import (
     GraphQLRequestContext,
 )
 
