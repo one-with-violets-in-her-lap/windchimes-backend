@@ -113,12 +113,12 @@ class SoundcloudApiClient:
 
                 return SoundcloudPlaylist(**response_data)
 
-    async def search_tracks(self, search_query: str, limit=20):
+    async def search_tracks(self, search_query: str, limit=35):
         """Searches tracks by provided search query
 
         Args:
             limit: How many tracks can be returned from API. **The maximum is 100**.
-                The default is 20
+                The default is 50
 
         Returns:
             Maximum of 100 tracks matching the search query
