@@ -18,7 +18,7 @@ from windchimes_backend.core.services.external_platforms.platform_aggregator imp
 logger = logging.getLogger(__name__)
 
 
-class PlaylistToImport(BaseModel):
+class ExternalPlaylistToImportFrom(BaseModel):
     platform: Platform
     url: HttpUrl
 
@@ -39,7 +39,7 @@ class TracksImportService:
 
     async def import_playlist_tracks(
         self,
-        playlist_to_import_from: PlaylistToImport,
+        playlist_to_import_from: ExternalPlaylistToImportFrom,
         playlist_to_import_to_id: int,
         replace_existing_tracks=False,
     ):

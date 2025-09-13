@@ -3,7 +3,7 @@ import strawberry
 
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
-    PlaylistToImport,
+    ExternalPlaylistToImportFrom,
 )
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
@@ -39,7 +39,7 @@ async def _import_external_playlist_tracks(
     replace_existing_tracks: bool = False,
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
     try:
-        validated_playlist_to_import_from = PlaylistToImport.model_validate(
+        validated_playlist_to_import_from = ExternalPlaylistToImportFrom.model_validate(
             {**vars(playlist_to_import_from)}
         )
     except ValidationError as error:
