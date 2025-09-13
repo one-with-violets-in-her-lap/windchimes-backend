@@ -28,35 +28,38 @@ async def _add_tracks_to_playlists(
             technical_explanation="`tracks` param must not be empty",
         )
 
-    playlists_service = info.context.playlists_service
     current_user = info.context.current_user
+    playlists_service = info.context.playlists_service
+    playlists_access_management_service = (
+        info.context.playlists_access_management_service
+    )
 
     if current_user is None:
         return UnauthorizedErrorGraphQL()
-
-    playlists_ids_to_update = []
-    for track in tracks:
-        playlists_ids_to_update.extend(track.playlists_ids_to_add_to)
-
-    playlists_to_update = await playlists_service.get_playlists(
-        PlaylistsFilters(ids=playlists_ids_to_update)
-    )
-
-    for playlist_to_update in playlists_to_update:
-        if playlist_to_update.owner_user_id != current_user.sub:
-            return ForbiddenErrorGraphQL(
-                explanation="You don't have access to playlists you want to add "
-                + "tracks to",
-                technical_explanation="You don't have access to some playlists "
-                + "you want to add tracks to",
-            )
-
+    
     try:
         validated_tracks = TracksToAddToPlaylistsWrapper.model_validate(
             {"tracks": convert_to_dictionary(tracks)}
         )
     except ValidationError as error:
         return ValidationErrorGraphQL.create_from_pydantic_validation_error(error)
+
+    playlists_ids_to_update = []
+    for track in tracks:
+        playlists_ids_to_update.extend(track.playlists_ids_to_add_to)
+
+    user_owns_all_playlists = (
+        await playlists_access_management_service.check_if_user_owns_the_playlists(
+            playlists_ids_to_update
+        )
+    )
+    if not user_owns_all_playlists:
+        return ForbiddenErrorGraphQL(
+            explanation="You don't have access to playlists you want to add "
+            + "tracks to",
+            technical_explanation="You don't have access to some playlists "
+            + "you want to add tracks to",
+        )
 
     await playlists_service.add_tracks_to_playlists(validated_tracks)
 

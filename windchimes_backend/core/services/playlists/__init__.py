@@ -70,11 +70,10 @@ class PlaylistsService:
     def __init__(self, database: Database):
         self._database = database
 
+    # TODO: optimize, do not query all of playlists' tracks just to count them
     async def get_playlists(self, filters: PlaylistsFilters = PlaylistsFilters()):
         async with self._database.create_session() as database_session:
-            statement = select(
-                Playlist, functions.count(TrackReference.id)
-            ).select_from(Playlist)
+            statement = select(Playlist).options(joinedload(Playlist.track_references))
 
             if filters.exclude_owner_user_id is not None:
                 statement = statement.where(
@@ -89,18 +88,13 @@ class PlaylistsService:
             if filters.ids is not None:
                 statement = statement.where(Playlist.id.in_(filters.ids))
 
-            statement = statement.join(Playlist.track_references).group_by(Playlist.id)
-
-            result = await database_session.execute(statement)
-
-            playlists_with_track_count = result.fetchall()
+            playlists_result = await database_session.execute(statement)
 
             return [
                 PlaylistToReadWithTrackCount(
-                    **vars(playlist_and_track_count[0]),
-                    track_count=playlist_and_track_count[1]
+                    **vars(playlist), track_count=len(playlist.track_references)
                 )
-                for playlist_and_track_count in playlists_with_track_count
+                for playlist in playlists_result.unique().scalars().all()
             ]
 
     async def get_playlist_with_track_references(self, playlist_id: int):
