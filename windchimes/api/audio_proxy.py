@@ -80,7 +80,7 @@ async def fetch_audio_as_proxy(url: str, request: Request):
             )
         elif "application/octet-stream" in content_type:
             return StreamingResponse(
-                response.iter_bytes(),
+                response.aiter_raw(),
                 media_type=content_type,
             )
         else:
