@@ -1,9 +1,16 @@
+import logging
+import os
 from typing import Literal, Optional
 
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from windchimes_backend.graphql_api.config import GraphQLApiSettings
+
+
+ENV_FILE_PATH = os.environ.get("WINDCHIMES__ENV_FILE") or "./.env"
+
+logger = logging.getLogger()
 
 
 class DatabaseSettings(BaseModel):
@@ -36,7 +43,7 @@ class ProxySettings(BaseModel):
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=["./.env", "./.env.prod"],
+        env_file=ENV_FILE_PATH,
         env_file_encoding="utf-8",
         env_nested_delimiter="__",
         env_prefix="WINDCHIMES__",
@@ -62,4 +69,5 @@ class AppConfig(BaseSettings):
         return AppConfig.model_validate({})
 
 
+logger.info("Loading app config from '%s'", ENV_FILE_PATH)
 app_config = AppConfig.load_from_env()
