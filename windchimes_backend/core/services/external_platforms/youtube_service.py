@@ -15,6 +15,7 @@ from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_cl
 )
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
+    ExternalPlaylistToSyncWith,
     PlaylistToImport,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
@@ -25,6 +26,7 @@ from windchimes_backend.core.services.external_platforms.no_suitable_format_erro
 
 
 MAX_YOUTUBE_TRACKS_REQUESTS = 4
+_YOUTUBE_PLAYLIST_PAGE_BASE_URL = "https://youtube.com/playlist"
 
 
 logger = logging.getLogger()
@@ -96,13 +98,15 @@ class YoutubeService(ExternalPlatformService):
 
         tracks_references = await self._fetch_all_videos_as_tracks(playlist_id)
 
-        return PlaylistToImport(
+        return ExternalPlaylistToSyncWith(
             external_platform_id=youtube_playlist.id,
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
             picture_url=youtube_playlist.snippet.thumbnails["default"]["url"],
             publicly_available=False,
             track_references=tracks_references,
+            original_page_url=_YOUTUBE_PLAYLIST_PAGE_BASE_URL
+            + f"?list={youtube_playlist.id}",
         )
 
     async def search_tracks(self, search_query):

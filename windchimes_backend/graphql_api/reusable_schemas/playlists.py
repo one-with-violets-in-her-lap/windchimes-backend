@@ -14,6 +14,7 @@ class ExternalPlaylistToReadGraphQL:
     name: str
     description: Optional[str]
     picture_url: Optional[str]
+    original_page_url: str
 
 
 @strawberry.type

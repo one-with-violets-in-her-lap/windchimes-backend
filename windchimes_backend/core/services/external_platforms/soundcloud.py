@@ -5,6 +5,7 @@ from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.api_clients.soundcloud.models import SoundcloudTrack
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
+    ExternalPlaylistToSyncWith,
     PlaylistToImport,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
@@ -108,7 +109,7 @@ class SoundcloudService(ExternalPlatformService):
             logger.error(str(error))
             return None
 
-        return PlaylistToImport(
+        return ExternalPlaylistToSyncWith(
             external_platform_id=str(soundcloud_playlist.id),
             name=soundcloud_playlist.title,
             description=soundcloud_playlist.description,
@@ -122,6 +123,7 @@ class SoundcloudService(ExternalPlatformService):
                 )
                 for track in soundcloud_playlist.tracks
             ],
+            original_page_url=soundcloud_playlist.permalink_url,
         )
 
     async def search_tracks(self, search_query):
