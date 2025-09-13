@@ -99,7 +99,7 @@ class SoundcloudService(ExternalPlatformService):
     async def get_playlist_by_id(self, playlist_id):
         try:
             soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_id(
-                playlist_id
+                playlist_id, artwork_in_highest_quality=True
             )
 
             if soundcloud_playlist is None:

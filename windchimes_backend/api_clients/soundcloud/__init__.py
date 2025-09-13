@@ -1,5 +1,6 @@
 from functools import reduce
 import logging
+from typing import Optional
 
 import aiohttp
 import httpx
@@ -114,7 +115,9 @@ class SoundcloudApiClient:
 
                 return SoundcloudPlaylist(**response_data)
 
-    async def get_playlist_by_id(self, playlist_id: str):
+    async def get_playlist_by_id(
+        self, playlist_id: str, artwork_in_highest_quality=False
+    ):
         async with httpx.AsyncClient(base_url=_SOUNDCLOUD_API_BASE_URL) as httpx_client:
             response = await httpx_client.get(
                 f"/playlists/{playlist_id}", params={"client_id": self.client_id}
@@ -128,7 +131,26 @@ class SoundcloudApiClient:
                     + f"with status code {response.status_code}"
                 ) from http_status_error
 
-            return SoundcloudPlaylist(**response.json())
+            soundcloud_playlist = SoundcloudPlaylist(**response.json())
+
+            if (
+                artwork_in_highest_quality
+                and soundcloud_playlist.artwork_url is not None
+            ):
+                soundcloud_playlist.artwork_url = (
+                    self._get_highest_quality_playlist_artwork(
+                        soundcloud_playlist.artwork_url
+                    )
+                )
+
+            return soundcloud_playlist
+
+    def _get_highest_quality_playlist_artwork(self, artwork_url: Optional[str]):
+        return (
+            artwork_url.replace("-large.jpg", "-t500x500.jpg")
+            if artwork_url is not None
+            else None
+        )
 
     async def search_tracks(self, search_query: str, limit=35):
         """Searches tracks by provided search query
