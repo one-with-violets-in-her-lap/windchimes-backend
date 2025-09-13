@@ -1,8 +1,10 @@
-from typing import Optional, cast
+from typing import Optional
+import urllib.parse
 
-from fastapi import Request
 import strawberry
+import urllib
 
+from windchimes.core.config import app_config
 from windchimes.core.models.platform import Platform
 from windchimes.api.reusable_schemas.errors import GraphQLApiError
 from windchimes.api.utils.graphql import GraphQLRequestInfo
@@ -36,9 +38,11 @@ async def _get_track_audio_file(
         return None
 
     if platform in PLATFORMS_TO_PROXY:
-        current_api_url = cast(Request, info.context.request).base_url
-        proxy_url = current_api_url.replace(path=audio_proxy_router.prefix)
-        audio_file_url = str(proxy_url.include_query_params(url=audio_file_url))
+        print(audio_proxy_router.prefix)
+        audio_file_url = (
+            f"{str(app_config.api.public_base_url).rstrip('/')}{audio_proxy_router.prefix}"
+            + f"?url={urllib.parse.quote(audio_file_url)}"
+        )
 
     return TrackAudioFileGraphQL(url=audio_file_url)
 
