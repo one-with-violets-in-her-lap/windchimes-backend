@@ -46,4 +46,4 @@ class PlaylistToReadWithTrackCount(PlaylistToRead):
 
 class PlaylistDetailed(PlaylistToReadWithTrackCount):
     track_references: list[TrackReferenceSchema]
-    external_playlist_to_sync_with: Optional[ExternalPlaylistReferenceSchema]
+    external_playlist_to_sync_with: Optional[ExternalPlaylistReferenceSchema] = None
