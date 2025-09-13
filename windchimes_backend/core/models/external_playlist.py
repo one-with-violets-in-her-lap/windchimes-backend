@@ -34,3 +34,6 @@ class ExternalPlaylistToSyncWith(BaseModel):
         - Youtube playlist original page url:
         `https://www.youtube.com/playlist?list=PLFV2KydlgVPrzJLyCYHLiDE38Z4tconON`
     """
+
+    soundcloud_secret_token: Optional[str] = None
+    """Platform-specific column for fetching private soundcloud playlists"""

@@ -3,6 +3,9 @@ import logging
 from windchimes_backend.api_clients.platform_api_error import PlatformApiError
 from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.api_clients.soundcloud.models import SoundcloudTrack
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
+)
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
     ExternalPlaylistToSyncWith,
@@ -95,12 +98,17 @@ class SoundcloudService(ExternalPlatformService):
                 for track in soundcloud_playlist.tracks
             ],
             original_page_url=soundcloud_playlist.permalink_url,
+            soundcloud_secret_token=soundcloud_playlist.secret_token,
         )
 
-    async def get_playlist_by_id(self, playlist_id):
+    async def get_playlist_by_id(
+        self, playlist_id, platform_specific_params: PlatformSpecificParams
+    ):
         try:
             soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_id(
-                playlist_id, artwork_in_highest_quality=True
+                playlist_id,
+                artwork_in_highest_quality=True,
+                secret_token=platform_specific_params.soundcloud_secret_token,
             )
 
             if soundcloud_playlist is None:

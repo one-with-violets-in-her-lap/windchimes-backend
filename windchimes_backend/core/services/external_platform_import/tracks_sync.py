@@ -11,6 +11,9 @@ from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
+)
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
@@ -73,6 +76,7 @@ class TracksSyncService:
                 platform_id=external_playlist_data.external_platform_id,
                 parent_playlist_id=playlist_to_link_to_id,
                 last_sync_at=datetime.now(),
+                soundcloud_secret_token=external_playlist_data.soundcloud_secret_token,
             )
 
             database_session.add(external_playlist_reference)
@@ -136,16 +140,17 @@ class TracksSyncService:
 
             result = await database_session.execute(linked_playlist_query_statement)
 
-            external_playlist_to_sync_with_reference = result.scalar()
+            external_playlist_reference = result.scalar()
 
-            if external_playlist_to_sync_with_reference is None:
+            if external_playlist_reference is None:
                 return None
 
-            external_playlist_data = (
-                await self.platform_aggregator_service.get_playlist_by_id(
-                    external_playlist_to_sync_with_reference.platform,
-                    external_playlist_to_sync_with_reference.platform_id,
-                )
+            external_playlist_data = await self.platform_aggregator_service.get_playlist_by_id(
+                external_playlist_reference.platform,
+                external_playlist_reference.platform_id,
+                platform_specific_params=PlatformSpecificParams(
+                    soundcloud_secret_token=external_playlist_reference.soundcloud_secret_token
+                ),
             )
 
             return external_playlist_data

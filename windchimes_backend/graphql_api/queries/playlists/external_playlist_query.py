@@ -44,6 +44,7 @@ async def _get_external_playlist_linked_for_sync(
                 "external_platform_id",
                 "track_references",
                 "publicly_available",
+                "soundcloud_secret_token"
             }
         )
     )

@@ -28,6 +28,9 @@ class ExternalPlaylistReference(BaseDatabaseModel):
 
     platform: Mapped[Platform]
 
+    soundcloud_secret_token: Mapped[Optional[str]]
+    """Platform-specific column for fetching private soundcloud playlists"""
+
     parent_playlist_id: Mapped[Optional[int]] = mapped_column(ForeignKey("playlist.id"))
     playlist: Mapped[Any] = relationship(
         "Playlist", back_populates="external_playlist_to_sync_with"

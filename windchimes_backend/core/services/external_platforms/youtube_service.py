@@ -17,6 +17,9 @@ from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
     ExternalPlaylistToSyncWith,
 )
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
+)
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
 from windchimes_backend.core.services.external_platforms.no_suitable_format_error import (
@@ -85,9 +88,12 @@ class YoutubeService(ExternalPlatformService):
         if playlist_id_query_param is None:
             return None
 
-        return await self.get_playlist_by_id(playlist_id_query_param[0])
+        return await self.get_playlist_by_id(
+            playlist_id_query_param[0],
+            PlatformSpecificParams(),  # There aren't any Youtube-specific params
+        )
 
-    async def get_playlist_by_id(self, playlist_id):
+    async def get_playlist_by_id(self, playlist_id, platform_specific_params):
         youtube_playlist = await self.youtube_data_api_client.get_playlist_by_id(
             playlist_id
         )

@@ -1,6 +1,9 @@
 import random
 from typing import Optional
 
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
+)
 from windchimes_backend.core.models.playlist import PlaylistToImport
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
 from windchimes_backend.utils.lists import set_items_order
@@ -76,9 +79,14 @@ class PlatformAggregatorService:
         return playlist
 
     async def get_playlist_by_id(
-        self, platform: Platform, playlist_id: str
+        self,
+        platform: Platform,
+        playlist_id: str,
+        platform_specific_params: PlatformSpecificParams,
     ) -> Optional[ExternalPlaylistToSyncWith]:
-        return await self.platform_services[platform].get_playlist_by_id(playlist_id)
+        return await self.platform_services[platform].get_playlist_by_id(
+            playlist_id, platform_specific_params
+        )
 
     async def search_tracks(self, search_query: str) -> list[LoadedTrack]:
         tracks = []

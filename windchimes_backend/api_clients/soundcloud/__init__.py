@@ -116,11 +116,15 @@ class SoundcloudApiClient:
                 return SoundcloudPlaylist(**response_data)
 
     async def get_playlist_by_id(
-        self, playlist_id: str, artwork_in_highest_quality=False
+        self,
+        playlist_id: str,
+        artwork_in_highest_quality=False,
+        secret_token: Optional[str] = None,
     ):
         async with httpx.AsyncClient(base_url=_SOUNDCLOUD_API_BASE_URL) as httpx_client:
             response = await httpx_client.get(
-                f"/playlists/{playlist_id}", params={"client_id": self.client_id}
+                f"/playlists/{playlist_id}",
+                params={"client_id": self.client_id, "secret_token": secret_token},
             )
 
             try:

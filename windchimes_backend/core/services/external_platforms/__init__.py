@@ -1,10 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Sequence
 
-from windchimes_backend.core.models.external_playlist import (
-    ExternalPlaylistToSyncWith
-)
-from windchimes_backend.core.models.playlist import PlaylistToImport
+from windchimes_backend.core.models.platform_specific_params import PlatformSpecificParams
+from windchimes_backend.core.models.external_playlist import ExternalPlaylistToSyncWith
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 
 
@@ -47,11 +45,15 @@ class ExternalPlatformService(ABC):
         pass
 
     @abstractmethod
-    async def get_playlist_by_url(self, url: str) -> Optional[ExternalPlaylistToSyncWith]:
+    async def get_playlist_by_url(
+        self, url: str
+    ) -> Optional[ExternalPlaylistToSyncWith]:
         pass
 
     @abstractmethod
-    async def get_playlist_by_id(self, playlist_id: str) -> Optional[ExternalPlaylistToSyncWith]:
+    async def get_playlist_by_id(
+        self, playlist_id: str, platform_specific_params: PlatformSpecificParams
+    ) -> Optional[ExternalPlaylistToSyncWith]:
         pass
 
     @abstractmethod

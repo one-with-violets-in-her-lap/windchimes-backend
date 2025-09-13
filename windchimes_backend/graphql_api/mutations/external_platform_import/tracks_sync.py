@@ -91,6 +91,7 @@ async def _set_playlist_for_tracks_sync(
                         "external_platform_id",
                         "track_references",
                         "publicly_available",
+                        "soundcloud_secret_token"
                     }
                 )
             )
