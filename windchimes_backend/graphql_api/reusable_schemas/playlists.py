@@ -20,6 +20,7 @@ class ExternalPlaylistToReadGraphQL:
 @strawberry.type
 class ExternalPlaylistReferenceGraphQL:
     id: int
+    last_sync_at: datetime
     platform: Platform
     platform_id: str
 

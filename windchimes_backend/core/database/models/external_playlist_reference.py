@@ -21,7 +21,7 @@ class ExternalPlaylistReference(BaseDatabaseModel):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    created_at: Mapped[datetime] = mapped_column(default=functions.now())
+    last_sync_at: Mapped[datetime]
 
     platform_id: Mapped[str]
     """External platform id of the playlist that is being referenced"""

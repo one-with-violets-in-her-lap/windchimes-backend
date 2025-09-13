@@ -1,6 +1,7 @@
+from datetime import datetime
 import logging
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.external_playlist_reference import (
@@ -115,6 +116,14 @@ class TracksSyncService:
             external_playlist_data.track_references,
             replace_existing_tracks=True,
         )
+
+        async with self.database.create_session() as database_session:
+            update_last_sync_date_statement = update(ExternalPlaylistReference).values(
+                last_sync_at=datetime.now()
+            )
+
+            await database_session.execute(update_last_sync_date_statement)
+            await database_session.commit()
 
         return external_playlist_data.track_references
 

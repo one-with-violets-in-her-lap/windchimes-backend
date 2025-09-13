@@ -1,4 +1,3 @@
-from calendar import c
 from datetime import datetime
 from typing import Optional
 
@@ -35,6 +34,7 @@ class ExternalPlaylistToLink(BaseModel):
 
 class ExternalPlaylistReferenceSchema(BaseModel):
     id: int
+    last_sync_at: datetime
     platform: Platform
     platform_id: str
 

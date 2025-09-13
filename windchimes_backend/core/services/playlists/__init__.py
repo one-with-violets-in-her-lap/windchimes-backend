@@ -14,9 +14,7 @@ from windchimes_backend.core.database.models.playlist import Playlist, PlaylistT
 from windchimes_backend.core.database.models.track_reference import TrackReference
 from windchimes_backend.core.models.playlist import (
     ExternalPlaylistReferenceSchema,
-    ExternalPlaylistToLink,
     PlaylistToCreate,
-    PlaylistToImport,
     PlaylistToReadWithTrackCount,
     PlaylistDetailed,
 )
