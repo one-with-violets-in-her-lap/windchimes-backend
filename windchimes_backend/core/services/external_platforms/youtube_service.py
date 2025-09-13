@@ -95,6 +95,9 @@ class YoutubeService(ExternalPlatformService):
             track_references=tracks_references,
         )
 
+    async def search_tracks(self, search_query):
+        return []
+
     async def _fetch_all_videos_as_tracks(self, playlist_id: str):
         """
         fetches all playlist videos by sending a request for each 50

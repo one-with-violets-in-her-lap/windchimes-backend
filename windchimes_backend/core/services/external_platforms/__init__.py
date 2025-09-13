@@ -50,6 +50,10 @@ class ExternalPlatformService(ABC):
         pass
 
     @abstractmethod
+    async def search_tracks(self, search_query: str) -> list[LoadedTrack]:
+        pass
+
+    @abstractmethod
     def _convert_to_multi_platform_track(
         self, resource_to_convert, track_id: str
     ) -> LoadedTrack:

@@ -95,6 +95,9 @@ class SoundcloudService(ExternalPlatformService):
             ],
         )
 
+    async def search_tracks(self, search_query):
+        return []
+
     def _get_suitable_format_url(self, track_transcodings: list[dict]):
         suitable_formats = [
             transcoding

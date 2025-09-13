@@ -1,5 +1,6 @@
 from typing import Optional
 
+from windchimes_backend.core.services.external_platforms import ExternalPlatformService
 from windchimes_backend.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
@@ -23,7 +24,7 @@ class PlatformAggregatorService:
     def __init__(
         self, soundcloud_service: SoundcloudService, youtube_service: YoutubeService
     ):
-        self.platform_services = {
+        self.platform_services: dict[Platform, ExternalPlatformService] = {
             Platform.SOUNDCLOUD: soundcloud_service,
             Platform.YOUTUBE: youtube_service,
         }
@@ -64,4 +65,21 @@ class PlatformAggregatorService:
     async def get_playlist_by_url(
         self, platform: Platform, playlist_url: str
     ) -> Optional[PlaylistToCreateWithTracks]:
-        return await self.platform_services[platform].get_playlist_by_url(playlist_url)
+        playlist = await self.platform_services[platform].get_playlist_by_url(
+            playlist_url
+        )
+
+        return (
+            PlaylistToCreateWithTracks(**playlist.model_dump())
+            if playlist is not None
+            else None
+        )
+
+    async def search_tracks(self, search_query: str) -> list[LoadedTrack]:
+        tracks = []
+
+        for platform in self.platform_services:
+            platform_service = self.platform_services[platform]
+            tracks.extend(await platform_service.search_tracks(search_query))
+
+        return tracks
