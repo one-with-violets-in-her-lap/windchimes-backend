@@ -1,7 +1,9 @@
 from pydantic import ValidationError
 import strawberry
 
+from windchimes_backend.core.models.user import User
 from windchimes_backend.core.services.playlists import (
+    TrackToDeleteFromPlaylists,
     TracksToAddToPlaylistsWrapper,
 )
 from windchimes_backend.graphql_api.mutations.playlists import TrackToAddGraphQL
@@ -11,10 +13,18 @@ from windchimes_backend.graphql_api.reusable_schemas.errors import (
     UnauthorizedErrorGraphQL,
     ValidationErrorGraphQL,
 )
+from windchimes_backend.graphql_api.strawberry_graphql_setup.auth import (
+    AuthorizedOnlyExtension,
+)
 from windchimes_backend.graphql_api.utils.dictionaries import convert_to_dictionary
 from windchimes_backend.graphql_api.utils.graphql import (
     GraphQLRequestInfo,
 )
+
+
+@strawberry.type
+class DeleteTrackFromPlaylistsResponse:
+    updated_playlists_ids: list[int]
 
 
 async def _add_tracks_to_playlists(
@@ -65,4 +75,51 @@ async def _add_tracks_to_playlists(
 
 add_tracks_to_playlists_mutation = strawberry.mutation(
     resolver=_add_tracks_to_playlists,
+)
+
+
+async def _delete_track_from_playlists(
+    info: GraphQLRequestInfo, track_id: str, playlists_ids: list[int]
+) -> DeleteTrackFromPlaylistsResponse | ValidationErrorGraphQL | GraphQLApiError:
+    playlists_access_management_service = (
+        info.context.playlists_access_management_service
+    )
+    playlists_service = info.context.playlists_service
+
+    try:
+        track_to_delete = TrackToDeleteFromPlaylists.model_validate(
+            {"track_id": track_id, "playlists_ids": playlists_ids}
+        )
+    except ValidationError as error:
+        return ValidationErrorGraphQL.create_from_pydantic_validation_error(error)
+
+    user_owns_all_playlists = (
+        await playlists_access_management_service.check_if_user_owns_the_playlists(
+            playlists_ids
+        )
+    )
+    if not user_owns_all_playlists:
+        return ForbiddenErrorGraphQL(
+            explanation="You don't have access to playlists you want to delete "
+            + "tracks from",
+            technical_explanation="You don't have access to some playlists "
+            + "you want to delete tracks from",
+        )
+
+    update_playlists_ids = await playlists_service.delete_track_from_playlists(
+        track_to_delete
+    )
+
+    return DeleteTrackFromPlaylistsResponse(updated_playlists_ids=update_playlists_ids)
+
+
+delete_track_from_playlists_mutation = strawberry.mutation(
+    resolver=_delete_track_from_playlists,
+    extensions=[AuthorizedOnlyExtension()],
+    description="""
+    Deletes track from playlists with specified ids (`track_to_delete_from_playlist.playlists_ids` param)
+
+    Returns:
+        Ids of the playlists from which the track was deleted
+    """,
 )

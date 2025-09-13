@@ -3,8 +3,7 @@ from typing import Annotated, Optional
 
 from annotated_types import Len
 from pydantic import BaseModel
-from sqlalchemy import delete, select, update
-from sqlalchemy.sql import functions
+from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
@@ -57,13 +56,17 @@ class PlaylistDeleteOrUpdateFailed(Exception):
         )
 
 
-class TrackToAddToPlaylist(BaseModel):
-    id: str
-    playlists_ids_to_add_to: Annotated[list[int], Len(min_length=1)]
-
-
 class TracksToAddToPlaylistsWrapper(BaseModel):
+    class TrackToAddToPlaylist(BaseModel):
+        id: str
+        playlists_ids_to_add_to: Annotated[list[int], Len(min_length=1)]
+
     tracks: list[TrackToAddToPlaylist]
+
+
+class TrackToDeleteFromPlaylists(BaseModel):
+    track_id: str
+    playlists_ids: Annotated[list[int], Len(min_length=1)]
 
 
 class PlaylistsService:
@@ -224,3 +227,29 @@ class PlaylistsService:
             database_session.add_all(new_playlist_tracks_associations)
 
             await database_session.commit()
+
+    async def delete_track_from_playlists(
+        self, track_to_delete_from_playlists: TrackToDeleteFromPlaylists
+    ):
+        """
+        Deletes track from playlists with specified ids
+        (`track_to_delete_from_playlist.playlists_ids` param)
+
+        Returns:
+            Ids of the playlist from which the track was deleted
+        """
+
+        async with self._database.create_session() as database_session:
+            statement = delete(PlaylistTrack).where(
+                and_(
+                    PlaylistTrack.playlist_id.in_(
+                        track_to_delete_from_playlists.playlists_ids
+                    ),
+                    PlaylistTrack.track_id == track_to_delete_from_playlists.track_id,
+                )
+            )
+
+            await database_session.execute(statement)
+            await database_session.commit()
+
+            return track_to_delete_from_playlists.playlists_ids
