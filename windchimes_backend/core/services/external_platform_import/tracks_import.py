@@ -26,5 +26,5 @@ class TracksImportService:
             playlist_to_import_from.platform.value,
             playlist_to_import_from.url,
             playlist_to_import_to_id,
-            replace_existing_tracks
+            replace_existing_tracks,
         )
