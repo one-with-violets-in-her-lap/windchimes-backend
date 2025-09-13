@@ -1,5 +1,6 @@
-from datetime import datetime
+import logging
 from typing import Annotated, Optional
+import timeit
 
 from annotated_types import Len
 from pydantic import BaseModel
@@ -8,9 +9,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database import Database
-from windchimes_backend.core.database.models.external_playlist_reference import (
-    ExternalPlaylistReference,
-)
 from windchimes_backend.core.database.models.playlist import Playlist, PlaylistTrack
 from windchimes_backend.core.database.models.track_reference import TrackReference
 from windchimes_backend.core.models.playlist import (
@@ -20,6 +18,9 @@ from windchimes_backend.core.models.playlist import (
     PlaylistDetailed,
 )
 from windchimes_backend.core.models.track import TrackReferenceSchema
+
+
+logger = logging.getLogger(__name__)
 
 
 class PlaylistsFilters(BaseModel):
@@ -79,6 +80,8 @@ class PlaylistsService:
         limit: Optional[int] = None,
     ):
         async with self._database.create_session() as database_session:
+            start_time_seconds = timeit.default_timer()
+
             statement = (
                 select(
                     Playlist,
@@ -124,6 +127,11 @@ class PlaylistsService:
             statement = statement.order_by(desc(Playlist.created_at))
 
             playlists_result = await database_session.execute(statement)
+
+            logger.info(
+                "Fetched the playlists from DB in %s seconds",
+                timeit.default_timer() - start_time_seconds,
+            )
 
             return [
                 PlaylistToReadWithTrackCount(
