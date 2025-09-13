@@ -1,14 +1,10 @@
-from enum import Enum
+from typing import Any
 
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from windchimes_backend.core.database.models.base import BaseDatabaseModel
-
-
-class Platform(Enum):
-    SOUNDCLOUD = "SOUNDCLOUD"
-    YOUTUBE = "YOUTUBE"
+from windchimes_backend.core.models.platform import Platform
 
 
 class TrackReference(BaseDatabaseModel):
@@ -25,6 +21,10 @@ class TrackReference(BaseDatabaseModel):
     """external platform id of the track that is being referenced"""
 
     platform: Mapped[Platform]
+
+    playlists: Mapped[list[Any]] = relationship(
+        "Playlist", secondary="playlist_track", back_populates="tracks"
+    )
 
     __table_args__ = (
         UniqueConstraint(

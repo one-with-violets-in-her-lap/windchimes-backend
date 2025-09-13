@@ -9,9 +9,7 @@ from windchimes_backend.graphql_api.graphql_setup import graphql_router
 
 root_logger.info("Launching uvicorn serving Graphql API")
 
-
 app = FastAPI(lifespan=lifespan)
 app.include_router(graphql_router, prefix="/graphql")
-
 
 uvicorn.run(app, port=app_config.graphql_api.port)
