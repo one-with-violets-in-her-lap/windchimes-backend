@@ -16,6 +16,14 @@ class PlaylistsFilters(BaseModel):
     exclude_owner_user_id: Optional[str] = None
 
 
+class PlaylistToCreate(BaseModel):
+    name: str
+    slug: str
+    description: Optional[str]
+    picture_url: Optional[str]
+    owner_user_id: str
+
+
 class PlaylistWithTrackCount(BaseModel):
     id: int
     created_at: datetime
@@ -24,11 +32,18 @@ class PlaylistWithTrackCount(BaseModel):
     description: Optional[str]
     picture_url: Optional[str]
     owner_user_id: str
-
     track_count: int
 
 
 class PlaylistWithTrackReferences(PlaylistWithTrackCount):
+    id: int
+    created_at: datetime
+    name: str
+    slug: str
+    description: Optional[str]
+    picture_url: Optional[str]
+    owner_user_id: str
+
     track_references: list[TrackReferenceSchema]
 
 
@@ -84,4 +99,14 @@ class PlaylistsService:
                         for track_reference in playlist.track_references
                     ],
                 }
+            )
+
+    async def create_playlist(self, playlist: PlaylistToCreate):
+        async with self._database.create_session() as database_session:
+            new_playlist = Playlist(**playlist.model_dump())
+            database_session.add(new_playlist)
+            await database_session.commit()
+
+            return PlaylistWithTrackReferences(
+                **vars(new_playlist), track_count=0, track_references=[]
             )
