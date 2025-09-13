@@ -10,7 +10,7 @@ from windchimes_backend.core.database.models.external_playlist_reference import 
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
-from windchimes_backend.core.models.playlist import ExternalPlaylistToLink
+from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
@@ -72,6 +72,7 @@ class TracksSyncService:
                 platform=external_playlist_to_link.platform,
                 platform_id=external_playlist_data.external_platform_id,
                 parent_playlist_id=playlist_to_link_to_id,
+                last_sync_at=datetime.now(),
             )
 
             database_session.add(external_playlist_reference)

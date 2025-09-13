@@ -1,12 +1,12 @@
 import random
 from typing import Optional
 
+from windchimes_backend.core.models.playlist import PlaylistToImport
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
 from windchimes_backend.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import (
+from windchimes_backend.core.models.external_playlist import (
     ExternalPlaylistToSyncWith,
-    PlaylistToImport,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.soundcloud import (
@@ -68,14 +68,12 @@ class PlatformAggregatorService:
 
     async def get_playlist_by_url(
         self, platform: Platform, playlist_url: str
-    ) -> Optional[PlaylistToImport]:
+    ) -> Optional[ExternalPlaylistToSyncWith]:
         playlist = await self.platform_services[platform].get_playlist_by_url(
             playlist_url
         )
 
-        return (
-            PlaylistToImport(**playlist.model_dump()) if playlist is not None else None
-        )
+        return playlist
 
     async def get_playlist_by_id(
         self, platform: Platform, playlist_id: str

@@ -5,7 +5,7 @@ from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import ExternalPlaylistToLink
+from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
 from windchimes_backend.core.services.external_platform_import.tracks_sync import (
     ExternalPlaylistNotLinkedError,
 )

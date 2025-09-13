@@ -10,7 +10,7 @@ from windchimes_backend.core.database.models.track_reference import TrackReferen
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
-from windchimes_backend.core.models.playlist import ExternalPlaylistToLink
+from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
 from windchimes_backend.core.models.track import TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,

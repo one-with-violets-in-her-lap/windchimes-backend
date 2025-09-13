@@ -14,9 +14,8 @@ from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_cl
     YoutubeInternalApiClient,
 )
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import (
+from windchimes_backend.core.models.external_playlist import (
     ExternalPlaylistToSyncWith,
-    PlaylistToImport,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
@@ -103,7 +102,6 @@ class YoutubeService(ExternalPlatformService):
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
             picture_url=youtube_playlist.snippet.thumbnails["default"]["url"],
-            publicly_available=False,
             track_references=tracks_references,
             original_page_url=_YOUTUBE_PLAYLIST_PAGE_BASE_URL
             + f"?list={youtube_playlist.id}",

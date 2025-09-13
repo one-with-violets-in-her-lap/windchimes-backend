@@ -2,7 +2,7 @@ from pydantic import ValidationError
 import strawberry
 
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import ExternalPlaylistToLink
+from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
