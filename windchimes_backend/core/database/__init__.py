@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Database:
-    def __init__(self, url: str, echo=False) -> None:
+    def __init__(self, url: str, echo=True) -> None:
         self._engine = create_async_engine(
             url,
             echo=echo,
@@ -25,4 +25,4 @@ class Database:
         await self._engine.dispose()
 
 
-database = Database(url=str(app_config.database.url))
+database = Database(url=str(app_config.database.url), echo=app_config.database.echo)

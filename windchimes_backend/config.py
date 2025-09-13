@@ -6,6 +6,7 @@ from windchimes_backend.graphql_api.config import GraphQLApiSettings
 
 class DatabaseSettings(BaseModel):
     url: AnyUrl
+    echo: bool = True
 
 
 class Auth0Settings(BaseModel):
