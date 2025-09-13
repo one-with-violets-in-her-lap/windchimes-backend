@@ -29,21 +29,21 @@ class PlaylistsFiltersGraphQL:
     )
 
 
-async def get_playlists(info: GraphQLRequestInfo, filters: PlaylistsFiltersGraphQL):
+async def __get_playlists(info: GraphQLRequestInfo, filters: PlaylistsFiltersGraphQL):
     playlists_service = info.context.playlists_service
     return await playlists_service.get_playlists(PlaylistsFilters(**vars(filters)))
 
 
 playlists_query = strawberry.field(
-    resolver=get_playlists, graphql_type=list[PlaylistToReadGraphQL]
+    resolver=__get_playlists, graphql_type=list[PlaylistToReadGraphQL]
 )
 
 
-async def get_one_playlist(info: GraphQLRequestInfo, playlist_id: int):
+async def __get_one_playlist(info: GraphQLRequestInfo, playlist_id: int):
     playlists_service = info.context.playlists_service
     return await playlists_service.get_playlist_with_track_references(playlist_id)
 
 
 playlist_query = strawberry.field(
-    resolver=get_one_playlist, graphql_type=PlaylistToReadWithTracksGraphQL
+    resolver=__get_one_playlist, graphql_type=PlaylistToReadWithTracksGraphQL
 )

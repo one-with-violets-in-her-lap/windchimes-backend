@@ -3,7 +3,7 @@ import stat
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
@@ -24,32 +24,34 @@ class PlaylistToCreate(BaseModel):
     owner_user_id: str
 
 
-class PlaylistWithTrackCount(BaseModel):
+class PlaylistUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    picture_url: Optional[str] = None
+
+
+class PlaylistToRead(BaseModel):
     id: int
     created_at: datetime
     name: str
     description: Optional[str]
     picture_url: Optional[str]
     owner_user_id: str
+
+
+class PlaylistToReadWithTrackCount(PlaylistToRead):
     track_count: int
 
 
-class PlaylistWithTrackReferences(PlaylistWithTrackCount):
-    id: int
-    created_at: datetime
-    name: str
-    description: Optional[str]
-    picture_url: Optional[str]
-    owner_user_id: str
-
+class PlaylistToReadWithTrackReferences(PlaylistToReadWithTrackCount):
     track_references: list[TrackReferenceSchema]
 
 
-class FailedToDeletePlaylistError(Exception):
+class PlaylistDeleteOrUpdateFailed(Exception):
     def __init__(self):
         super().__init__(
-            "Deletion failed because the playlist with specified id does not exist "
-            + "or current user doesn't have access to that playlist"
+            "Deletion or update failed because the playlist with specified id does "
+            + "not exist or current user doesn't have access to that playlist"
         )
 
 
@@ -80,7 +82,7 @@ class PlaylistsService:
             playlists_with_track_count = result.fetchall()
 
             return [
-                PlaylistWithTrackCount(
+                PlaylistToReadWithTrackCount(
                     **vars(playlist_and_track_count[0]),
                     track_count=playlist_and_track_count[1]
                 )
@@ -96,7 +98,7 @@ class PlaylistsService:
             if playlist is None:
                 return None
 
-            return PlaylistWithTrackReferences.model_validate(
+            return PlaylistToReadWithTrackReferences.model_validate(
                 {
                     **vars(playlist),
                     "track_count": len(playlist.track_references),
@@ -113,7 +115,7 @@ class PlaylistsService:
             database_session.add(new_playlist)
             await database_session.commit()
 
-            return PlaylistWithTrackReferences(
+            return PlaylistToReadWithTrackReferences(
                 **vars(new_playlist), track_count=0, track_references=[]
             )
 
@@ -129,7 +131,7 @@ class PlaylistsService:
                 cannot delete it
 
         Raises:
-            FailedToDeletePlaylistError: Deletion failed because the playlist with
+            PlaylistDeleteOrUpdateFailed: Deletion failed because the playlist with
                 specified id does not exist or current user doesn't have access to that playlist
         """
 
@@ -144,4 +146,43 @@ class PlaylistsService:
             await database_session.commit()
 
             if result.rowcount == 0:
-                raise FailedToDeletePlaylistError()
+                raise PlaylistDeleteOrUpdateFailed()
+
+    # TODO: move to separate `auth/playlists.py` service
+    async def update_playlist(
+        self,
+        playlist_to_update_id: int,
+        owner_user_id: str,
+        new_playlist_data: PlaylistUpdate,
+    ):
+        """
+        Updates a playlist by its id. Owner user id is also needed for access management
+
+        Args:
+            playlist_to_update: Id of a playlist to update
+            owner_user_id: Id of the playlist owner user. It's needed to ensure user
+                with id that does not match the owner user id of a playlist
+                cannot update it
+            new_playlist_data: Fields to update in playlist
+
+        Raises:
+            PlaylistDeleteOrUpdateFailed: Update failed because the playlist with
+                specified id does not exist or current user doesn't have access to that playlist
+        """
+
+        async with self._database.create_session() as database_session:
+            statement = (
+                update(Playlist)
+                .where(
+                    Playlist.id == playlist_to_update_id,
+                    Playlist.owner_user_id == owner_user_id,
+                )
+                .values(new_playlist_data.model_dump(exclude_none=True))
+            )
+
+            result = await database_session.execute(statement)
+
+            await database_session.commit()
+
+            if result.rowcount == 0:
+                raise PlaylistDeleteOrUpdateFailed()

@@ -1,18 +1,17 @@
-from datetime import datetime
 from typing import Optional
 
 import strawberry
 
 from windchimes_backend.core.services.playlists import (
-    FailedToDeletePlaylistError,
+    PlaylistDeleteOrUpdateFailed,
     PlaylistToCreate,
+    PlaylistUpdate,
 )
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     GraphQLApiError,
     UnauthorizedErrorGraphQL,
 )
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
-    PlaylistToReadGraphQL,
     PlaylistToReadWithTracksGraphQL,
 )
 from windchimes_backend.graphql_api.utils.dataclasses import convert_to_dataclass
@@ -28,7 +27,14 @@ class PlaylistToCreateGraphQL:
     picture_url: Optional[str] = None
 
 
-async def create_playlist(
+@strawberry.input
+class PlaylistUpdateGraphQL:
+    name: Optional[str] = None
+    description: Optional[str] = None
+    picture_url: Optional[str] = None
+
+
+async def __create_playlist(
     info: GraphQLRequestInfo, playlist: PlaylistToCreateGraphQL
 ) -> PlaylistToReadWithTracksGraphQL | UnauthorizedErrorGraphQL:
     playlists_service = info.context.playlists_service
@@ -45,11 +51,11 @@ async def create_playlist(
 
 
 create_playlist_mutation = strawberry.mutation(
-    resolver=create_playlist,
+    resolver=__create_playlist,
 )
 
 
-async def delete_playlist(
+async def __delete_playlist(
     info: GraphQLRequestInfo, playlist_to_delete_id: int
 ) -> None | GraphQLApiError:
     playlists_service = info.context.playlists_service
@@ -60,7 +66,7 @@ async def delete_playlist(
 
     try:
         await playlists_service.delete_playlist(playlist_to_delete_id, current_user.sub)
-    except FailedToDeletePlaylistError as error:
+    except PlaylistDeleteOrUpdateFailed as error:
         return GraphQLApiError(
             name="playlist-deletion-failed-error",
             explanation="Playlist couldn't be deleted because it doesn't exist or you don't have access to it",
@@ -69,5 +75,35 @@ async def delete_playlist(
 
 
 delete_playlist_mutation = strawberry.mutation(
-    resolver=delete_playlist,
+    resolver=__delete_playlist,
+)
+
+
+async def __update_playlist(
+    info: GraphQLRequestInfo,
+    playlist_to_update_id: int,
+    playlist_data_to_update: PlaylistUpdateGraphQL,
+) -> None | GraphQLApiError:
+    playlists_service = info.context.playlists_service
+    current_user = info.context.current_user
+
+    if current_user is None:
+        return UnauthorizedErrorGraphQL()
+
+    try:
+        await playlists_service.update_playlist(
+            playlist_to_update_id,
+            current_user.sub,
+            PlaylistUpdate.model_validate(vars(playlist_data_to_update)),
+        )
+    except PlaylistDeleteOrUpdateFailed as error:
+        return GraphQLApiError(
+            name="playlist-update-failed-error",
+            explanation="Playlist couldn't be updated because it doesn't exist or you don't have access to it",
+            technical_explanation=str(error),
+        )
+
+
+update_playlist_mutation = strawberry.mutation(
+    resolver=__update_playlist,
 )
