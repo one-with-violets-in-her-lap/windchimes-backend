@@ -25,6 +25,12 @@ class PlaylistsFiltersGraphQL:
         default=None,
     )
 
+    containing_track_reference_id: Optional[str] = strawberry.field(
+        description="If specified, ONLY the playlists that contain track reference with "
+        + "specified id are included in the output",
+        default=None,
+    )
+
     exclude_containing_track_reference_id: Optional[str] = strawberry.field(
         description="If specified, playlists that contain track reference with "
         + "specified id are excluded from the output",

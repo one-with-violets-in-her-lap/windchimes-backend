@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 from annotated_types import Len
 from pydantic import BaseModel
-from sqlalchemy import and_, delete, select, update
+from sqlalchemy import and_, delete, not_, select, update
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
@@ -22,6 +22,12 @@ class PlaylistsFilters(BaseModel):
     """
     If specified, playlists that contain track reference with
     specified id are excluded from the output
+    """
+
+    containing_track_reference_id: Optional[str] = None
+    """
+    If specified, ONLY the playlists that contain track reference with
+    specified id are included in the output
     """
 
 
@@ -91,11 +97,21 @@ class PlaylistsService:
             if filters.ids is not None:
                 statement = statement.where(Playlist.id.in_(filters.ids))
 
-            if filters.exclude_containing_track_reference_id is not None:
+            if filters.containing_track_reference_id is not None:
                 statement = statement.where(
-                    ~Playlist.track_references.any(
+                    Playlist.track_references.any(
                         TrackReference.id
                         == filters.exclude_containing_track_reference_id
+                    )
+                )
+
+            if filters.exclude_containing_track_reference_id is not None:
+                statement = statement.where(
+                    not_(
+                        Playlist.track_references.any(
+                            TrackReference.id
+                            == filters.exclude_containing_track_reference_id
+                        )
                     )
                 )
 
