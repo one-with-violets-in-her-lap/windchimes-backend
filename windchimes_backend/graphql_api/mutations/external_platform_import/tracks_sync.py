@@ -1,5 +1,3 @@
-from math import e
-from typing import cast
 from pydantic import ValidationError
 import strawberry
 
@@ -8,11 +6,9 @@ from windchimes_backend.core.errors.external_platform_import import (
 )
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
-from windchimes_backend.core.models.user import User
 from windchimes_backend.core.services.external_platform_import.tracks_sync import (
     ExternalPlaylistNotLinkedError,
 )
-from windchimes_backend.core.services.playlists import PlaylistsFilters
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,

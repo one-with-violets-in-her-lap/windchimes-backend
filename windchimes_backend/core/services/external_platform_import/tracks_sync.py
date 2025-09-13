@@ -1,12 +1,11 @@
 import logging
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select
 
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.external_playlist_reference import (
     ExternalPlaylistReference,
 )
-from windchimes_backend.core.database.models.playlist import Playlist
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
