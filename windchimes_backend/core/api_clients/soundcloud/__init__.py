@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class SoundcloudApiClient:
-    client_id: Optional[str] = app_config.soundcloud_api.fallback_client_id
+    client_id = app_config.soundcloud_api.fallback_client_id
     """API key to use for Soundcloud API access
 
     Scraped from soundcloud website regularly (check

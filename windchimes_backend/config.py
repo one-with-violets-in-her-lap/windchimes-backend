@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,7 +21,7 @@ class YoutubeDataApiSettings(BaseModel):
 
 
 class SoundcloudApiSettings(BaseModel):
-    fallback_client_id: Optional[str] = None
+    fallback_client_id: str = ""
     """Fallback API key for Soundcloud API
 
     Used when scraping it automatically does not work

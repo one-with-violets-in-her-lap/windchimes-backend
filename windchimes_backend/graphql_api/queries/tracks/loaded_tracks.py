@@ -35,8 +35,8 @@ async def _get_loaded_tracks(
     if len(track_references) > MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST:
         return GraphQLApiError(
             name="too-many-tracks-to-load-error",
-            technical_explanation=f"Cannot load more than {MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST}"
-            + "tracks at once",
+            technical_explanation="Cannot load more than "
+            + f"{MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST} tracks at once",
         )
 
     loaded_tracks = await platform_aggregator_service.load_tracks(
