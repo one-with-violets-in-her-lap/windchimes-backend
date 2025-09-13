@@ -41,7 +41,8 @@ class YoutubeInternalApiClient:
                 "client": {
                     "hl": "en",
                     "gl": "AU",
-                    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36,gzip(gfe)",
+                    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                    + "(KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36,gzip(gfe)",
                     "clientName": "WEB",
                     "clientVersion": "2.20250205.01.00",
                     "osName": "X11",
@@ -67,7 +68,8 @@ class YoutubeInternalApiClient:
             "origin": "https://www.youtube.com",
             "priority": "u=1, i",
             "referer": f"{_YOUTUBE_WEBSITE_BASE_URL}/results?search_query={search_query}",
-            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            + "(KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
         }
 
         try:
@@ -100,6 +102,6 @@ class YoutubeInternalApiClient:
             raise YoutubeInternalApiError(
                 status_code=http_status_error.response.status_code,
                 more_info=http_status_error.response.text,
-            )
-        except httpx.HTTPError as error:
-            raise YoutubeInternalApiError(more_info=str(error))
+            ) from http_status_error
+        except httpx.HTTPError as http_error:
+            raise YoutubeInternalApiError(more_info=str(http_error)) from http_error
