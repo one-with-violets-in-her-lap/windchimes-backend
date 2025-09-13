@@ -9,5 +9,9 @@ from windchimes_backend.core.regular_tasks.soundcloud_client_id_obtaining import
 
 scheduler = AsyncIOScheduler()
 scheduler.add_job(
-    obtain_soundcloud_client_id, "interval", days=1, next_run_time=datetime.now()
+    obtain_soundcloud_client_id,
+    "interval",
+    days=1,
+    next_run_time=datetime.now(),
+    misfire_grace_time=60 * 3,
 )
