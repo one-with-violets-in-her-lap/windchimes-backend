@@ -43,5 +43,5 @@ async def _get_one_playlist(info: GraphQLRequestInfo, playlist_id: int):
 
 
 playlist_query = strawberry.field(
-    resolver=_get_one_playlist, graphql_type=PlaylistToReadWithTracksGraphQL
+    resolver=_get_one_playlist, graphql_type=Optional[PlaylistToReadWithTracksGraphQL]
 )

@@ -15,7 +15,11 @@ class TrackReference(BaseDatabaseModel):
 
     __tablename__ = "track_reference"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
+    """
+    Unique track identifier in this format - `PLATFORM/TRACK_PLATFORM_ID`,
+    for example `YOUTUBE/vKuKp10LQEM`
+    """
 
     platform_id: Mapped[str]
     """external platform id of the track that is being referenced"""

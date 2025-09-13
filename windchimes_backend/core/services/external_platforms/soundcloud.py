@@ -3,10 +3,9 @@ import logging
 from windchimes_backend.core.api_clients.platform_api_error import PlatformApiError
 from windchimes_backend.core.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.core.api_clients.soundcloud.models import SoundcloudTrack
-from windchimes_backend.core.database.models.playlist import Playlist
-from windchimes_backend.core.database.models.track_reference import TrackReference
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.track import LoadedTrack
+from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
+from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ProviderPlatformService
 
 
@@ -70,7 +69,7 @@ class SoundcloudService(ProviderPlatformService):
 
         return format_data["url"]
 
-    async def get_playlist_by_url(self, url: str, user_id_to_assign_as_owner: str):
+    async def get_playlist_by_url(self, url: str):
         try:
             soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_url(
                 url
@@ -81,14 +80,13 @@ class SoundcloudService(ProviderPlatformService):
             logger.error(str(error))
             return None
 
-        return Playlist(
+        return PlaylistToCreateWithTracks(
             name=soundcloud_playlist.title,
-            slug=soundcloud_playlist.permalink,
             description=soundcloud_playlist.description,
             picture_url=soundcloud_playlist.artwork_url,
-            owner_user_id=user_id_to_assign_as_owner,
             track_references=[
-                TrackReference(
+                TrackReferenceSchema(
+                    id=f'{Platform.SOUNDCLOUD}/{track["id"]}',
                     platform_id=str(track["id"]), platform=Platform.SOUNDCLOUD
                 )
                 for track in soundcloud_playlist.tracks
@@ -109,7 +107,7 @@ class SoundcloudService(ProviderPlatformService):
         return format_url.replace("/preview/", "/stream/")
 
     def _convert_to_multi_platform_track(
-        self, resource_to_convert: SoundcloudTrack, track_id: int
+        self, resource_to_convert: SoundcloudTrack, track_id
     ):
         try:
             audio_file_endpoint_url = self._get_suitable_format_url(

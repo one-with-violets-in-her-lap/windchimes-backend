@@ -15,7 +15,7 @@ class PlaylistTrack(BaseDatabaseModel):
         ForeignKey("playlist.id", ondelete="CASCADE"), primary_key=True
     )
 
-    track_id: Mapped[int] = mapped_column(
+    track_id: Mapped[str] = mapped_column(
         ForeignKey("track_reference.id", ondelete="CASCADE"), primary_key=True
     )
 

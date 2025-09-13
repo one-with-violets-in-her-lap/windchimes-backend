@@ -6,7 +6,7 @@ from windchimes_backend.core.models.platform import Platform
 
 
 class TrackReferenceSchema(BaseModel):
-    id: int
+    id: str
     platform: Platform
     platform_id: str
 
@@ -14,10 +14,6 @@ class TrackReferenceSchema(BaseModel):
 class LoadedTrack(TrackReferenceSchema):
     class TrackOwner(BaseModel):
         name: str
-
-    id: int
-    platform_id: str
-    platform: Platform
 
     name: str
     picture_url: Optional[str]

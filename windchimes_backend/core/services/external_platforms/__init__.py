@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from windchimes_backend.core.database.models.playlist import Playlist
+from windchimes_backend.core.models.playlist import PlaylistToCreate
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 
 
@@ -44,13 +44,11 @@ class ProviderPlatformService(ABC):
         pass
 
     @abstractmethod
-    async def get_playlist_by_url(
-        self, url: str, user_id_to_assign_as_owner: str
-    ) -> Optional[Playlist]:
+    async def get_playlist_by_url(self, url: str) -> Optional[PlaylistToCreate]:
         pass
 
     @abstractmethod
     def _convert_to_multi_platform_track(
-        self, resource_to_convert, track_id: int
+        self, resource_to_convert, track_id: str
     ) -> LoadedTrack:
         pass

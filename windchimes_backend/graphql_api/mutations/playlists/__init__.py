@@ -50,7 +50,7 @@ async def _create_playlist(
         return UnauthorizedErrorGraphQL()
 
     created_playlist = await playlists_service.create_playlist(
-        PlaylistToCreate(**vars(playlist), owner_user_id=current_user.sub)
+        PlaylistToCreate(**vars(playlist)), owner_user_id=current_user.sub
     )
 
     return convert_to_dataclass(vars(created_playlist), PlaylistToReadWithTracksGraphQL)

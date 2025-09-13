@@ -1,6 +1,7 @@
 from typing import Optional
 
 from windchimes_backend.core.models.platform import Platform
+from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
@@ -8,7 +9,7 @@ from windchimes_backend.core.services.external_platforms.soundcloud import (
 from windchimes_backend.core.utils.lists import set_items_order
 
 
-class CrossPlatformAggregatorService:
+class PlatformAggregatorService:
     """Service that aggregates tracks data from api of external platforms
 
     Uses its subclasses to communicate with external platforms:
@@ -52,9 +53,5 @@ class CrossPlatformAggregatorService:
             track_platform_id, audio_file_endpoint_url
         )
 
-    async def get_playlist_by_url(
-        self, platform: Platform, playlist_url: str, owner_user_id: str
-    ):
-        return await self.platform_services[platform].get_playlist_by_url(
-            playlist_url, owner_user_id
-        )
+    async def get_playlist_by_url(self, platform: Platform, playlist_url: str) -> Optional[PlaylistToCreateWithTracks]:
+        return await self.platform_services[platform].get_playlist_by_url(playlist_url)

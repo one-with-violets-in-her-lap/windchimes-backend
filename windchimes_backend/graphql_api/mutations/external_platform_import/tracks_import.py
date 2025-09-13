@@ -30,6 +30,11 @@ async def _import_external_playlist_tracks(
     playlist_to_import_to_id: int,
     replace_existing_tracks: bool = False,
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
+    current_user = info.context.current_user
+
+    if current_user is None:
+        return
+
     try:
         validated_playlist_to_import_from = PlaylistToImport.model_validate(
             {**vars(playlist_to_import_from)}
@@ -43,13 +48,13 @@ async def _import_external_playlist_tracks(
         info.context.playlists_access_management_service
     )
 
-    playlist_is_owned_by_current_user = (
+    is_playlist_owned_by_user = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
             [playlist_to_import_to_id]
         )
     )
 
-    if not playlist_is_owned_by_current_user:
+    if is_playlist_owned_by_user == False:
         return ForbiddenErrorGraphQL()
 
     tracks_import_service = info.context.tracks_import_service

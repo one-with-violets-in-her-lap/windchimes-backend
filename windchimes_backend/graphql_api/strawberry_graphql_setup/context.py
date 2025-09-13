@@ -9,8 +9,8 @@ from windchimes_backend.core.services.auth import AuthService
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
-from windchimes_backend.core.services.external_platforms.cross_platform_aggregator import (
-    CrossPlatformAggregatorService,
+from windchimes_backend.core.services.external_platforms.platform_aggregator import (
+    PlatformAggregatorService,
 )
 from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
@@ -41,7 +41,7 @@ class GraphQLRequestContext(BaseContext):
 
     @cached_property
     def tracks_import_service(self):
-        return TracksImportService()
+        return TracksImportService(self.database, self.platform_aggregator_service)
 
     @cached_property
     def soundcloud_integration(self):
@@ -51,8 +51,8 @@ class GraphQLRequestContext(BaseContext):
         return {"api_client": soundcloud_api_client, "service": soundcloud_service}
 
     @cached_property
-    def cross_platform_service(self):
-        return CrossPlatformAggregatorService(
+    def platform_aggregator_service(self):
+        return PlatformAggregatorService(
             soundcloud_service=self.soundcloud_integration["service"]
         )
 

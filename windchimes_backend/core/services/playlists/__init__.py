@@ -10,6 +10,7 @@ from sqlalchemy.orm import joinedload
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.playlist import Playlist, PlaylistTrack
 from windchimes_backend.core.database.models.track_reference import TrackReference
+from windchimes_backend.core.models.playlist import PlaylistToCreate
 from windchimes_backend.core.models.track import TrackReferenceSchema
 
 
@@ -17,13 +18,6 @@ class PlaylistsFilters(BaseModel):
     owner_user_id: Optional[str] = None
     exclude_owner_user_id: Optional[str] = None
     ids: Optional[list[int]] = None
-
-
-class PlaylistToCreate(BaseModel):
-    name: str
-    description: Optional[str]
-    picture_url: Optional[str]
-    owner_user_id: str
 
 
 class PlaylistUpdate(BaseModel):
@@ -117,9 +111,9 @@ class PlaylistsService:
                 }
             )
 
-    async def create_playlist(self, playlist: PlaylistToCreate):
+    async def create_playlist(self, playlist: PlaylistToCreate, owner_user_id: str):
         async with self._database.create_session() as database_session:
-            new_playlist = Playlist(**playlist.model_dump())
+            new_playlist = Playlist(**playlist.model_dump(), owner_user_id=owner_user_id)
             database_session.add(new_playlist)
             await database_session.commit()
 
