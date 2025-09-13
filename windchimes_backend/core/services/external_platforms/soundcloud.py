@@ -97,9 +97,16 @@ class SoundcloudService(ExternalPlatformService):
         )
 
     async def get_playlist_by_id(self, playlist_id):
-        soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_id(
-            playlist_id
-        )
+        try:
+            soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_id(
+                playlist_id
+            )
+
+            if soundcloud_playlist is None:
+                return None
+        except PlatformApiError as error:
+            logger.error(str(error))
+            return None
 
         return PlaylistToImport(
             external_platform_id=str(soundcloud_playlist.id),
