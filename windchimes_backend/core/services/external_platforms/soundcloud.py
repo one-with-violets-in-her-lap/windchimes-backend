@@ -148,7 +148,7 @@ class SoundcloudService(ExternalPlatformService):
         suitable_formats = [
             transcoding
             for transcoding in track_transcodings
-            if transcoding["format"]["protocol"] == "progressive"
+            if transcoding["format"]["protocol"] == "hls"
         ]
 
         if len(suitable_formats) == 0:
