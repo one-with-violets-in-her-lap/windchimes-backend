@@ -19,4 +19,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-uvicorn.run(app, port=app_config.graphql_api.port, host="0.0.0.0")
+if __name__ == "__main__":
+    uvicorn.run(app, port=app_config.graphql_api.port, host="0.0.0.0")
