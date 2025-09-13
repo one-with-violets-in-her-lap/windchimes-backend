@@ -53,5 +53,7 @@ class PlatformAggregatorService:
             track_platform_id, audio_file_endpoint_url
         )
 
-    async def get_playlist_by_url(self, platform: Platform, playlist_url: str) -> Optional[PlaylistToCreateWithTracks]:
+    async def get_playlist_by_url(
+        self, platform: Platform, playlist_url: str
+    ) -> Optional[PlaylistToCreateWithTracks]:
         return await self.platform_services[platform].get_playlist_by_url(playlist_url)

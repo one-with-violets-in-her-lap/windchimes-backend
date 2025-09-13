@@ -86,8 +86,9 @@ class SoundcloudService(ProviderPlatformService):
             picture_url=soundcloud_playlist.artwork_url,
             track_references=[
                 TrackReferenceSchema(
-                    id=f'{Platform.SOUNDCLOUD}/{track["id"]}',
-                    platform_id=str(track["id"]), platform=Platform.SOUNDCLOUD
+                    id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',
+                    platform_id=str(track["id"]),
+                    platform=Platform.SOUNDCLOUD,
                 )
                 for track in soundcloud_playlist.tracks
             ],

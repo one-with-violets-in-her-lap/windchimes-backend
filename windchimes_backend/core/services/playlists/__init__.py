@@ -52,7 +52,7 @@ class PlaylistDeleteOrUpdateFailed(Exception):
 
 
 class TrackToAddToPlaylist(BaseModel):
-    id: int
+    id: str
     playlists_ids_to_add_to: Annotated[list[int], Len(min_length=1)]
 
 
@@ -113,7 +113,9 @@ class PlaylistsService:
 
     async def create_playlist(self, playlist: PlaylistToCreate, owner_user_id: str):
         async with self._database.create_session() as database_session:
-            new_playlist = Playlist(**playlist.model_dump(), owner_user_id=owner_user_id)
+            new_playlist = Playlist(
+                **playlist.model_dump(), owner_user_id=owner_user_id
+            )
             database_session.add(new_playlist)
             await database_session.commit()
 

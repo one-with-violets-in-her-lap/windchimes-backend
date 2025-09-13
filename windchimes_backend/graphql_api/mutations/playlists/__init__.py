@@ -36,7 +36,7 @@ class PlaylistUpdateGraphQL:
 
 @strawberry.input
 class TrackToAddGraphQL:
-    id: int
+    id: str
     playlists_ids_to_add_to: list[int]
 
 
