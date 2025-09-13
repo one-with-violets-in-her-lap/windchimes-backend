@@ -158,7 +158,7 @@ async def _sync_playlist_tracks_with_external_playlist(
         await tracks_sync_service.sync_playlist_tracks(
             access_check_result.loaded_playlists[0]
         )
-    except (ExternalPlaylistNotFoundError, ExternalPlaylistNotLinkedError) as error:
+    except (ExternalPlaylistNotFoundError, ExternalPlaylistNotLinkedError):
         return ExternalPlaylistNotAvailableErrorGraphQL()
 
 
