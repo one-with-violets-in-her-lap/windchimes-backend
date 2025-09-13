@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import Any, Optional
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database.models.base import BaseDatabaseModel
 from windchimes_backend.core.models.platform import Platform
@@ -18,6 +20,8 @@ class ExternalPlaylistReference(BaseDatabaseModel):
     __tablename__ = "external_playlist_reference"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+
+    created_at: Mapped[datetime] = mapped_column(default=functions.now())
 
     platform_id: Mapped[str]
     """External platform id of the playlist that is being referenced"""
