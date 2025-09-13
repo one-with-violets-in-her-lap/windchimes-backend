@@ -37,8 +37,10 @@ async def _import_external_playlist_tracks(
     replace_existing_tracks: bool = False,
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
     try:
-        validated_playlist_to_import_from = ExternalPlaylistReferenceSchema.model_validate(
-            {**vars(playlist_to_import_from)}
+        validated_playlist_to_import_from = (
+            ExternalPlaylistReferenceSchema.model_validate(
+                {**vars(playlist_to_import_from)}
+            )
         )
     except ValidationError as error:
         return ValidationErrorGraphQL.create_from_pydantic_validation_error(

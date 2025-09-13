@@ -134,7 +134,12 @@ disable_playlist_sync_mutation = strawberry.mutation(
 
 async def _sync_playlist_tracks_with_external_playlist(
     info: GraphQLRequestInfo, playlist_id: int
-) -> None | NotFoundErrorGraphQL | GraphQLApiError | ExternalPlaylistNotAvailableErrorGraphQL:
+) -> (
+    None
+    | NotFoundErrorGraphQL
+    | GraphQLApiError
+    | ExternalPlaylistNotAvailableErrorGraphQL
+):
     playlist_access_management_service = (
         info.context.playlists_access_management_service
     )
