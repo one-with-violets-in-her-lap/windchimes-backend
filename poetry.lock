@@ -946,8 +946,10 @@ files = [
 ]
 
 [package.dependencies]
+fastapi = {version = ">=0.65.2", optional = true, markers = "extra == \"fastapi\""}
 graphql-core = ">=3.2.0,<3.4.0"
 python-dateutil = ">=2.7.0,<3.0.0"
+python-multipart = {version = ">=0.0.7", optional = true, markers = "extra == \"asgi\" or extra == \"debug-server\" or extra == \"fastapi\""}
 typing-extensions = ">=4.5.0"
 
 [package.extras]
@@ -1237,4 +1239,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "1b7e6b8bc43135ab71f904280875f9270558f3f915898acd9810d9422f1a0160"
+content-hash = "9a6d2f0e8204ee7ab1e32b54d01a9d4ab6b1ca09d93a14a66c9da914cf3a921b"
