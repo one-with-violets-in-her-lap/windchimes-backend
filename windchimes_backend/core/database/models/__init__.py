@@ -4,3 +4,5 @@ from windchimes_backend.core.database.models.playlist import Playlist
 
 
 __all__ = ["BaseDatabaseModel", "TrackReference", "Playlist"]
+
+database_models = [TrackReference, Playlist]
