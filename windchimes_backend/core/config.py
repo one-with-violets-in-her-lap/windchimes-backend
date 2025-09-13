@@ -36,7 +36,7 @@ class ProxySettings(BaseModel):
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=["./prod.env", "./.env"],
+        env_file=["./.env", "./.env.prod"],
         env_file_encoding="utf-8",
         env_nested_delimiter="__",
         env_prefix="WINDCHIMES__",
