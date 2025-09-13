@@ -1,13 +1,13 @@
 from datetime import datetime
-import stat
-from typing import Optional
+from typing import Annotated, Optional
 
+from annotated_types import Len
 from pydantic import BaseModel
 from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
-from windchimes_backend.core.database.models.playlist import Playlist
+from windchimes_backend.core.database.models.playlist import Playlist, PlaylistTrack
 from windchimes_backend.core.database.models.track_reference import TrackReference
 from windchimes_backend.core.models.track_reference import TrackReferenceSchema
 
@@ -15,6 +15,7 @@ from windchimes_backend.core.models.track_reference import TrackReferenceSchema
 class PlaylistsFilters(BaseModel):
     owner_user_id: Optional[str] = None
     exclude_owner_user_id: Optional[str] = None
+    ids: Optional[list[int]] = None
 
 
 class PlaylistToCreate(BaseModel):
@@ -55,6 +56,11 @@ class PlaylistDeleteOrUpdateFailed(Exception):
         )
 
 
+class TrackToAddToPlaylists(BaseModel):
+    id: int
+    playlists_ids_to_add_to: Annotated[list[int], Len(min_length=1)]
+
+
 class PlaylistsService:
     def __init__(self, database: Database):
         self._database = database
@@ -74,6 +80,9 @@ class PlaylistsService:
                 statement = statement.where(
                     Playlist.owner_user_id == filters.owner_user_id
                 )
+
+            if filters.ids is not None:
+                statement = statement.where(Playlist.id.in_(filters.ids))
 
             statement = statement.join(Playlist.track_references).group_by(Playlist.id)
 
@@ -186,3 +195,19 @@ class PlaylistsService:
 
             if result.rowcount == 0:
                 raise PlaylistDeleteOrUpdateFailed()
+
+    async def add_tracks_to_playlists(self, tracks: list[TrackToAddToPlaylists]):
+        async with self._database.create_session() as database_session:
+            new_playlist_tracks_associations: list[PlaylistTrack] = []
+
+            for track in tracks:
+                new_playlist_tracks_associations.extend(
+                    [
+                        PlaylistTrack(playlist_id=playlist_id, track_id=track.id)
+                        for playlist_id in track.playlists_ids_to_add_to
+                    ]
+                )
+
+            database_session.add_all(new_playlist_tracks_associations)
+
+            await database_session.commit()
