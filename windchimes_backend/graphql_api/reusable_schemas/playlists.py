@@ -3,7 +3,9 @@ from typing import Optional
 
 import strawberry
 
-from windchimes_backend.graphql_api.reusable_schemas.track_reference import TrackReferenceToReadGraphQL
+from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
+    TrackReferenceToReadGraphQL,
+)
 
 
 @strawberry.type

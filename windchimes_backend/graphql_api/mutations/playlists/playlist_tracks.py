@@ -18,7 +18,7 @@ from windchimes_backend.graphql_api.utils.graphql import (
 )
 
 
-async def __add_tracks_to_playlists(
+async def _add_tracks_to_playlists(
     info: GraphQLRequestInfo, tracks: list[TrackToAddGraphQL]
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
     if len(tracks) == 0:
@@ -45,8 +45,10 @@ async def __add_tracks_to_playlists(
     for playlist_to_update in playlists_to_update:
         if playlist_to_update.owner_user_id != current_user.sub:
             return ForbiddenErrorGraphQL(
-                explanation="You don't have access to playlists you want to add tracks to",
-                technical_explanation="You don't have access to some playlists you want to add tracks to",
+                explanation="You don't have access to playlists you want to add "
+                + "tracks to",
+                technical_explanation="You don't have access to some playlists "
+                + "you want to add tracks to",
             )
 
     try:
@@ -60,5 +62,5 @@ async def __add_tracks_to_playlists(
 
 
 add_tracks_to_playlists_mutation = strawberry.mutation(
-    resolver=__add_tracks_to_playlists,
+    resolver=_add_tracks_to_playlists,
 )

@@ -3,7 +3,8 @@ from typing import Annotated, Optional
 
 from annotated_types import Len
 from pydantic import BaseModel
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import delete, select, update
+from sqlalchemy.sql import functions
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
@@ -71,9 +72,9 @@ class PlaylistsService:
 
     async def get_playlists(self, filters: PlaylistsFilters = PlaylistsFilters()):
         async with self._database.create_session() as database_session:
-            statement = select(Playlist, func.count(TrackReference.id)).select_from(
-                Playlist
-            )
+            statement = select(
+                Playlist, functions.count(TrackReference.id)
+            ).select_from(Playlist)
 
             if filters.exclude_owner_user_id is not None:
                 statement = statement.where(
@@ -145,7 +146,8 @@ class PlaylistsService:
 
         Raises:
             PlaylistDeleteOrUpdateFailed: Deletion failed because the playlist with
-                specified id does not exist or current user doesn't have access to that playlist
+                specified id does not exist or current user doesn't have access to that
+                playlist
         """
 
         async with self._database.create_session() as database_session:
@@ -180,7 +182,8 @@ class PlaylistsService:
 
         Raises:
             PlaylistDeleteOrUpdateFailed: Update failed because the playlist with
-                specified id does not exist or current user doesn't have access to that playlist
+                specified id does not exist or current user doesn't have access to that
+                playlist
         """
 
         async with self._database.create_session() as database_session:

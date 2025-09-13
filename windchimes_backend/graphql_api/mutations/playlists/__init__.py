@@ -40,7 +40,7 @@ class TrackToAddGraphQL:
     playlists_ids_to_add_to: list[int]
 
 
-async def __create_playlist(
+async def _create_playlist(
     info: GraphQLRequestInfo, playlist: PlaylistToCreateGraphQL
 ) -> PlaylistToReadWithTracksGraphQL | UnauthorizedErrorGraphQL:
     playlists_service = info.context.playlists_service
@@ -57,11 +57,11 @@ async def __create_playlist(
 
 
 create_playlist_mutation = strawberry.mutation(
-    resolver=__create_playlist,
+    resolver=_create_playlist,
 )
 
 
-async def __delete_playlist(
+async def _delete_playlist(
     info: GraphQLRequestInfo, playlist_to_delete_id: int
 ) -> None | GraphQLApiError:
     playlists_service = info.context.playlists_service
@@ -75,17 +75,18 @@ async def __delete_playlist(
     except PlaylistDeleteOrUpdateFailed as error:
         return GraphQLApiError(
             name="playlist-deletion-failed-error",
-            explanation="Playlist couldn't be deleted because it doesn't exist or you don't have access to it",
+            explanation="Playlist couldn't be deleted because it doesn't exist or "
+            + "you don't have access to it",
             technical_explanation=str(error),
         )
 
 
 delete_playlist_mutation = strawberry.mutation(
-    resolver=__delete_playlist,
+    resolver=_delete_playlist,
 )
 
 
-async def __update_playlist(
+async def _update_playlist(
     info: GraphQLRequestInfo,
     playlist_to_update_id: int,
     playlist_data_to_update: PlaylistUpdateGraphQL,
@@ -105,11 +106,12 @@ async def __update_playlist(
     except PlaylistDeleteOrUpdateFailed as error:
         return GraphQLApiError(
             name="playlist-update-failed-error",
-            explanation="Playlist couldn't be updated because it doesn't exist or you don't have access to it",
+            explanation="Playlist couldn't be updated because it doesn't "
+            + "exist or you don't have access to it",
             technical_explanation=str(error),
         )
 
 
 update_playlist_mutation = strawberry.mutation(
-    resolver=__update_playlist,
+    resolver=_update_playlist,
 )

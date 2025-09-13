@@ -76,13 +76,15 @@ class ValidationErrorGraphQL(GraphQLApiError):
     def create_from_pydantic_validation_error(
         pydantic_validation_error: ValidationError, field_prefix: Optional[str] = None
     ):
-        """Creates "validation error" schema object for graphql usage from pydantic validation error
+        """
+        Creates "validation error" schema object for graphql usage from pydantic
+        validation error
 
         Args:
             pydantic_validation_error: Pydantic validation error object
             field_prefix: prefix/namespace to append to the field location
-                (`dot_separated_field_location` field). E.g. prefix `user` and field `email`
-                in pydantic error will result `user.email` as field location
+                (`dot_separated_field_location` field). E.g. prefix `user` and field
+                `email` in pydantic error will result `user.email` as field location
 
         Raises:
             ValueError: if pydantic validation error does not have any errors

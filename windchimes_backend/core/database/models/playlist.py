@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy import ForeignKey, func, DateTime
+from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database.models.base import BaseDatabaseModel
 
@@ -30,8 +31,9 @@ class Playlist(BaseDatabaseModel):
     __tablename__ = "playlist"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    # pylint: disable=not-callable
-    created_at: Mapped[datetime] = mapped_column(DateTime(), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(), server_default=functions.now()
+    )
 
     name: Mapped[str]
     description: Mapped[Optional[str]]

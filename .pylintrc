@@ -131,6 +131,7 @@ disable=R,
         zip-builtin-not-iterating,
         missing-module-docstring,
         missing-class-docstring,
+        unsubscriptable-object # fixes sqlalchemy `Mapped[...]` false-positive
 
 
 [REPORTS]
