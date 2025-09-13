@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Sequence
 
 from windchimes_backend.core.models.playlist import (
     PlaylistToImport,
@@ -50,7 +50,7 @@ class ExternalPlatformService(ABC):
         pass
 
     @abstractmethod
-    async def search_tracks(self, search_query: str) -> list[Optional[LoadedTrack]]:
+    async def search_tracks(self, search_query: str) -> Sequence[Optional[LoadedTrack]]:
         pass
 
     @abstractmethod
