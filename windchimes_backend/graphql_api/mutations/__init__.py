@@ -7,7 +7,7 @@ from windchimes_backend.graphql_api.mutations.playlists import (
 )
 from windchimes_backend.graphql_api.mutations.playlists.playlist_picture_mutations import (
     update_playlist_picture_mutation,
-    delete_playlist_picture_mutation
+    delete_playlist_picture_mutation,
 )
 from windchimes_backend.graphql_api.mutations.playlists.playlist_tracks import (
     delete_track_from_playlists_mutation,

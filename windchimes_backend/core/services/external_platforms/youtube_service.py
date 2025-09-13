@@ -207,6 +207,7 @@ class YoutubeService(ExternalPlatformService):
                 likes_count=None,
                 picture_url=resource_to_convert.snippet.thumbnails["default"]["url"],
                 seconds_duration=seconds + minutes * 60 + hours * 60 * 60,
+                original_page_url=f"https://youtube.com/watch?v={resource_to_convert.id}",
                 audio_file_endpoint_url=None,
                 owner={"name": resource_to_convert.snippet.channel_title},
             )

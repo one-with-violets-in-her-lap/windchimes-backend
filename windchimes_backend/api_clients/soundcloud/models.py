@@ -23,6 +23,7 @@ class SoundcloudTrack(BaseModel):
     description: Optional[str]
     full_duration: int
     likes_count: Optional[int]
+    permalink_url: str
     media: dict
     user: dict
 

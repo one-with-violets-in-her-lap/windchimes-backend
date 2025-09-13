@@ -127,6 +127,7 @@ class SoundcloudService(ExternalPlatformService):
                 description=resource_to_convert.description,
                 name=resource_to_convert.title,
                 audio_file_endpoint_url=audio_file_endpoint_url,
+                original_page_url=resource_to_convert.permalink_url,
                 owner={"name": resource_to_convert.user["username"]},
             )
         )
