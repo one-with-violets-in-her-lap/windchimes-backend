@@ -23,7 +23,7 @@ class TrackReference(BaseDatabaseModel):
     platform: Mapped[Platform]
 
     playlists: Mapped[list[Any]] = relationship(
-        "Playlist", secondary="playlist_track", back_populates="tracks"
+        "Playlist", secondary="playlist_track", back_populates="track_references"
     )
 
     __table_args__ = (

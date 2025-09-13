@@ -40,7 +40,7 @@ class Playlist(BaseDatabaseModel):
 
     owner_user_id: Mapped[str]
 
-    tracks: Mapped[list[Any]] = relationship(
+    track_references: Mapped[list[Any]] = relationship(
         "TrackReference", secondary="playlist_track", back_populates="playlists"
     )
 
