@@ -6,7 +6,6 @@ from annotated_types import Len
 from pydantic import BaseModel
 from sqlalchemy import and_, delete, desc, not_, select, update
 from sqlalchemy.orm import joinedload
-from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.playlist import Playlist, PlaylistTrack
@@ -82,14 +81,7 @@ class PlaylistsService:
         async with self._database.create_session() as database_session:
             start_time_seconds = timeit.default_timer()
 
-            statement = (
-                select(
-                    Playlist,
-                    functions.count(PlaylistTrack.playlist_id).label("track_count"),
-                )
-                .outerjoin(PlaylistTrack)
-                .group_by(Playlist.id)
-            )
+            statement = select(Playlist).options(joinedload(Playlist.track_references))
 
             if filters.exclude_owner_user_id is not None:
                 statement = statement.where(
@@ -135,10 +127,9 @@ class PlaylistsService:
 
             return [
                 PlaylistToReadWithTrackCount(
-                    **vars(playlist_and_track_count[0]),
-                    track_count=playlist_and_track_count[1]
+                    **vars(playlist), track_count=len(playlist.track_references)
                 )
-                for playlist_and_track_count in playlists_result.unique().all()
+                for playlist in playlists_result.unique().scalars().all()
             ]
 
     async def get_playlist_detailed(self, playlist_id: int):
