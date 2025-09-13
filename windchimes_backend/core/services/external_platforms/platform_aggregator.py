@@ -8,7 +8,7 @@ from windchimes_backend.core.services.external_platforms import ExternalPlatform
 from windchimes_backend.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
-    ExternalPlaylistToSyncWith,
+    ExternalPlaylistInfo,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.soundcloud import (
@@ -70,7 +70,7 @@ class PlatformAggregatorService:
 
     async def get_playlist_by_url(
         self, platform: Platform, playlist_url: str
-    ) -> Optional[ExternalPlaylistToSyncWith]:
+    ) -> Optional[ExternalPlaylistInfo]:
         playlist = await self.platform_services[platform].get_playlist_by_url(
             playlist_url
         )
@@ -82,7 +82,7 @@ class PlatformAggregatorService:
         platform: Platform,
         playlist_id: str,
         platform_specific_params: PlatformSpecificParams,
-    ) -> Optional[ExternalPlaylistToSyncWith]:
+    ) -> Optional[ExternalPlaylistInfo]:
         return await self.platform_services[platform].get_playlist_by_id(
             playlist_id, platform_specific_params
         )

@@ -8,7 +8,7 @@ from windchimes_backend.core.models.platform_specific_params import (
 )
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
-    ExternalPlaylistToSyncWith,
+    ExternalPlaylistInfo,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
@@ -83,7 +83,7 @@ class SoundcloudService(ExternalPlatformService):
             logger.error(str(error))
             return None
 
-        return ExternalPlaylistToSyncWith(
+        return ExternalPlaylistInfo(
             external_platform_id=str(soundcloud_playlist.id),
             name=soundcloud_playlist.title,
             description=soundcloud_playlist.description,
@@ -116,7 +116,7 @@ class SoundcloudService(ExternalPlatformService):
             logger.error(str(error))
             return None
 
-        return ExternalPlaylistToSyncWith(
+        return ExternalPlaylistInfo(
             external_platform_id=str(soundcloud_playlist.id),
             name=soundcloud_playlist.title,
             description=soundcloud_playlist.description,

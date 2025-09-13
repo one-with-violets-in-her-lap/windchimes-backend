@@ -18,7 +18,7 @@ class ExternalPlaylistReferenceSchema(BaseModel):
     platform_id: str
 
 
-class ExternalPlaylistToSyncWith(BaseModel):
+class ExternalPlaylistInfo(BaseModel):
     external_platform_id: str
     name: str
     description: Optional[str]

@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 from windchimes_backend.core.models.platform_specific_params import (
     PlatformSpecificParams,
 )
-from windchimes_backend.core.models.external_playlist import ExternalPlaylistToSyncWith
+from windchimes_backend.core.models.external_playlist import ExternalPlaylistInfo
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 
 
@@ -49,13 +49,13 @@ class ExternalPlatformService(ABC):
     @abstractmethod
     async def get_playlist_by_url(
         self, url: str
-    ) -> Optional[ExternalPlaylistToSyncWith]:
+    ) -> Optional[ExternalPlaylistInfo]:
         pass
 
     @abstractmethod
     async def get_playlist_by_id(
         self, playlist_id: str, platform_specific_params: PlatformSpecificParams
-    ) -> Optional[ExternalPlaylistToSyncWith]:
+    ) -> Optional[ExternalPlaylistInfo]:
         pass
 
     @abstractmethod

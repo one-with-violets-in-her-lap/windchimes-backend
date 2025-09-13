@@ -15,7 +15,7 @@ from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_cl
 )
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.external_playlist import (
-    ExternalPlaylistToSyncWith,
+    ExternalPlaylistInfo,
 )
 from windchimes_backend.core.models.platform_specific_params import (
     PlatformSpecificParams,
@@ -109,7 +109,7 @@ class YoutubeService(ExternalPlatformService):
 
         tracks_references = await self._fetch_all_videos_as_tracks(playlist_id)
 
-        return ExternalPlaylistToSyncWith(
+        return ExternalPlaylistInfo(
             external_platform_id=youtube_playlist.id,
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
