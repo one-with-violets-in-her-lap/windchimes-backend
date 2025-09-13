@@ -108,10 +108,16 @@ class TracksImportService:
             track_reference.id for track_reference in new_track_references_to_add
         ]
 
-        track_references_ids_to_associate_with_playlist = (
+        track_references_to_associate_with_playlist = (
             self._get_track_references_not_in_playlist(
                 already_existing_track_references,
                 playlist_to_import_to_id,
+            )
+        )
+        track_references_ids_to_associate_with_playlist = list(
+            map(
+                lambda track_reference: track_reference.id,
+                track_references_to_associate_with_playlist,
             )
         )
 

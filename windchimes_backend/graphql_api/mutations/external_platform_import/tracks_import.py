@@ -77,5 +77,7 @@ async def _import_external_playlist_tracks(
 
 
 import_external_playlist_tracks_mutation = strawberry.mutation(
-    resolver=_import_external_playlist_tracks, extensions=[AuthorizedOnlyExtension()]
+    resolver=_import_external_playlist_tracks,
+    extensions=[AuthorizedOnlyExtension()],
+    description="Imports tracks from external platform playlist (Soundcloud/Youtube/etc.) to a playlist in this app\n\nReturns n",
 )
