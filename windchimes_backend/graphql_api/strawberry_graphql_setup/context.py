@@ -1,10 +1,14 @@
 from functools import cached_property
+import logging
 
 from strawberry.fastapi import BaseContext
 
 from windchimes_backend.core.database import database
-from windchimes_backend.core.models.user import User
+from windchimes_backend.core.services.auth import AuthService
 from windchimes_backend.core.services.playlists import PlaylistsService
+
+
+logger = logging.getLogger(__name__)
 
 
 class GraphQLRequestContext(BaseContext):
@@ -17,7 +21,13 @@ class GraphQLRequestContext(BaseContext):
         return PlaylistsService(self.database)
 
     @cached_property
+    def auth_service(self):
+        return AuthService()
+
+    @cached_property
     def current_user(self):
+        logger.info("Getting current user via auth service")
+
         if not self.request:
             return None
 
@@ -33,12 +43,4 @@ class GraphQLRequestContext(BaseContext):
 
         token = auth_header_parts[1]
 
-        # return auth_service.get_user_from_token(token)
-        return User(
-            nickname="user",
-            name="user",
-            picture="https://picture.com",
-            email="",
-            email_verified=True,
-            sub="auth0|123213",
-        )
+        return self.auth_service.get_user_from_token(token)

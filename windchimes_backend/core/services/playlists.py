@@ -11,6 +11,7 @@ from windchimes_backend.core.database.models.track_reference import TrackReferen
 
 class PlaylistsFilters(BaseModel):
     owner_user_id: Optional[str] = None
+    exclude_owner_user_id: Optional[str] = None
 
 
 class PlaylistWithTrackCount(BaseModel):
@@ -31,13 +32,23 @@ class PlaylistsService:
 
     async def get_playlists(self, filters: PlaylistsFilters = PlaylistsFilters()):
         async with self._database.create_session() as database_session:
-            result = await database_session.execute(
-                select(Playlist, func.count(TrackReference.id))
-                .select_from(Playlist)
-                .where(**filters.model_dump(exclude_none=True))
-                .outerjoin(Playlist.track_references)
-                .group_by(Playlist.id)
+            statement = select(Playlist, func.count(TrackReference.id)).select_from(
+                Playlist
             )
+
+            if filters.exclude_owner_user_id is not None:
+                statement = statement.where(
+                    Playlist.owner_user_id != filters.exclude_owner_user_id
+                )
+
+            if filters.owner_user_id is not None:
+                statement = statement.where(
+                    Playlist.owner_user_id == filters.owner_user_id
+                )
+
+            statement = statement.join(Playlist.track_references).group_by(Playlist.id)
+
+            result = await database_session.execute(statement)
 
             playlists_with_track_count = result.fetchall()
 
