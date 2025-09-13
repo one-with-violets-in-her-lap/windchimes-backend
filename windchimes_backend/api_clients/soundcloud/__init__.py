@@ -113,10 +113,42 @@ class SoundcloudApiClient:
 
                 return SoundcloudPlaylist(**response_data)
 
-    async def search_playlists(self, search_query: str):
-        """searches playlists by provided search query
+    async def search_tracks(self, search_query: str, limit=20):
+        """Searches tracks by provided search query
 
-        Returns: maximum of 100 playlists matching the search query
+        Args:
+            limit: How many tracks can be returned from API. **The maximum is 100**.
+                The default is 20
+
+        Returns:
+            Maximum of 100 tracks matching the search query
+        """
+
+        async with aiohttp.ClientSession(
+            base_url=_SOUNDCLOUD_API_BASE_URL
+        ) as aiohttp_session:
+            async with aiohttp_session.get(
+                f"/search/tracks?q={search_query}"
+                + f"&client_id={self.client_id}&limit={limit}&offset=0"
+            ) as response:
+                if not response.ok:
+                    raise PlatformApiError(
+                        "Error occurred on soundcloud api request "
+                        + f"with status code {response.status}"
+                    )
+
+                response_data: dict = await response.json()
+
+                return [
+                    SoundcloudTrack(**track_dict)
+                    for track_dict in response_data["collection"]
+                ]
+
+    async def search_playlists(self, search_query: str):
+        """Searches playlists by provided search query
+
+        Returns:
+            Maximum of 100 playlists matching the search query
         """
 
         async with aiohttp.ClientSession(
