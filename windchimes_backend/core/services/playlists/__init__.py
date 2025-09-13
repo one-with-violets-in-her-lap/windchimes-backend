@@ -35,6 +35,7 @@ class PlaylistUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     picture_url: Optional[str] = None
+    public: Optional[bool] = None
 
 
 class PlaylistToRead(BaseModel):
@@ -43,6 +44,8 @@ class PlaylistToRead(BaseModel):
     name: str
     description: Optional[str]
     picture_url: Optional[str]
+
+    public: bool
     owner_user_id: str
 
 

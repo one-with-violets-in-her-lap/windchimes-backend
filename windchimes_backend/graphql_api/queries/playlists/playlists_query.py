@@ -40,7 +40,17 @@ class PlaylistsFiltersGraphQL:
 
 async def _get_playlists(info: GraphQLRequestInfo, filters: PlaylistsFiltersGraphQL):
     playlists_service = info.context.playlists_service
-    return await playlists_service.get_playlists(PlaylistsFilters(**vars(filters)))
+    playlists_access_management_service = (
+        info.context.playlists_access_management_service
+    )
+
+    playlists = await playlists_service.get_playlists(PlaylistsFilters(**vars(filters)))
+
+    playlists_user_can_view = (
+        playlists_access_management_service.get_playlists_user_can_view(playlists)
+    )
+
+    return playlists_user_can_view
 
 
 playlists_query = strawberry.field(

@@ -21,7 +21,6 @@ class TrackOwnerGraphQL:
 
 @strawberry.type
 class LoadedTrackGraphQL(TrackReferenceToReadGraphQL):
-
     name: str
     picture_url: Optional[str]
     description: Optional[str]
@@ -46,11 +45,21 @@ async def _get_one_playlist(
 ) -> Optional[PlaylistWithLoadedTracksGraphQL] | GraphQLApiError:
     tracks_service = info.context.tracks_service
     playlists_service = info.context.playlists_service
+    playlists_access_management_service = (
+        info.context.playlists_access_management_service
+    )
     platform_aggregator_service = info.context.platform_aggregator_service
 
     playlist = await playlists_service.get_playlist_with_track_references(playlist_id)
 
     if playlist is None:
+        return None
+    
+    current_user_can_view_playlist = (
+        len(playlists_access_management_service.get_playlists_user_can_view([playlist]))
+        > 0
+    )
+    if not current_user_can_view_playlist:
         return None
 
     if tracks_to_load_ids is None and not load_first_tracks:
