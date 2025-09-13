@@ -2,12 +2,8 @@
 name = "windchimes-backend"
 version = "0.1.0"
 description = ""
-package-mode = true
-authors = []
+package-mode = false
 readme = "README.md"
-
-[tool.poetry.scripts]
-api = "windchimes_backend.graphql_api.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"

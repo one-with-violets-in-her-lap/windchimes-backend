@@ -17,4 +17,4 @@ RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
 
 COPY windchimes_backend ./windchimes_backend
 
-ENTRYPOINT ["poetry", "run", "api", "-m"]
+ENTRYPOINT ["poetry", "run", "python", "-m", "windchimes_backend.graphql_api.main"]

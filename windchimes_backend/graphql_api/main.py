@@ -10,19 +10,13 @@ from windchimes_backend.graphql_api.strawberry_graphql_setup import graphql_rout
 
 root_logger.info("Launching uvicorn serving Graphql API")
 
+app = FastAPI(lifespan=lifespan)
+app.include_router(graphql_router, prefix="/graphql")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=app_config.graphql_api.cors_allowed_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def main():
-    app = FastAPI(lifespan=lifespan)
-    app.include_router(graphql_router, prefix="/graphql")
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=app_config.graphql_api.cors_allowed_origins,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-    uvicorn.run(app, port=app_config.graphql_api.port, host="0.0.0.0")
-
-
-if __name__ == "__main__":
-    main()
+uvicorn.run(app, port=app_config.graphql_api.port, host="0.0.0.0")
