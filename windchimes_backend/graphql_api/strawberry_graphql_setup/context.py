@@ -8,9 +8,6 @@ from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.api_clients.youtube_data_api.youtube_data_api_client import (
     YoutubeDataApiClient,
 )
-from windchimes_backend.api_clients.youtube_internal_api.youtube_downloader import (
-    YoutubeDownloader,
-)
 from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_client import (
     YoutubeInternalApiClient,
 )
@@ -91,11 +88,8 @@ class GraphQLRequestContext(BaseContext):
     def youtube_service(self):
         youtube_data_api_client = YoutubeDataApiClient(app_config.youtube_data_api.key)
         youtube_internal_api_client = YoutubeInternalApiClient(app_config.proxy.url)
-        youtube_downloader = YoutubeDownloader()
 
-        return YoutubeService(
-            youtube_data_api_client, youtube_internal_api_client, youtube_downloader
-        )
+        return YoutubeService(youtube_data_api_client, youtube_internal_api_client)
 
     @cached_property
     def platform_aggregator_service(self):

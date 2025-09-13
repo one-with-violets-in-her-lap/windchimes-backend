@@ -7,9 +7,6 @@ from windchimes_backend.api_clients.youtube_data_api.youtube_data_api_client imp
     MAX_YOUTUBE_TRACKS_PER_REQUEST,
     YoutubeDataApiClient,
 )
-from windchimes_backend.api_clients.youtube_internal_api.youtube_downloader import (
-    YoutubeDownloader,
-)
 from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_client import (
     YoutubeInternalApiClient,
 )
@@ -39,11 +36,9 @@ class YoutubeService(ExternalPlatformService):
         self,
         youtube_data_api_client: YoutubeDataApiClient,
         youtube_internal_api_client: YoutubeInternalApiClient,
-        downloader: YoutubeDownloader,
     ):
         self.youtube_data_api_client = youtube_data_api_client
         self.youtube_internal_api_client = youtube_internal_api_client
-        self.downloader = downloader
 
     async def load_tracks(self, tracks_to_load):
         tracks_ids = [track.id for track in tracks_to_load]
@@ -71,14 +66,7 @@ class YoutubeService(ExternalPlatformService):
                 + "youtube audio file getting"
             )
 
-        audio_file_url = await self.downloader.get_audio_download_url(
-            f"http://youtube.com/watch?v={track_platform_id}"
-        )
-
-        if audio_file_url is None:
-            raise NoSuitableFormatError()
-
-        return audio_file_url
+        return ""
 
     async def get_playlist_by_url(self, url: str):
         playlist_id_query_param = urllib.parse.parse_qs(
