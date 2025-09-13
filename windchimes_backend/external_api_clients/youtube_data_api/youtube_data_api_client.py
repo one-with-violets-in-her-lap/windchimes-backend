@@ -4,8 +4,8 @@ from typing import Optional
 import aiohttp
 from pydantic import BaseModel
 
-from windchimes_backend.api_clients.platform_api_error import PlatformApiError
-from windchimes_backend.api_clients.youtube_data_api.models import (
+from windchimes_backend.external_api_clients.platform_api_error import PlatformApiError
+from windchimes_backend.external_api_clients.youtube_data_api.models import (
     YoutubePlaylist,
     YoutubePlaylistVideo,
     YoutubeVideo,

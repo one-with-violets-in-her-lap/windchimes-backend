@@ -3,12 +3,14 @@ import logging
 
 from strawberry.fastapi import BaseContext
 
-from windchimes_backend.api_clients.imagekit_api_client import ImagekitApiClient
-from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
-from windchimes_backend.api_clients.youtube_data_api.youtube_data_api_client import (
+from windchimes_backend.external_api_clients.imagekit_api_client import (
+    ImagekitApiClient,
+)
+from windchimes_backend.external_api_clients.soundcloud import SoundcloudApiClient
+from windchimes_backend.external_api_clients.youtube_data_api.youtube_data_api_client import (
     YoutubeDataApiClient,
 )
-from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_client import (
+from windchimes_backend.external_api_clients.youtube_internal_api.youtube_internal_api_client import (
     YoutubeInternalApiClient,
 )
 from windchimes_backend.core.database import database

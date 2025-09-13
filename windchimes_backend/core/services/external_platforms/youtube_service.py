@@ -2,12 +2,12 @@ import logging
 import re
 import urllib.parse
 
-from windchimes_backend.api_clients.youtube_data_api.models import YoutubeVideo
-from windchimes_backend.api_clients.youtube_data_api.youtube_data_api_client import (
+from windchimes_backend.external_api_clients.youtube_data_api.models import YoutubeVideo
+from windchimes_backend.external_api_clients.youtube_data_api.youtube_data_api_client import (
     MAX_YOUTUBE_TRACKS_PER_REQUEST,
     YoutubeDataApiClient,
 )
-from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_client import (
+from windchimes_backend.external_api_clients.youtube_internal_api.youtube_internal_api_client import (
     YoutubeInternalApiClient,
 )
 from windchimes_backend.core.models.platform import Platform
