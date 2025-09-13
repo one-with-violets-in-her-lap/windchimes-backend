@@ -34,6 +34,12 @@ class PlaylistUpdateGraphQL:
     picture_url: Optional[str] = None
 
 
+@strawberry.input
+class TrackToAddGraphQL:
+    id: int
+    playlists_ids_to_add_to: list[int]
+
+
 async def __create_playlist(
     info: GraphQLRequestInfo, playlist: PlaylistToCreateGraphQL
 ) -> PlaylistToReadWithTracksGraphQL | UnauthorizedErrorGraphQL:
