@@ -3,6 +3,7 @@ import logging
 
 from strawberry.fastapi import BaseContext
 
+from windchimes_backend.api_clients.imagekit_api_client import ImagekitApiClient
 from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.api_clients.youtube.youtube_data_api_client import (
     YoutubeDataApiClient,
@@ -21,6 +22,9 @@ from windchimes_backend.core.services.external_platforms.soundcloud import (
 )
 from windchimes_backend.core.services.external_platforms.youtube_service import (
     YoutubeService,
+)
+from windchimes_backend.core.services.picture_storage_service import (
+    PictureStorageService,
 )
 from windchimes_backend.core.services.playlists import PlaylistsService
 from windchimes_backend.core.services.playlists.playlists_access_management import (
@@ -58,6 +62,11 @@ class GraphQLRequestContext(BaseContext):
     @cached_property
     def tracks_import_service(self):
         return TracksImportService(self.database, self.platform_aggregator_service)
+
+    @cached_property
+    def picture_storage_service(self):
+        imagekit_api_client = ImagekitApiClient(app_config.imagekit_api.private_key)
+        return PictureStorageService(imagekit_api_client)
 
     @cached_property
     def soundcloud_service(self):

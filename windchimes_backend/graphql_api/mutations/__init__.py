@@ -5,6 +5,9 @@ from windchimes_backend.graphql_api.mutations.playlists import (
     delete_playlist_mutation,
     update_playlist_mutation,
 )
+from windchimes_backend.graphql_api.mutations.playlists.update_playlist_picture_mutation import (
+    update_playlist_picture_mutation,
+)
 from windchimes_backend.graphql_api.mutations.playlists.playlist_tracks import (
     delete_track_from_playlists_mutation,
     add_tracks_to_playlists_mutation,
@@ -19,7 +22,10 @@ class Mutation:
     create_playlist = create_playlist_mutation
     delete_playlist = delete_playlist_mutation
     update_playlist = update_playlist_mutation
+
     add_tracks_to_playlists = add_tracks_to_playlists_mutation
     delete_track_from_playlists = delete_track_from_playlists_mutation
+
+    update_playlist_image = update_playlist_picture_mutation
 
     import_external_playlist_tracks = import_external_playlist_tracks_mutation
