@@ -121,7 +121,7 @@ class YoutubeService(ExternalPlatformService):
             ]
         )
 
-        return [track for track in loaded_tracks if track is not None]
+        return loaded_tracks
 
     async def _fetch_all_videos_as_tracks(self, playlist_id: str):
         """

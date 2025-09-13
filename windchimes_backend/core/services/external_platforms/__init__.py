@@ -50,7 +50,7 @@ class ExternalPlatformService(ABC):
         pass
 
     @abstractmethod
-    async def search_tracks(self, search_query: str) -> list[LoadedTrack]:
+    async def search_tracks(self, search_query: str) -> list[Optional[LoadedTrack]]:
         pass
 
     @abstractmethod
