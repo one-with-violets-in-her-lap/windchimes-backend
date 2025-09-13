@@ -6,16 +6,36 @@ import strawberry
 
 @strawberry.type
 class GraphQLApiError:
+    """Common class for all errors returned in GraphQL API
+
+    Raises:
+        ValueError: If utility field `is_error_response` was overridden in constructor
+            to value `False`. Because, obviously, it's always must be `True`
+    """
+
+    is_error_response: bool = True
+    """Flag that marks the response as an error
+
+    Needed for type-checking on the frontend
+    """
+
     name: str
 
     technical_explanation: str
-    """explanation of the error for developers
+    """Explanation of the error for developers
 
-    can be given to the user to report the error somewhere
+    Can be given to the user to report the error somewhere
     """
 
     explanation: str = "An error occurred"
     """user-friendly explanation that can be displayed somewhere"""
+
+    def __post_init__(self):
+        if not self.is_error_response:
+            raise ValueError(
+                "Field `is_error_response` is an utility for usage on the "
+                + "client-side and must not be overridden to `False`"
+            )
 
 
 class UnauthorizedErrorGraphQL(GraphQLApiError):
@@ -108,4 +128,18 @@ class ValidationErrorGraphQL(GraphQLApiError):
         return ValidationErrorGraphQL(
             explanation=first_error["msg"],
             dot_separated_field_location=first_error_field_location,
+        )
+
+
+@strawberry.type
+class NotFoundErrorGraphQL(GraphQLApiError):
+    def __init__(
+        self,
+        explanation="Requested resource cannot be found",
+        technical_explanation="Requested resource cannot be found",
+    ):
+        super().__init__(
+            name="not-found-error",
+            explanation=explanation,
+            technical_explanation=technical_explanation,
         )

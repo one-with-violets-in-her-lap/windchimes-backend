@@ -47,12 +47,12 @@ async def _update_playlist_picture(
     )
     playlists_service = info.context.playlists_service
 
-    user_owns_the_playlist = (
+    access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
             [playlist_id]
         )
     )
-    if not user_owns_the_playlist:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL()
 
     if picture.content_type not in _SUPPORTED_PICTURE_MIME_TYPES:
@@ -118,12 +118,12 @@ async def _delete_playlist_picture(
     )
     playlists_service = info.context.playlists_service
 
-    user_owns_the_playlist = (
+    access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
             [playlist_id]
         )
     )
-    if not user_owns_the_playlist:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL()
 
     await playlists_service.update_playlist(

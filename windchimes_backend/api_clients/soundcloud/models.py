@@ -33,5 +33,7 @@ class SoundcloudPlaylist(BaseModel):
     title: str
     description: Optional[str]
     permalink: str
+    permalink_url: str
     artwork_url: Optional[str]
+    secret_token: Optional[str]
     tracks: list[dict[str, Any]]

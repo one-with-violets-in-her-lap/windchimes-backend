@@ -10,7 +10,7 @@ from windchimes_backend.core.services.external_platforms.platform_aggregator imp
     PlatformAggregatorService,
 )
 from windchimes_backend.core.services.playlists import (
-    PlaylistToReadWithTrackReferences,
+    PlaylistDetailed,
 )
 from windchimes_backend.utils.lists import find_item
 
@@ -24,7 +24,7 @@ class TracksService:
 
     def get_track_references_to_load(
         self,
-        playlist: PlaylistToReadWithTrackReferences,
+        playlist: PlaylistDetailed,
         track_references_ids_to_load: Optional[list[str]] = None,
         load_first_tracks=False,
     ) -> Sequence[Optional[TrackReferenceSchema]]:

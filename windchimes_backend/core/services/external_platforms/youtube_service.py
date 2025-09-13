@@ -14,8 +14,11 @@ from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_cl
     YoutubeInternalApiClient,
 )
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import (
-    PlaylistToImport,
+from windchimes_backend.core.models.external_playlist import (
+    ExternalPlaylistInfo,
+)
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
@@ -25,6 +28,7 @@ from windchimes_backend.core.services.external_platforms.no_suitable_format_erro
 
 
 MAX_YOUTUBE_TRACKS_REQUESTS = 4
+_YOUTUBE_PLAYLIST_PAGE_BASE_URL = "https://youtube.com/playlist"
 
 
 logger = logging.getLogger()
@@ -84,23 +88,35 @@ class YoutubeService(ExternalPlatformService):
         if playlist_id_query_param is None:
             return None
 
+        return await self.get_playlist_by_id(
+            playlist_id_query_param[0],
+            PlatformSpecificParams(),  # There aren't any Youtube-specific params
+        )
+
+    async def get_playlist_by_id(self, playlist_id, platform_specific_params):
+        logger.info(
+            "Fetching Youtube playlist with id %s. Platform-specific params: %s",
+            playlist_id,
+            str(platform_specific_params),
+        )
+
         youtube_playlist = await self.youtube_data_api_client.get_playlist_by_id(
-            playlist_id_query_param[0]
+            playlist_id
         )
 
         if youtube_playlist is None:
             return None
 
-        tracks_references = await self._fetch_all_videos_as_tracks(
-            playlist_id_query_param[0]
-        )
+        tracks_references = await self._fetch_all_videos_as_tracks(playlist_id)
 
-        return PlaylistToImport(
+        return ExternalPlaylistInfo(
+            external_platform_id=youtube_playlist.id,
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
             picture_url=youtube_playlist.snippet.thumbnails["default"]["url"],
-            publicly_available=False,
             track_references=tracks_references,
+            original_page_url=_YOUTUBE_PLAYLIST_PAGE_BASE_URL
+            + f"?list={youtube_playlist.id}",
         )
 
     async def search_tracks(self, search_query):

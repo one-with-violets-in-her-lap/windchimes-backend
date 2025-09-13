@@ -7,9 +7,17 @@ from sqlalchemy import and_, delete, desc, not_, select, update
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
+from windchimes_backend.core.database.models.external_playlist_reference import (
+    ExternalPlaylistReference,
+)
 from windchimes_backend.core.database.models.playlist import Playlist, PlaylistTrack
 from windchimes_backend.core.database.models.track_reference import TrackReference
-from windchimes_backend.core.models.playlist import PlaylistToCreate
+from windchimes_backend.core.models.playlist import (
+    ExternalPlaylistReferenceSchema,
+    PlaylistToCreate,
+    PlaylistToReadWithTrackCount,
+    PlaylistDetailed,
+)
 from windchimes_backend.core.models.track import TrackReferenceSchema
 
 
@@ -36,25 +44,6 @@ class PlaylistUpdate(BaseModel):
     description: Optional[str] = None
     picture_url: Optional[str] = None
     publicly_available: Optional[bool] = None
-
-
-class PlaylistToRead(BaseModel):
-    id: int
-    created_at: datetime
-    name: str
-    description: Optional[str]
-    picture_url: Optional[str]
-
-    publicly_available: bool
-    owner_user_id: str
-
-
-class PlaylistToReadWithTrackCount(PlaylistToRead):
-    track_count: int
-
-
-class PlaylistToReadWithTrackReferences(PlaylistToReadWithTrackCount):
-    track_references: list[TrackReferenceSchema]
 
 
 class PlaylistDeleteOrUpdateFailed(Exception):
@@ -135,18 +124,32 @@ class PlaylistsService:
                 for playlist in playlists_result.unique().scalars().all()
             ]
 
-    async def get_playlist_with_track_references(self, playlist_id: int):
+    async def get_playlist_detailed(self, playlist_id: int):
         async with self._database.create_session() as database_session:
             playlist = await database_session.get(
-                Playlist, playlist_id, options=[joinedload(Playlist.track_references)]
+                Playlist,
+                playlist_id,
+                options=[
+                    joinedload(Playlist.track_references),
+                    joinedload(Playlist.external_playlist_to_sync_with),
+                ],
             )
 
             if playlist is None:
                 return None
 
-            return PlaylistToReadWithTrackReferences.model_validate(
+            external_playlist_to_sync_with = (
+                ExternalPlaylistReferenceSchema.model_validate(
+                    vars(playlist.external_playlist_to_sync_with)
+                )
+                if playlist.external_playlist_to_sync_with is not None
+                else None
+            )
+
+            return PlaylistDetailed.model_validate(
                 {
                     **vars(playlist),
+                    "external_playlist_to_sync_with": external_playlist_to_sync_with,
                     "track_count": len(playlist.track_references),
                     "track_references": [
                         TrackReferenceSchema.model_validate(vars(track_reference))
@@ -163,7 +166,7 @@ class PlaylistsService:
             database_session.add(new_playlist)
             await database_session.commit()
 
-            return PlaylistToReadWithTrackReferences(
+            return PlaylistDetailed(
                 **vars(new_playlist), track_count=0, track_references=[]
             )
 

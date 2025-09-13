@@ -4,7 +4,8 @@ import strawberry
 
 from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
-    PlaylistToReadWithTracksGraphQL,
+    ExternalPlaylistReferenceGraphQL,
+    PlaylistDetailedGraphQL,
 )
 from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
     TrackReferenceToReadGraphQL,
@@ -39,7 +40,7 @@ class LoadedTrackGraphQL(TrackReferenceToReadGraphQL):
 
 
 @strawberry.type
-class PlaylistWithLoadedTracksGraphQL(PlaylistToReadWithTracksGraphQL):
+class PlaylistDetailedWithLoadedTracksGraphQL(PlaylistDetailedGraphQL):
     loaded_tracks: list[Optional[LoadedTrackGraphQL]]
 
 
@@ -48,7 +49,7 @@ async def _get_one_playlist(
     playlist_id: int,
     tracks_to_load_ids: Optional[list[str]] = None,
     load_first_tracks: bool = False,
-) -> Optional[PlaylistWithLoadedTracksGraphQL] | GraphQLApiError:
+) -> Optional[PlaylistDetailedWithLoadedTracksGraphQL] | GraphQLApiError:
     tracks_service = info.context.tracks_service
     playlists_service = info.context.playlists_service
     playlists_access_management_service = (
@@ -56,7 +57,7 @@ async def _get_one_playlist(
     )
     platform_aggregator_service = info.context.platform_aggregator_service
 
-    playlist = await playlists_service.get_playlist_with_track_references(playlist_id)
+    playlist = await playlists_service.get_playlist_detailed(playlist_id)
 
     if playlist is None:
         return None
@@ -68,16 +69,27 @@ async def _get_one_playlist(
     if not current_user_can_view_playlist:
         return None
 
+    external_playlist_to_sync_with = (
+        ExternalPlaylistReferenceGraphQL(
+            **playlist.external_playlist_to_sync_with.model_dump()
+        )
+        if playlist.external_playlist_to_sync_with is not None
+        else None
+    )
+
     if tracks_to_load_ids is None and not load_first_tracks:
         # TODO: refactor duplicate code when converting playlist pydantic model
         # to graphql
-        return PlaylistWithLoadedTracksGraphQL(
-            **playlist.model_dump(exclude={"track_references"}),
+        return PlaylistDetailedWithLoadedTracksGraphQL(
+            **playlist.model_dump(
+                exclude={"track_references", "external_playlist_to_sync_with"}
+            ),
             track_references=[
                 TrackReferenceToReadGraphQL(**track_reference.model_dump())
                 for track_reference in playlist.track_references
             ],
             loaded_tracks=[],
+            external_playlist_to_sync_with=external_playlist_to_sync_with,
         )
 
     track_references_to_load: Sequence = tracks_service.get_track_references_to_load(
@@ -101,8 +113,10 @@ async def _get_one_playlist(
         list(track_references_to_load)
     )
 
-    return PlaylistWithLoadedTracksGraphQL(
-        **playlist.model_dump(exclude={"track_references": True}),
+    return PlaylistDetailedWithLoadedTracksGraphQL(
+        **playlist.model_dump(
+            exclude={"track_references", "external_playlist_to_sync_with"}
+        ),
         track_references=[
             TrackReferenceToReadGraphQL(**track_reference.model_dump())
             for track_reference in playlist.track_references
@@ -118,6 +132,7 @@ async def _get_one_playlist(
             )
             for track in loaded_tracks
         ],
+        external_playlist_to_sync_with=external_playlist_to_sync_with,
     )
 
 

@@ -1,10 +1,21 @@
-from typing import Sequence
+from typing import Optional, Sequence
+
+from pydantic import BaseModel
+
+from windchimes_backend.core.models.playlist import (
+    PlaylistToRead,
+    PlaylistToReadWithTrackCount,
+)
 from windchimes_backend.core.models.user import User
 from windchimes_backend.core.services.playlists import (
-    PlaylistToRead,
     PlaylistsFilters,
     PlaylistsService,
 )
+
+
+class PlaylistsAccessCheckResult(BaseModel):
+    user_owns_all_playlists: bool
+    loaded_playlists: Optional[list[PlaylistToReadWithTrackCount]]
 
 
 class PlaylistsAccessManagementService:
@@ -20,17 +31,24 @@ class PlaylistsAccessManagementService:
             If requested playlists' owner user id matches current user's
             (`current_user` constructor param) id, returns `True`
         """
+
         if self.current_user is None:
-            return False
+            return PlaylistsAccessCheckResult(
+                user_owns_all_playlists=False, loaded_playlists=None
+            )
 
         playlists_to_check = await self.playlists_service.get_playlists(
             PlaylistsFilters(ids=playlists_ids, owner_user_id=self.current_user.sub)
         )
 
         if len(playlists_to_check) == 0:
-            return False
+            return PlaylistsAccessCheckResult(
+                user_owns_all_playlists=False, loaded_playlists=playlists_to_check
+            )
         else:
-            return True
+            return PlaylistsAccessCheckResult(
+                user_owns_all_playlists=True, loaded_playlists=playlists_to_check
+            )
 
     def get_playlists_user_can_view(self, playlists: Sequence[PlaylistToRead]):
         return [

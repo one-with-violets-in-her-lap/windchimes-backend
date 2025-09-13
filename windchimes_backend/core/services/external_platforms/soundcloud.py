@@ -3,9 +3,12 @@ import logging
 from windchimes_backend.api_clients.platform_api_error import PlatformApiError
 from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.api_clients.soundcloud.models import SoundcloudTrack
+from windchimes_backend.core.models.platform_specific_params import (
+    PlatformSpecificParams,
+)
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import (
-    PlaylistToImport,
+from windchimes_backend.core.models.external_playlist import (
+    ExternalPlaylistInfo,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
@@ -80,11 +83,11 @@ class SoundcloudService(ExternalPlatformService):
             logger.error(str(error))
             return None
 
-        return PlaylistToImport(
+        return ExternalPlaylistInfo(
+            external_platform_id=str(soundcloud_playlist.id),
             name=soundcloud_playlist.title,
             description=soundcloud_playlist.description,
             picture_url=soundcloud_playlist.artwork_url,
-            publicly_available=False,
             track_references=[
                 TrackReferenceSchema(
                     id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',
@@ -93,6 +96,40 @@ class SoundcloudService(ExternalPlatformService):
                 )
                 for track in soundcloud_playlist.tracks
             ],
+            original_page_url=soundcloud_playlist.permalink_url,
+            soundcloud_secret_token=soundcloud_playlist.secret_token,
+        )
+
+    async def get_playlist_by_id(
+        self, playlist_id, platform_specific_params: PlatformSpecificParams
+    ):
+        try:
+            soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_id(
+                playlist_id,
+                artwork_in_highest_quality=True,
+                secret_token=platform_specific_params.soundcloud_secret_token,
+            )
+
+            if soundcloud_playlist is None:
+                return None
+        except PlatformApiError as error:
+            logger.error(str(error))
+            return None
+
+        return ExternalPlaylistInfo(
+            external_platform_id=str(soundcloud_playlist.id),
+            name=soundcloud_playlist.title,
+            description=soundcloud_playlist.description,
+            picture_url=soundcloud_playlist.artwork_url,
+            track_references=[
+                TrackReferenceSchema(
+                    id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',
+                    platform_id=str(track["id"]),
+                    platform=Platform.SOUNDCLOUD,
+                )
+                for track in soundcloud_playlist.tracks
+            ],
+            original_page_url=soundcloud_playlist.permalink_url,
         )
 
     async def search_tracks(self, search_query):
