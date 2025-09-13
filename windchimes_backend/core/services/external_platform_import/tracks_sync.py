@@ -1,19 +1,31 @@
 import logging
 
-from sqlalchemy import update
+from sqlalchemy import delete, select, update
+
 from windchimes_backend.core.database import Database
+from windchimes_backend.core.database.models.external_playlist_reference import (
+    ExternalPlaylistReference,
+)
 from windchimes_backend.core.database.models.playlist import Playlist
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
-from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import ExternalPlaylistReference
+from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,
 )
+from windchimes_backend.core.services.playlists import PlaylistToReadWithTrackCount
 
 
 logger = logging.getLogger(__name__)
+
+
+class ExternalPlaylistNotLinkedError(Exception):
+    def __init__(self):
+        super().__init__(
+            "Playlist you want to sync does not have external playlist linked to it. "
+            + "Playlist must have `external_playlist_reference` table row related to it"
+        )
 
 
 class TracksSyncService:
@@ -26,10 +38,10 @@ class TracksSyncService:
     async def link_external_playlist_for_sync(
         self,
         playlist_to_link_to_id: int,
-        external_playlist_to_link: ExternalPlaylistReference,
+        external_playlist_to_link: ExternalPlaylistReferenceSchema,
     ):
         logger.info(
-            "Setting up sync for playlist %s with external %s playlist - %s",
+            "Sync setup: starting setup for playlist %s with external %s playlist - %s",
             playlist_to_link_to_id,
             external_playlist_to_link.platform.value,
             str(external_playlist_to_link.url),
@@ -45,19 +57,17 @@ class TracksSyncService:
         if external_playlist_data is None:
             raise ExternalPlaylistNotFoundError()
 
+        logger.info("Sync setup: Deleting previously linked playlist if exists")
+        await self.disable_external_playlist_sync(playlist_to_link_to_id)
+
         async with self.database.create_session() as database_session:
-            statement = (
-                update(Playlist)
-                .where(
-                    Playlist.id == playlist_to_link_to_id,
-                )
-                .values(
-                    sync_platform=external_playlist_to_link.platform,
-                    sync_playlist_external_platform_id=external_playlist_data.external_platform_id,
-                )
+            external_playlist_reference = ExternalPlaylistReference(
+                platform=external_playlist_to_link.platform,
+                platform_id=external_playlist_data.external_platform_id,
+                parent_playlist_id=playlist_to_link_to_id,
             )
 
-            await database_session.execute(statement)
+            database_session.add(external_playlist_reference)
             await database_session.commit()
 
             return external_playlist_data
@@ -66,17 +76,41 @@ class TracksSyncService:
         logger.info("Disabling sync for playlist %s", playlist_id)
 
         async with self.database.create_session() as database_session:
-            statement = (
-                update(Playlist)
-                .where(
-                    Playlist.id == playlist_id,
-                )
-                .values(sync_platform=None, sync_playlist_external_platform_id=None)
+            statement = delete(ExternalPlaylistReference).where(
+                ExternalPlaylistReference.parent_playlist_id == playlist_id
             )
 
             await database_session.execute(statement)
             await database_session.commit()
 
-    async def sync_playlist_tracks(self, playlist_to_sync_id: int):
+    async def sync_playlist_tracks(
+        self, playlist_to_sync: PlaylistToReadWithTrackCount
+    ):
         async with self.database.create_session() as database_session:
-            pass
+            linked_playlist_query_statement = select(ExternalPlaylistReference).where(
+                ExternalPlaylistReference.parent_playlist_id == playlist_to_sync.id
+            )
+
+            result = await database_session.execute(linked_playlist_query_statement)
+
+            external_playlist_to_sync_with_reference = result.scalar()
+
+            if external_playlist_to_sync_with_reference is None:
+                raise ExternalPlaylistNotLinkedError()
+
+        external_playlist_data = (
+            await self.platform_aggregator_service.get_playlist_by_id(
+                external_playlist_to_sync_with_reference.platform,
+                external_playlist_to_sync_with_reference.platform_id,
+            )
+        )
+
+        if external_playlist_data is None:
+            raise ExternalPlaylistNotFoundError()
+
+        logger.info(
+            "Syncing %s tracks from %s playlist with id '%s'",
+            len(external_playlist_data.track_references),
+            external_playlist_to_sync_with_reference.platform.value,
+            external_playlist_to_sync_with_reference.platform_id,
+        )

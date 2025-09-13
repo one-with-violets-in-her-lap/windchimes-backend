@@ -1,4 +1,5 @@
 from math import e
+from typing import cast
 from pydantic import ValidationError
 import strawberry
 
@@ -6,10 +7,16 @@ from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.playlist import ExternalPlaylistReference
+from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
+from windchimes_backend.core.models.user import User
+from windchimes_backend.core.services.external_platform_import.tracks_sync import (
+    ExternalPlaylistNotLinkedError,
+)
+from windchimes_backend.core.services.playlists import PlaylistsFilters
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
+    NotFoundErrorGraphQL,
     ValidationErrorGraphQL,
 )
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
@@ -22,14 +29,13 @@ from windchimes_backend.graphql_api.utils.graphql import GraphQLRequestInfo
 
 
 @strawberry.type
-class ExternalPlaylistNotFoundErrorGraphQL(GraphQLApiError):
+class ExternalPlaylistNotAvailableErrorGraphQL(GraphQLApiError):
     def __init__(self):
         super().__init__(
-            name="external-playlist-not-found-error",
-            explanation="Failed to find the playlist you want to sync, perhaps the "
-            + "url you specified is invalid",
-            technical_explanation="Failed to retrieve external playlist data from "
-            + "specified url and platform",
+            name="external-playlist-not-available-error",
+            explanation="Playlist to sync with is not available",
+            technical_explanation="Failed to retrieve external playlist data, "
+            + "perhaps it's not available anymore",
         )
 
 
@@ -47,7 +53,7 @@ async def _set_playlist_for_tracks_sync(
     SetPlaylistForTracksSyncMutationResult
     | ValidationErrorGraphQL
     | GraphQLApiError
-    | ExternalPlaylistNotFoundErrorGraphQL
+    | ExternalPlaylistNotAvailableErrorGraphQL
 ):
     tracks_sync_service = info.context.tracks_sync_service
     playlist_access_management_service = (
@@ -55,7 +61,7 @@ async def _set_playlist_for_tracks_sync(
     )
 
     try:
-        external_playlist_reference = ExternalPlaylistReference.model_validate(
+        external_playlist_reference = ExternalPlaylistReferenceSchema.model_validate(
             {"platform": external_playlist_platform, "url": external_playlist_url}
         )
     except ValidationError as validation_error:
@@ -82,12 +88,16 @@ async def _set_playlist_for_tracks_sync(
         return SetPlaylistForTracksSyncMutationResult(
             external_playlist_linked=ExternalPlaylistToReadGraphQL(
                 **external_playlist_linked.model_dump(
-                    exclude={"external_platform_id", "track_references"}
+                    exclude={
+                        "external_platform_id",
+                        "track_references",
+                        "publicly_available",
+                    }
                 )
             )
         )
     except ExternalPlaylistNotFoundError:
-        return ExternalPlaylistNotFoundErrorGraphQL()
+        return ExternalPlaylistNotAvailableErrorGraphQL()
 
 
 set_playlist_for_tracks_sync_mutation = strawberry.mutation(
@@ -124,18 +134,34 @@ disable_playlist_sync_mutation = strawberry.mutation(
 
 async def _sync_playlist_tracks_with_external_playlist(
     info: GraphQLRequestInfo, playlist_id: int
-):
+) -> None | NotFoundErrorGraphQL | GraphQLApiError | ExternalPlaylistNotAvailableErrorGraphQL:
     playlist_access_management_service = (
         info.context.playlists_access_management_service
     )
+    tracks_sync_service = info.context.tracks_sync_service
 
-    user_owns_the_playlist = (
+    access_check_result = (
         await playlist_access_management_service.check_if_user_owns_the_playlists(
             [playlist_id]
         )
     )
 
-    if not user_owns_the_playlist:
+    if (
+        not access_check_result.user_owns_all_playlists
+        or access_check_result.loaded_playlists is None
+        or len(access_check_result.loaded_playlists) == 0
+    ):
         return ForbiddenErrorGraphQL()
 
-    return
+    try:
+        await tracks_sync_service.sync_playlist_tracks(
+            access_check_result.loaded_playlists[0]
+        )
+    except (ExternalPlaylistNotFoundError, ExternalPlaylistNotLinkedError) as error:
+        return ExternalPlaylistNotAvailableErrorGraphQL()
+
+
+sync_playlist_tracks_with_external_playlist_mutation = strawberry.mutation(
+    resolver=_sync_playlist_tracks_with_external_playlist,
+    extensions=[AuthorizedOnlyExtension()],
+)

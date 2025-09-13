@@ -19,6 +19,7 @@ from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_im
 from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_sync import (
     set_playlist_for_tracks_sync_mutation,
     disable_playlist_sync_mutation,
+    sync_playlist_tracks_with_external_playlist_mutation,
 )
 
 
@@ -37,3 +38,6 @@ class Mutation:
     import_external_playlist_tracks = import_external_playlist_tracks_mutation
     set_playlist_for_tracks_sync = set_playlist_for_tracks_sync_mutation
     disable_playlist_sync = disable_playlist_sync_mutation
+    sync_playlist_tracks_with_external_playlist = (
+        sync_playlist_tracks_with_external_playlist_mutation
+    )

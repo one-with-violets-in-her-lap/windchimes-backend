@@ -26,6 +26,6 @@ class PlaylistToImport(BaseModel):
     track_references: list[TrackReferenceSchema]
 
 
-class ExternalPlaylistReference(BaseModel):
+class ExternalPlaylistReferenceSchema(BaseModel):
     platform: Platform
     url: HttpUrl

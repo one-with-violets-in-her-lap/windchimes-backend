@@ -96,6 +96,9 @@ class SoundcloudService(ExternalPlatformService):
             ],
         )
 
+    async def get_playlist_by_id(self, playlist_id):
+        return None
+
     async def search_tracks(self, search_query):
         tracks = await self.soundcloud_api_client.search_tracks(search_query)
 

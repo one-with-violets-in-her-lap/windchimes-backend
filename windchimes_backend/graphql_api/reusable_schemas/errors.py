@@ -109,3 +109,17 @@ class ValidationErrorGraphQL(GraphQLApiError):
             explanation=first_error["msg"],
             dot_separated_field_location=first_error_field_location,
         )
+
+
+@strawberry.type
+class NotFoundErrorGraphQL(GraphQLApiError):
+    def __init__(
+        self,
+        explanation="Requested resource cannot be found",
+        technical_explanation="Requested resource cannot be found",
+    ):
+        super().__init__(
+            name="not-found-error",
+            explanation=explanation,
+            technical_explanation=technical_explanation,
+        )

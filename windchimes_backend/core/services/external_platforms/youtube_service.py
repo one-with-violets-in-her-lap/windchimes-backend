@@ -84,16 +84,17 @@ class YoutubeService(ExternalPlatformService):
         if playlist_id_query_param is None:
             return None
 
+        return await self.get_playlist_by_id(playlist_id_query_param[0])
+
+    async def get_playlist_by_id(self, playlist_id):
         youtube_playlist = await self.youtube_data_api_client.get_playlist_by_id(
-            playlist_id_query_param[0]
+            playlist_id
         )
 
         if youtube_playlist is None:
             return None
 
-        tracks_references = await self._fetch_all_videos_as_tracks(
-            playlist_id_query_param[0]
-        )
+        tracks_references = await self._fetch_all_videos_as_tracks(playlist_id)
 
         return PlaylistToImport(
             external_platform_id=youtube_playlist.id,

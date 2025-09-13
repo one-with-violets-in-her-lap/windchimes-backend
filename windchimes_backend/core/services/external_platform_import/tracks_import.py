@@ -10,7 +10,7 @@ from windchimes_backend.core.database.models.track_reference import TrackReferen
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
-from windchimes_backend.core.models.playlist import ExternalPlaylistReference
+from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
 from windchimes_backend.core.models.track import TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,
@@ -31,7 +31,7 @@ class TracksImportService:
 
     async def import_playlist_tracks(
         self,
-        playlist_to_import_from: ExternalPlaylistReference,
+        playlist_to_import_from: ExternalPlaylistReferenceSchema,
         playlist_to_import_to_id: int,
         replace_existing_tracks=False,
     ):

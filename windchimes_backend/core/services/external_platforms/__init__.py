@@ -50,6 +50,10 @@ class ExternalPlatformService(ABC):
         pass
 
     @abstractmethod
+    async def get_playlist_by_id(self, playlist_id: str) -> Optional[PlaylistToImport]:
+        pass
+
+    @abstractmethod
     async def search_tracks(self, search_query: str) -> Sequence[Optional[LoadedTrack]]:
         pass
 

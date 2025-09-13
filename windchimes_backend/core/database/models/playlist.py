@@ -6,7 +6,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database.models.base import BaseDatabaseModel
-from windchimes_backend.core.models.platform import Platform
+from windchimes_backend.core.database.models.external_playlist_reference import (
+    ExternalPlaylistReference,
+)
 
 
 class PlaylistTrack(BaseDatabaseModel):
@@ -47,8 +49,9 @@ class Playlist(BaseDatabaseModel):
         "TrackReference", secondary="playlist_track", back_populates="playlists"
     )
 
-    sync_platform: Mapped[Optional[Platform]]
-    sync_playlist_external_platform_id: Mapped[Optional[str]]
+    external_playlist_to_sync_with: Mapped[Optional[ExternalPlaylistReference]] = (
+        relationship(ExternalPlaylistReference, back_populates="playlist")
+    )
 
     def __repr__(self) -> str:
         return f"playlist {self.id} - '{self.name}'"

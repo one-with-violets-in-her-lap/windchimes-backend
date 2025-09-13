@@ -74,10 +74,13 @@ class PlatformAggregatorService:
         )
 
         return (
-            PlaylistToImport(**playlist.model_dump())
-            if playlist is not None
-            else None
+            PlaylistToImport(**playlist.model_dump()) if playlist is not None else None
         )
+
+    async def get_playlist_by_id(
+        self, platform: Platform, playlist_id: str
+    ) -> Optional[PlaylistToImport]:
+        return await self.platform_services[platform].get_playlist_by_id(playlist_id)
 
     async def search_tracks(self, search_query: str) -> list[LoadedTrack]:
         tracks = []

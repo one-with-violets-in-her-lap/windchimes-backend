@@ -2,6 +2,7 @@ from functools import reduce
 import logging
 
 import aiohttp
+import httpx
 
 from windchimes_backend.core.config import app_config
 from windchimes_backend.api_clients.platform_api_error import PlatformApiError
@@ -112,6 +113,12 @@ class SoundcloudApiClient:
                     return None
 
                 return SoundcloudPlaylist(**response_data)
+
+    async def get_playlist_by_id(self, playlist_id: str):
+        async with httpx.AsyncClient(base_url=_SOUNDCLOUD_API_BASE_URL) as httpx_client:
+            response = await httpx_client.get(
+                f"/playlists/{playlist_id}", params={"client_id": self.client_id}
+            )
 
     async def search_tracks(self, search_query: str, limit=35):
         """Searches tracks by provided search query
