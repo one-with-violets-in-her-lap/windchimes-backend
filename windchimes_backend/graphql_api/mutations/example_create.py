@@ -6,8 +6,8 @@ from windchimes_backend.graphql_api.reusable_schemas.example import (
 )
 
 
-def create_example(input: ExampleInput) -> Example:
-    return Example(text=f'example mutation, name: "{input.name}"')
+def create_example(example_input: ExampleInput) -> Example:
+    return Example(text=f'example mutation, name: "{example_input.name}"')
 
 
 create_example_mutation = strawberry.mutation(resolver=create_example)

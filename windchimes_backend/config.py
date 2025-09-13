@@ -25,7 +25,7 @@ class AppConfig(BaseSettings):
         env_file_encoding="utf-8",
         env_nested_delimiter="__",
         env_prefix="WINDCHIMES__",
-        extra='ignore',
+        extra="ignore",
     )
 
     database: DatabaseSettings
