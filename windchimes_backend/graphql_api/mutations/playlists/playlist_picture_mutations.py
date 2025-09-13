@@ -67,7 +67,10 @@ async def _update_playlist_picture(
         picture_data = await picture.read()
 
         uploaded_picture_url = await picture_storage_service.upload_picture(
-            picture_data, f"playlist_{playlist_id}", "/playlists"
+            picture_data=picture_data,
+            filename=f"playlist_{playlist_id}",
+            folder="/playlists",
+            append_unique_suffix_to_filename=False,
         )
 
         await playlists_service.update_playlist(
