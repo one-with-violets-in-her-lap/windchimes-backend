@@ -39,7 +39,7 @@ class ForbiddenErrorGraphQL(GraphQLApiError):
         technical_explanation="You don't have access to this resource",
     ):
         super().__init__(
-            name="unauthorized-error",
+            name="forbidden-error",
             explanation=explanation,
             technical_explanation=technical_explanation,
         )
