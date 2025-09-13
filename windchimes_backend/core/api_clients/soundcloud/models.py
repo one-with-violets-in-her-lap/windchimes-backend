@@ -20,7 +20,7 @@ class SoundcloudTrack(BaseModel):
     title: str
     artwork_url: Optional[str]
     created_at: str
-    description: str
+    description: Optional[str]
     full_duration: int
     likes_count: Optional[int]
     media: dict
@@ -32,5 +32,5 @@ class SoundcloudPlaylist(BaseModel):
     title: str
     description: Optional[str]
     permalink: str
-    artwork_url: str
+    artwork_url: Optional[str]
     tracks: list[dict[str, Any]]
