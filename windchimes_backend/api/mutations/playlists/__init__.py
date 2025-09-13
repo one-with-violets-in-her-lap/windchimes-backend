@@ -14,7 +14,7 @@ from windchimes_backend.api.reusable_schemas.errors import (
 from windchimes_backend.api.reusable_schemas.playlists import (
     PlaylistDetailedGraphQL,
 )
-from windchimes_backend.api.utils.dataclasses import convert_to_dataclass
+from windchimes_backend.common.utils.dataclasses import convert_to_dataclass
 from windchimes_backend.api.utils.graphql import (
     GraphQLRequestInfo,
 )

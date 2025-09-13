@@ -15,7 +15,6 @@ from windchimes_backend.api.reusable_schemas.errors import (
 from windchimes_backend.api.strawberry_graphql_setup.auth import (
     AuthorizedOnlyExtension,
 )
-from windchimes_backend.api.utils.dictionaries import convert_to_dictionary
 from windchimes_backend.api.utils.graphql import (
     GraphQLRequestInfo,
 )
@@ -47,7 +46,7 @@ async def _add_tracks_to_playlists(
 
     try:
         validated_tracks = TracksToAddToPlaylistsWrapper.model_validate(
-            {"tracks": convert_to_dictionary(tracks)}
+            {"tracks": [strawberry.asdict(track) for track in tracks]}
         )
     except ValidationError as error:
         return ValidationErrorGraphQL.create_from_pydantic_validation_error(error)
