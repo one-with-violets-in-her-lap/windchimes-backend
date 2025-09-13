@@ -16,6 +16,7 @@ pydantic-settings = "^2.7.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
+pylint = "^3.3.3"
 
 [build-system]
 requires = ["poetry-core"]
