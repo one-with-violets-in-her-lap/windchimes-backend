@@ -5,7 +5,6 @@ from windchimes_backend.core.services.external_platforms import ExternalPlatform
 from windchimes_backend.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
-    PlaylistToCreateWithTracks,
     PlaylistToImport,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
