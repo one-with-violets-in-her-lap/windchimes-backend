@@ -18,6 +18,9 @@ from windchimes_backend.graphql_api.reusable_schemas.errors import (
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
     ExternalPlaylistToReadGraphQL,
 )
+from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
+    TrackReferenceToReadGraphQL,
+)
 from windchimes_backend.graphql_api.strawberry_graphql_setup.auth import (
     AuthorizedOnlyExtension,
 )
@@ -128,10 +131,15 @@ disable_playlist_sync_mutation = strawberry.mutation(
 )
 
 
+@strawberry.type
+class TracksSyncResult:
+    updated_track_references: list[TrackReferenceToReadGraphQL]
+
+
 async def _sync_playlist_tracks_with_external_playlist(
     info: GraphQLRequestInfo, playlist_id: int
 ) -> (
-    None
+    TracksSyncResult
     | NotFoundErrorGraphQL
     | GraphQLApiError
     | ExternalPlaylistNotAvailableErrorGraphQL
@@ -155,8 +163,15 @@ async def _sync_playlist_tracks_with_external_playlist(
         return ForbiddenErrorGraphQL()
 
     try:
-        await tracks_sync_service.sync_playlist_tracks(
+        updated_track_list = await tracks_sync_service.sync_playlist_tracks(
             access_check_result.loaded_playlists[0]
+        )
+
+        return TracksSyncResult(
+            updated_track_references=[
+                TrackReferenceToReadGraphQL(**track_reference.model_dump())
+                for track_reference in updated_track_list
+            ]
         )
     except (ExternalPlaylistNotFoundError, ExternalPlaylistNotLinkedError):
         return ExternalPlaylistNotAvailableErrorGraphQL()
@@ -164,5 +179,8 @@ async def _sync_playlist_tracks_with_external_playlist(
 
 sync_playlist_tracks_with_external_playlist_mutation = strawberry.mutation(
     resolver=_sync_playlist_tracks_with_external_playlist,
+    description="Replaces playlist tracks with tracks from external playlist linked "
+    + "to it via `set_playlist_for_tracks_sync_mutation` mutation. Returns list "
+    + "of updated playlist tracks",
     extensions=[AuthorizedOnlyExtension()],
 )

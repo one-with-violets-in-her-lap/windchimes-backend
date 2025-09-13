@@ -126,3 +126,5 @@ class TracksSyncService:
             external_playlist_data.track_references,
             replace_existing_tracks=True,
         )
+
+        return external_playlist_data.track_references
