@@ -10,6 +10,7 @@ from windchimes_backend.graphql_api.queries.playlists import (
 )
 from windchimes_backend.graphql_api.mutations.playlists import (
     create_playlist_mutation,
+    delete_playlist_mutation,
 )
 
 
@@ -22,6 +23,7 @@ class Query:
 @strawberry.type
 class Mutation:
     create_playlist = create_playlist_mutation
+    delete_playlist = delete_playlist_mutation
 
 
 __schema = strawberry.Schema(query=Query, mutation=Mutation)

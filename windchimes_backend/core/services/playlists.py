@@ -1,8 +1,9 @@
 from datetime import datetime
+import stat
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
@@ -45,6 +46,14 @@ class PlaylistWithTrackReferences(PlaylistWithTrackCount):
     owner_user_id: str
 
     track_references: list[TrackReferenceSchema]
+
+
+class FailedToDeletePlaylistError(Exception):
+    def __init__(self):
+        super().__init__(
+            "Deletion failed because the playlist with specified id does not exist "
+            + "or current user doesn't have access to that playlist"
+        )
 
 
 class PlaylistsService:
@@ -110,3 +119,32 @@ class PlaylistsService:
             return PlaylistWithTrackReferences(
                 **vars(new_playlist), track_count=0, track_references=[]
             )
+
+    # TODO: move to separate `auth/playlists.py` service
+    async def delete_playlist(self, playlist_to_delete_id: int, owner_user_id: str):
+        """
+        Deletes a playlist by its id. Owner user id is also needed for access management
+
+        Args:
+            playlist_to_delete_id: Id of a playlist to delete
+            owner_user_id: Id of the playlist owner user. It's needed to ensure user
+                with id that does not match the owner user id of a playlist
+                cannot delete it
+
+        Raises:
+            FailedToDeletePlaylistError: Deletion failed because the playlist with
+                specified id does not exist or current user doesn't have access to that playlist
+        """
+
+        async with self._database.create_session() as database_session:
+            statement = delete(Playlist).where(
+                Playlist.id == playlist_to_delete_id,
+                Playlist.owner_user_id == owner_user_id,
+            )
+
+            result = await database_session.execute(statement)
+
+            await database_session.commit()
+
+            if result.rowcount == 0:
+                raise FailedToDeletePlaylistError()
