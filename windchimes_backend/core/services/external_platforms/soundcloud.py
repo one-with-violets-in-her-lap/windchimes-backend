@@ -81,6 +81,7 @@ class SoundcloudService(ExternalPlatformService):
             return None
 
         return PlaylistToImport(
+            external_platform_id=str(soundcloud_playlist.id),
             name=soundcloud_playlist.title,
             description=soundcloud_playlist.description,
             picture_url=soundcloud_playlist.artwork_url,

@@ -2,9 +2,7 @@ from pydantic import ValidationError
 import strawberry
 
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.services.external_platform_import.tracks_import import (
-    ExternalPlaylistToImportFrom,
-)
+from windchimes_backend.core.models.playlist import ExternalPlaylistReference
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
@@ -39,7 +37,7 @@ async def _import_external_playlist_tracks(
     replace_existing_tracks: bool = False,
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
     try:
-        validated_playlist_to_import_from = ExternalPlaylistToImportFrom.model_validate(
+        validated_playlist_to_import_from = ExternalPlaylistReference.model_validate(
             {**vars(playlist_to_import_from)}
         )
     except ValidationError as error:

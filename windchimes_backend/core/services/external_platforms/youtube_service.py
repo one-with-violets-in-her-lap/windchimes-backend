@@ -96,6 +96,7 @@ class YoutubeService(ExternalPlatformService):
         )
 
         return PlaylistToImport(
+            external_platform_id=youtube_playlist.id,
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
             picture_url=youtube_playlist.snippet.thumbnails["default"]["url"],

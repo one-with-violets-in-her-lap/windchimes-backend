@@ -16,6 +16,10 @@ from windchimes_backend.graphql_api.mutations.playlists.playlist_tracks import (
 from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_import import (
     import_external_playlist_tracks_mutation,
 )
+from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_sync import (
+    set_playlist_for_tracks_sync_mutation,
+    disable_playlist_sync_mutation,
+)
 
 
 @strawberry.type
@@ -31,3 +35,5 @@ class Mutation:
     delete_playlist_picture = delete_playlist_picture_mutation
 
     import_external_playlist_tracks = import_external_playlist_tracks_mutation
+    set_playlist_for_tracks_sync = set_playlist_for_tracks_sync_mutation
+    disable_playlist_sync = disable_playlist_sync_mutation

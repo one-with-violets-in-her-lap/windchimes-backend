@@ -48,7 +48,7 @@ class Playlist(BaseDatabaseModel):
     )
 
     sync_platform: Mapped[Optional[Platform]]
-    sync_playlist_url: Mapped[Optional[str]]
+    sync_playlist_external_platform_id: Mapped[Optional[str]]
 
     def __repr__(self) -> str:
         return f"playlist {self.id} - '{self.name}'"

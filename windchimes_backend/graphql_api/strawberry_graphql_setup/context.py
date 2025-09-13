@@ -19,6 +19,9 @@ from windchimes_backend.core.services.auth_service import AuthService
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
+from windchimes_backend.core.services.external_platform_import.tracks_sync import (
+    TracksSyncService,
+)
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,
 )
@@ -67,6 +70,10 @@ class GraphQLRequestContext(BaseContext):
     @cached_property
     def tracks_import_service(self):
         return TracksImportService(self.database, self.platform_aggregator_service)
+
+    @cached_property
+    def tracks_sync_service(self):
+        return TracksSyncService(self.database, self.platform_aggregator_service)
 
     @cached_property
     def picture_storage_service(self):

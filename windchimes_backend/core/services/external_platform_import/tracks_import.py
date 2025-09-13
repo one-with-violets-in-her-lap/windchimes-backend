@@ -1,14 +1,16 @@
 import logging
 from typing import Sequence
 
-from pydantic import BaseModel, HttpUrl
 from sqlalchemy import delete, select
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.playlist import PlaylistTrack
 from windchimes_backend.core.database.models.track_reference import TrackReference
-from windchimes_backend.core.models.platform import Platform
+from windchimes_backend.core.errors.external_platform_import import (
+    ExternalPlaylistNotFoundError,
+)
+from windchimes_backend.core.models.playlist import ExternalPlaylistReference
 from windchimes_backend.core.models.track import TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,
@@ -16,16 +18,6 @@ from windchimes_backend.core.services.external_platforms.platform_aggregator imp
 
 
 logger = logging.getLogger(__name__)
-
-
-class ExternalPlaylistToImportFrom(BaseModel):
-    platform: Platform
-    url: HttpUrl
-
-
-class ExternalPlaylistNotFoundError(Exception):
-    def __init__(self):
-        super().__init__("External playlist with specified url cannot be found")
 
 
 class TracksImportService:
@@ -39,7 +31,7 @@ class TracksImportService:
 
     async def import_playlist_tracks(
         self,
-        playlist_to_import_from: ExternalPlaylistToImportFrom,
+        playlist_to_import_from: ExternalPlaylistReference,
         playlist_to_import_to_id: int,
         replace_existing_tracks=False,
     ):
