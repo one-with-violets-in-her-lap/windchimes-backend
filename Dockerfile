@@ -1,20 +1,13 @@
-FROM python:3.10.14-slim
+FROM ghcr.io/astral-sh/uv:alpine
 
-RUN apt-get update -qq && apt-get install ffmpeg -y
+RUN apk update
+RUN apk upgrade
+RUN apk add --no-cache ffmpeg
 
-RUN pip install poetry==1.8.3
+WORKDIR /app
 
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+ADD . /app
 
-WORKDIR /windchimes-graphql-api
+RUN uv sync --locked
 
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
-
-COPY windchimes ./windchimes
-
-ENTRYPOINT ["poetry", "run", "python", "-m", "windchimes.api.main"]
+ENTRYPOINT "./start.sh"

@@ -1,6 +1,32 @@
 services:
+  database:
+    image: "postgres:latest"
+    ports:
+      - 15432:5432
+    env_file: ${ENV_FILE:-.env}
+    networks:
+      - postgres-network
+    volumes:
+      - ${PWD}/db-data/:/var/lib/postgresql/data/
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 15433:80
+    env_file: ${ENV_FILE:-.env}
+    depends_on:
+      - database
+    networks:
+      - postgres-network
+
   graphql_api:
     build: .
     env_file: ${ENV_FILE:-.env}
+    networks:
+      - postgres-network
     ports:
-      - "7000:8000"
+      - "8000:8000"
+
+networks:
+  postgres-network:
+    driver: bridge
