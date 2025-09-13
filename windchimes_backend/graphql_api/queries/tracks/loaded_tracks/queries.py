@@ -1,50 +1,60 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 import strawberry
 
 from windchimes_backend.core.constants.external_api_usage_limits import (
     MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST,
 )
-from windchimes_backend.core.models.track import TrackReferenceSchema
+from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.graphql_api.queries.playlists.one_playlist_query import (
     LoadedTrackGraphQL,
     TrackOwnerGraphQL,
 )
-from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
-from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
-    TrackReferenceToReadGraphQL,
+from windchimes_backend.graphql_api.queries.tracks.loaded_tracks.models import (
+    LoadedTracksFilter,
+    LoadedTracksWrapper,
+    TrackReferenceToLoadGraphQL,
 )
+from windchimes_backend.graphql_api.reusable_schemas.errors import GraphQLApiError
 from windchimes_backend.graphql_api.utils.graphql import GraphQLRequestInfo
 
 
-@strawberry.input
-class TrackReferenceToLoadGraphQL(TrackReferenceToReadGraphQL):
-    pass
-
-
-@strawberry.type
-class LoadedTracksWrapper:
-    items: list[Optional[LoadedTrackGraphQL]]
-
-
 async def _get_loaded_tracks(
-    info: GraphQLRequestInfo, track_references: list[TrackReferenceToLoadGraphQL]
+    info: GraphQLRequestInfo, tracks_filter: LoadedTracksFilter
 ) -> LoadedTracksWrapper | GraphQLApiError:
     platform_aggregator_service = info.context.platform_aggregator_service
 
-    if len(track_references) > MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST:
-        return GraphQLApiError(
-            name="too-many-tracks-to-load-error",
-            technical_explanation="Cannot load more than "
-            + f"{MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST} tracks at once",
+    loaded_tracks: Optional[Sequence[LoadedTrack | None]] = None
+
+    if tracks_filter.track_references_to_load is not None:
+        if (
+            len(tracks_filter.track_references_to_load)
+            > MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST
+        ):
+            return GraphQLApiError(
+                name="too-many-tracks-to-load-error",
+                technical_explanation="Cannot load more than "
+                + f"{MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST} tracks at once",
+            )
+
+        loaded_tracks = await platform_aggregator_service.load_tracks(
+            [
+                TrackReferenceSchema(**vars(track_reference))
+                for track_reference in tracks_filter.track_references_to_load
+            ]
+        )
+    elif tracks_filter.search_query is not None:
+        loaded_tracks = await platform_aggregator_service.search_tracks(
+            tracks_filter.search_query
         )
 
-    loaded_tracks = await platform_aggregator_service.load_tracks(
-        [
-            TrackReferenceSchema(**vars(track_reference))
-            for track_reference in track_references
-        ]
-    )
+    if loaded_tracks is None:
+        return GraphQLApiError(
+            name="no-filter-specified-error",
+            technical_explanation="At least one field must be specified "
+            + "in `filter` argument",
+            explanation="No proper filter condition was specified",
+        )
 
     # TODO: move to a utility converter function
     # (loaded track pydantic -> loaded track strawberry graphql object)

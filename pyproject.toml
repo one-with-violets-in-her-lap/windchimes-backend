@@ -17,6 +17,7 @@ asyncpg = "^0.30.0"
 auth0-python = "^4.7.2"
 apscheduler = "^3.11.0"
 yt-dlp = "^2024.12.23"
+httpx = {extras = ["socks"], version = "^0.28.1"}
 
 
 [tool.poetry.group.dev.dependencies]

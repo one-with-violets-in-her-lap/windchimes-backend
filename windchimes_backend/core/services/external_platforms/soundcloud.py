@@ -95,6 +95,16 @@ class SoundcloudService(ExternalPlatformService):
             ],
         )
 
+    async def search_tracks(self, search_query):
+        tracks = await self.soundcloud_api_client.search_tracks(search_query)
+
+        return [
+            self._convert_to_multi_platform_track(
+                track, f"{Platform.SOUNDCLOUD.value}/{track.id}"
+            )
+            for track in tracks
+        ]
+
     def _get_suitable_format_url(self, track_transcodings: list[dict]):
         suitable_formats = [
             transcoding
