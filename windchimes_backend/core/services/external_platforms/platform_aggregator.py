@@ -78,8 +78,7 @@ class PlatformAggregatorService:
     async def search_tracks(self, search_query: str) -> list[LoadedTrack]:
         tracks = []
 
-        for platform in self.platform_services:
-            platform_service = self.platform_services[platform]
+        for _, platform_service in self.platform_services.items():
             tracks.extend(await platform_service.search_tracks(search_query))
 
         return tracks

@@ -20,14 +20,17 @@ from windchimes_backend.graphql_api.utils.graphql import GraphQLRequestInfo
 
 
 async def _get_loaded_tracks(
-    info: GraphQLRequestInfo, filter: LoadedTracksFilter
+    info: GraphQLRequestInfo, tracks_filter: LoadedTracksFilter
 ) -> LoadedTracksWrapper | GraphQLApiError:
     platform_aggregator_service = info.context.platform_aggregator_service
 
     loaded_tracks: Optional[Sequence[LoadedTrack | None]] = None
 
-    if filter.track_references_to_load is not None:
-        if len(filter.track_references_to_load) > MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST:
+    if tracks_filter.track_references_to_load is not None:
+        if (
+            len(tracks_filter.track_references_to_load)
+            > MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST
+        ):
             return GraphQLApiError(
                 name="too-many-tracks-to-load-error",
                 technical_explanation="Cannot load more than "
@@ -37,12 +40,12 @@ async def _get_loaded_tracks(
         loaded_tracks = await platform_aggregator_service.load_tracks(
             [
                 TrackReferenceSchema(**vars(track_reference))
-                for track_reference in filter.track_references_to_load
+                for track_reference in tracks_filter.track_references_to_load
             ]
         )
-    elif filter.search_query is not None:
+    elif tracks_filter.search_query is not None:
         loaded_tracks = await platform_aggregator_service.search_tracks(
-            filter.search_query
+            tracks_filter.search_query
         )
 
     if loaded_tracks is None:
