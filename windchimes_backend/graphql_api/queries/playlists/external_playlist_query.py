@@ -1,14 +1,12 @@
 from typing import Optional
 import strawberry
 
-from windchimes_backend.core.services.playlists import PlaylistToReadWithTrackReferences
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
 )
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
     ExternalPlaylistToReadGraphQL,
-    PlaylistToReadGraphQL,
 )
 from windchimes_backend.graphql_api.strawberry_graphql_setup.auth import (
     AuthorizedOnlyExtension,
