@@ -6,6 +6,8 @@ import httpx
 from pydantic import BaseModel, ValidationError
 import yt_dlp
 
+from windchimes.common.utils.user_agent import WINDOWS_CHROME_USER_AGENT
+
 
 _YOUTUBE_WEBSITE_BASE_URL = "https://www.youtube.com"
 _YOUTUBE_INTERNAL_API_BASE_URL = f"{_YOUTUBE_WEBSITE_BASE_URL}/youtubei/v1"
@@ -52,8 +54,7 @@ class YoutubeInternalApiClient:
                 "client": {
                     "hl": "en",
                     "gl": "AU",
-                    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                    + "(KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36,gzip(gfe)",
+                    "userAgent": WINDOWS_CHROME_USER_AGENT,
                     "clientName": "WEB",
                     "clientVersion": "2.20250205.01.00",
                     "osName": "X11",
@@ -79,8 +80,7 @@ class YoutubeInternalApiClient:
             "origin": "https://www.youtube.com",
             "priority": "u=1, i",
             "referer": f"{_YOUTUBE_WEBSITE_BASE_URL}/results?search_query={search_query}",
-            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            + "(KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+            "user-agent": WINDOWS_CHROME_USER_AGENT,
         }
 
         try:
