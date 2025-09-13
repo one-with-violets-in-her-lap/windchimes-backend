@@ -1,5 +1,7 @@
 FROM python:3.10.14-slim
 
+RUN apt-get update -qq && apt-get install ffmpeg -y
+
 RUN pip install poetry==1.8.3
 
 ENV POETRY_NO_INTERACTION=1 \
