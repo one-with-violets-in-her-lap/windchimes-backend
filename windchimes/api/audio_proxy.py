@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import StreamingResponse
 import httpx
 
+from windchimes.common.utils.user_agent import WINDOWS_CHROME_USER_AGENT
 from windchimes.core.config import app_config
 
 
@@ -49,7 +50,7 @@ async def fetch_audio_as_proxy(url: str, request: Request):
             headers={
                 "Accept": "*/*",
                 "Accept-language": "en-US,en;q=0.9",
-                "User-Agent": "Mozilla/5.0",
+                "User-Agent": WINDOWS_CHROME_USER_AGENT,
             },
             follow_redirects=True,
         ) as response:
