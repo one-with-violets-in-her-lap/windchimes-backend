@@ -10,7 +10,6 @@ from windchimes_backend.api_clients.youtube.youtube_data_api_client import (
 from windchimes_backend.api_clients.youtube.youtube_downloader import YoutubeDownloader
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
-    PlaylistToCreate,
     PlaylistToCreateWithTracks,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
@@ -92,6 +91,7 @@ class YoutubeService(ExternalPlatformService):
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
             picture_url=youtube_playlist.snippet.thumbnails["default"]["url"],
+            publicly_available=False,
             track_references=tracks_references,
         )
 

@@ -1,5 +1,7 @@
+from typing import Sequence
 from windchimes_backend.core.models.user import User
 from windchimes_backend.core.services.playlists import (
+    PlaylistToRead,
     PlaylistsFilters,
     PlaylistsService,
 )
@@ -29,3 +31,14 @@ class PlaylistsAccessManagementService:
             return False
         else:
             return True
+
+    def get_playlists_user_can_view(self, playlists: Sequence[PlaylistToRead]):
+        return [
+            playlist
+            for playlist in playlists
+            if playlist.publicly_available
+            or (
+                self.current_user is not None
+                and playlist.owner_user_id == self.current_user.sub
+            )
+        ]

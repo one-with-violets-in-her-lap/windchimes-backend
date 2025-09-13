@@ -82,6 +82,7 @@ class SoundcloudService(ExternalPlatformService):
             name=soundcloud_playlist.title,
             description=soundcloud_playlist.description,
             picture_url=soundcloud_playlist.artwork_url,
+            publicly_available=False,
             track_references=[
                 TrackReferenceSchema(
                     id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',

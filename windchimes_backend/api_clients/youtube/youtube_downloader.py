@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 
 class YtDlpVideoInfoOutput(BaseModel):
@@ -49,7 +49,7 @@ class YoutubeDownloader:
 
             yt_dlp_output_dict = json.loads(yt_dlp_output)
 
-            yt_dlp_video_info = YtDlpVideoInfoOutput(**yt_dlp_output_dict)
+            yt_dlp_video_info = YtDlpVideoInfoOutput.model_validate(yt_dlp_output_dict)
 
             suitable_formats_download_urls = [
                 format.url
@@ -61,6 +61,6 @@ class YoutubeDownloader:
                 return None
 
             return suitable_formats_download_urls[0]
-        except Exception as error:
+        except (json.JSONDecodeError, ValidationError) as error:
             logger.error(error)
             return None

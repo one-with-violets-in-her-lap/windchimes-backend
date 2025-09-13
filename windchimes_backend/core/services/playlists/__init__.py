@@ -35,6 +35,7 @@ class PlaylistUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     picture_url: Optional[str] = None
+    publicly_available: Optional[bool] = None
 
 
 class PlaylistToRead(BaseModel):
@@ -43,6 +44,8 @@ class PlaylistToRead(BaseModel):
     name: str
     description: Optional[str]
     picture_url: Optional[str]
+
+    publicly_available: bool
     owner_user_id: str
 
 
@@ -100,8 +103,7 @@ class PlaylistsService:
             if filters.containing_track_reference_id is not None:
                 statement = statement.where(
                     Playlist.track_references.any(
-                        TrackReference.id
-                        == filters.exclude_containing_track_reference_id
+                        TrackReference.id == filters.containing_track_reference_id
                     )
                 )
 

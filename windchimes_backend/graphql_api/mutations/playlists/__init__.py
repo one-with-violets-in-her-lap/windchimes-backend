@@ -25,6 +25,7 @@ class PlaylistToCreateGraphQL:
     name: str
     description: Optional[str] = None
     picture_url: Optional[str] = None
+    publicly_available: bool = False
 
 
 @strawberry.input
@@ -32,6 +33,7 @@ class PlaylistUpdateGraphQL:
     name: Optional[str] = None
     description: Optional[str] = None
     picture_url: Optional[str] = None
+    publicly_available: Optional[bool] = None
 
 
 @strawberry.input

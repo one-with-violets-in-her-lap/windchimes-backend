@@ -1,7 +1,6 @@
 from pydantic import ValidationError
 import strawberry
 
-from windchimes_backend.core.models.user import User
 from windchimes_backend.core.services.playlists import (
     TrackToDeleteFromPlaylists,
     TracksToAddToPlaylistsWrapper,
