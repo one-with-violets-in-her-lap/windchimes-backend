@@ -3,10 +3,17 @@ import logging
 
 from strawberry.fastapi import BaseContext
 
+from windchimes_backend.core.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.core.database import database
 from windchimes_backend.core.services.auth import AuthService
 from windchimes_backend.core.services.other_platform_import.tracks_import import (
     TracksImportService,
+)
+from windchimes_backend.core.services.other_platforms.cross_platform_aggregator import (
+    CrossPlatformAggregatorService,
+)
+from windchimes_backend.core.services.other_platforms.soundcloud import (
+    SoundcloudService,
 )
 from windchimes_backend.core.services.playlists import PlaylistsService
 from windchimes_backend.core.services.playlists.playlists_access_management import (
@@ -35,6 +42,19 @@ class GraphQLRequestContext(BaseContext):
     @cached_property
     def tracks_import_service(self):
         return TracksImportService()
+
+    @cached_property
+    def soundcloud_integration(self):
+        soundcloud_api_client = SoundcloudApiClient()
+        soundcloud_service = SoundcloudService(soundcloud_api_client)
+
+        return {"api_client": soundcloud_api_client, "service": soundcloud_service}
+
+    @cached_property
+    def cross_platform_service(self):
+        return CrossPlatformAggregatorService(
+            soundcloud_service=self.soundcloud_integration["service"]
+        )
 
     @cached_property
     def auth_service(self):

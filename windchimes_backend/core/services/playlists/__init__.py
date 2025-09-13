@@ -10,7 +10,7 @@ from sqlalchemy.orm import joinedload
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.playlist import Playlist, PlaylistTrack
 from windchimes_backend.core.database.models.track_reference import TrackReference
-from windchimes_backend.core.models.track_reference import TrackReferenceSchema
+from windchimes_backend.core.models.track import TrackReferenceSchema
 
 
 class PlaylistsFilters(BaseModel):
