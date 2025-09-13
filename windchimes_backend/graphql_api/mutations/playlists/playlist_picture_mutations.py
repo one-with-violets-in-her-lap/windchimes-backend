@@ -5,6 +5,10 @@ import strawberry
 from fastapi import UploadFile
 
 from windchimes_backend.core.models.user import User
+from windchimes_backend.core.services.picture_storage_service import (
+    PictureTooLargeError,
+    PictureUploadError,
+)
 from windchimes_backend.core.services.playlists import PlaylistUpdate
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
@@ -22,6 +26,14 @@ class PlaylistNewPicture:
 
 
 logger = logging.getLogger(__name__)
+
+_SUPPORTED_PICTURE_MIME_TYPES = [
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "image/avif",
+    "image/bmp",
+]
 
 
 async def _update_playlist_picture(
@@ -43,6 +55,14 @@ async def _update_playlist_picture(
     if not user_owns_the_playlist:
         return ForbiddenErrorGraphQL()
 
+    if picture.content_type not in _SUPPORTED_PICTURE_MIME_TYPES:
+        return GraphQLApiError(
+            name="invalid-file-type-error",
+            explanation="Invalid file type",
+            technical_explanation=f"Uploaded file mime type `{picture.content_type}` "
+            + "is not in the list of supported mime types",
+        )
+
     try:
         picture_data = await picture.read()
 
@@ -57,6 +77,20 @@ async def _update_playlist_picture(
         )
 
         return PlaylistNewPicture(url=uploaded_picture_url)
+    except PictureTooLargeError as error:
+        logger.error("%s", error)
+        return GraphQLApiError(
+            name="picture-too-large-error",
+            explanation=str(error),
+            technical_explanation=str(error),
+        )
+    except PictureUploadError as error:
+        logger.error("%s", error)
+        return GraphQLApiError(
+            name="picture-upload-error",
+            explanation="Failed to upload the pic",
+            technical_explanation=str(error),
+        )
     except Exception as error:
         logger.error("%s", error)
         return GraphQLApiError(
@@ -68,4 +102,32 @@ async def _update_playlist_picture(
 
 update_playlist_picture_mutation = strawberry.mutation(
     resolver=_update_playlist_picture, extensions=[AuthorizedOnlyExtension()]
+)
+
+
+async def _delete_playlist_picture(
+    info: GraphQLRequestInfo, playlist_id: int
+) -> None | GraphQLApiError:
+    current_user = cast(User, info.context.current_user)
+
+    playlists_access_management_service = (
+        info.context.playlists_access_management_service
+    )
+    playlists_service = info.context.playlists_service
+
+    user_owns_the_playlist = (
+        await playlists_access_management_service.check_if_user_owns_the_playlists(
+            [playlist_id]
+        )
+    )
+    if not user_owns_the_playlist:
+        return ForbiddenErrorGraphQL()
+
+    await playlists_service.update_playlist(
+        playlist_id, current_user.sub, PlaylistUpdate(picture_url=None)
+    )
+
+
+delete_playlist_picture_mutation = strawberry.mutation(
+    resolver=_delete_playlist_picture, extensions=[AuthorizedOnlyExtension()]
 )

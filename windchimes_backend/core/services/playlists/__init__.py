@@ -218,7 +218,7 @@ class PlaylistsService:
                     Playlist.id == playlist_to_update_id,
                     Playlist.owner_user_id == owner_user_id,
                 )
-                .values(new_playlist_data.model_dump(exclude_none=True))
+                .values(new_playlist_data.model_dump(exclude_unset=True))
             )
 
             result = await database_session.execute(statement)

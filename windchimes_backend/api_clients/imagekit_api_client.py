@@ -63,7 +63,7 @@ class ImagekitApiClient:
             headers={"Authorization": f"Basic {self.encoded_private_key}"},
         ) as aiohttp_session:
             async with aiohttp_session.post(
-                "/api/v1/files/uplcoad", data=form_data
+                "/api/v1/files/upload", data=form_data
             ) as response:
                 try:
                     response_data = await response.json()
