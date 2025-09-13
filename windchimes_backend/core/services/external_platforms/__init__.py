@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from windchimes_backend.core.models.playlist import PlaylistToCreate
+from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 
 
-class ProviderPlatformService(ABC):
+class ExternalPlatformService(ABC):
     """
     Base class for services that provide methods to access data from
     external platforms like Youtube and Soundcloud
@@ -44,7 +44,9 @@ class ProviderPlatformService(ABC):
         pass
 
     @abstractmethod
-    async def get_playlist_by_url(self, url: str) -> Optional[PlaylistToCreate]:
+    async def get_playlist_by_url(
+        self, url: str
+    ) -> Optional[PlaylistToCreateWithTracks]:
         pass
 
     @abstractmethod

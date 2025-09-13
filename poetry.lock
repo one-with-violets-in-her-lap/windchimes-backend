@@ -1746,6 +1746,17 @@ files = [
 ]
 
 [[package]]
+name = "pytubefix"
+version = "8.11.0"
+description = "Python3 library for downloading YouTube Videos."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytubefix-8.11.0-py3-none-any.whl", hash = "sha256:36971d3a1e31d5357731a7b5ff179a46830fb978bbb6093e79096c1b99edd4f7"},
+    {file = "pytubefix-8.11.0.tar.gz", hash = "sha256:3f7d47ba0e666a8bc8c11b9515cae764ca59d513b3a2f2de6eca4243428559d5"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.2"
 description = "YAML parser and emitter for Python"
@@ -2506,4 +2517,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "37a3967e8df11320a3006e641d1318d82b3dd429ae36e1c4c70a8ac0be49e6aa"
+content-hash = "1fc1fbe150f3c7d1e25c6277fc12916fbfb7762fc0795901e75e1d5b3187f648"

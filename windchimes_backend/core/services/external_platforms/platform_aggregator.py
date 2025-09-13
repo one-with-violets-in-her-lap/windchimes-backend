@@ -1,12 +1,13 @@
 from typing import Optional
 
+from windchimes_backend.utils.lists import set_items_order
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
 )
-from windchimes_backend.utils.lists import set_items_order
+from windchimes_backend.core.services.external_platforms.youtube_service import YoutubeService
 
 
 class PlatformAggregatorService:
@@ -17,10 +18,10 @@ class PlatformAggregatorService:
         - `YoutubeService`
     """
 
-    def __init__(self, soundcloud_service: SoundcloudService):
+    def __init__(self, soundcloud_service: SoundcloudService, youtube_service: YoutubeService):
         self.platform_services = {
             Platform.SOUNDCLOUD: soundcloud_service,
-            Platform.YOUTUBE: soundcloud_service,
+            Platform.YOUTUBE: youtube_service,
         }
 
     async def load_tracks(self, tracks_to_load: list[TrackReferenceSchema]):

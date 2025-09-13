@@ -6,18 +6,16 @@ from windchimes_backend.api_clients.soundcloud.models import SoundcloudTrack
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import PlaylistToCreateWithTracks
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
-from windchimes_backend.core.services.external_platforms import ProviderPlatformService
+from windchimes_backend.core.services.external_platforms import ExternalPlatformService
+from windchimes_backend.core.services.external_platforms.no_suitable_format_error import (
+    NoSuitableFormatError,
+)
 
 
 logger = logging.getLogger()
 
 
-class NoSuitableFormatError(Exception):
-    def __init__(self):
-        super().__init__("couldn't find suitable audio format (mp3)")
-
-
-class SoundcloudService(ProviderPlatformService):
+class SoundcloudService(ExternalPlatformService):
     def __init__(self, soundcloud_api_client: SoundcloudApiClient):
         self.soundcloud_api_client = soundcloud_api_client
 

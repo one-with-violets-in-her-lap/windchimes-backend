@@ -1,4 +1,5 @@
-from typing import Literal
+from typing import Literal, Optional
+
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -29,6 +30,10 @@ class SoundcloudApiSettings(BaseModel):
     """
 
 
+class ProxySettings(BaseModel):
+    url: Optional[str] = None
+
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=["./prod.env", "./.env"],
@@ -49,6 +54,8 @@ class AppConfig(BaseSettings):
     youtube_data_api: YoutubeDataApiSettings
 
     soundcloud_api: SoundcloudApiSettings = SoundcloudApiSettings()
+
+    proxy: ProxySettings = ProxySettings()
 
     @staticmethod
     def load_from_env():

@@ -4,6 +4,9 @@ import logging
 from strawberry.fastapi import BaseContext
 
 from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
+from windchimes_backend.api_clients.youtube.youtube_data_api_client import (
+    YoutubeDataApiClient,
+)
 from windchimes_backend.core.database import database
 from windchimes_backend.core.services.auth_service import AuthService
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
@@ -15,6 +18,9 @@ from windchimes_backend.core.services.external_platforms.platform_aggregator imp
 from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
 )
+from windchimes_backend.core.services.external_platforms.youtube_service import (
+    YoutubeService,
+)
 from windchimes_backend.core.services.playlists import PlaylistsService
 from windchimes_backend.core.services.playlists.playlists_access_management import (
     PlaylistsAccessManagementService,
@@ -23,6 +29,7 @@ from windchimes_backend.core.services.tracks_service import TracksService
 from windchimes_backend.core.stores.soundcloud_api_client_id_store import (
     get_soundcloud_api_client_id,
 )
+from windchimes_backend.core.config import app_config
 
 
 logger = logging.getLogger(__name__)
@@ -52,16 +59,20 @@ class GraphQLRequestContext(BaseContext):
         return TracksImportService(self.database, self.platform_aggregator_service)
 
     @cached_property
-    def soundcloud_integration(self):
+    def soundcloud_service(self):
         soundcloud_api_client = SoundcloudApiClient(get_soundcloud_api_client_id())
-        soundcloud_service = SoundcloudService(soundcloud_api_client)
+        return SoundcloudService(soundcloud_api_client)
 
-        return {"api_client": soundcloud_api_client, "service": soundcloud_service}
+    @cached_property
+    def youtube_service(self):
+        youtube_data_api_client = YoutubeDataApiClient(app_config.youtube_data_api.key)
+        return YoutubeService(youtube_data_api_client)
 
     @cached_property
     def platform_aggregator_service(self):
         return PlatformAggregatorService(
-            soundcloud_service=self.soundcloud_integration["service"]
+            soundcloud_service=self.soundcloud_service,
+            youtube_service=self.youtube_service,
         )
 
     @cached_property

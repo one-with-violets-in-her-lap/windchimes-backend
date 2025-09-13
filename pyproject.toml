@@ -16,6 +16,7 @@ alembic = "^1.14.0"
 asyncpg = "^0.30.0"
 auth0-python = "^4.7.2"
 apscheduler = "^3.11.0"
+pytubefix = "^8.11.0"
 
 
 [tool.poetry.group.dev.dependencies]
