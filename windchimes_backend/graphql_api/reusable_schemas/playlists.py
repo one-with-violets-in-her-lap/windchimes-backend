@@ -11,7 +11,6 @@ class PlaylistToReadGraphQL:
     id: int
     created_at: datetime
     name: str
-    slug: str
     description: Optional[str]
     picture_url: Optional[str]
     owner_user_id: str

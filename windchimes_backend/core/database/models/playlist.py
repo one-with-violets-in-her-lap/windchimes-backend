@@ -34,7 +34,6 @@ class Playlist(BaseDatabaseModel):
     created_at: Mapped[datetime] = mapped_column(DateTime(), server_default=func.now())
 
     name: Mapped[str]
-    slug: Mapped[str]
     description: Mapped[Optional[str]]
     picture_url: Mapped[Optional[str]]
 

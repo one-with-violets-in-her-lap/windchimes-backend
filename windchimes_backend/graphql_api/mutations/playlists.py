@@ -24,7 +24,6 @@ from windchimes_backend.graphql_api.utils.graphql import (
 @strawberry.input
 class PlaylistToCreateGraphQL:
     name: str
-    slug: str
     description: Optional[str] = None
     picture_url: Optional[str] = None
 
