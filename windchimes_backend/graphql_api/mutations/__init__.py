@@ -8,7 +8,7 @@ from windchimes_backend.graphql_api.mutations.playlists import (
 from windchimes_backend.graphql_api.mutations.playlists.playlist_tracks import (
     add_tracks_to_playlists_mutation,
 )
-from windchimes_backend.graphql_api.mutations.other_platform_import.tracks_import import (
+from windchimes_backend.graphql_api.mutations.external_platform_import.tracks_import import (
     import_external_playlist_tracks_mutation,
 )
 

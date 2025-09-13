@@ -7,7 +7,7 @@ from windchimes_backend.core.database.models.playlist import Playlist
 from windchimes_backend.core.database.models.track_reference import TrackReference
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.track import LoadedTrack
-from windchimes_backend.core.services.other_platforms import ProviderPlatformService
+from windchimes_backend.core.services.external_platforms import ProviderPlatformService
 
 
 logger = logging.getLogger()

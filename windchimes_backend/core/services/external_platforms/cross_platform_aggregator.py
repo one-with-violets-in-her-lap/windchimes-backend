@@ -2,7 +2,7 @@ from typing import Optional
 
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
-from windchimes_backend.core.services.other_platforms.soundcloud import (
+from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
 )
 from windchimes_backend.core.utils.lists import set_items_order

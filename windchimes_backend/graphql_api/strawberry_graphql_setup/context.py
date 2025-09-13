@@ -6,13 +6,13 @@ from strawberry.fastapi import BaseContext
 from windchimes_backend.core.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.core.database import database
 from windchimes_backend.core.services.auth import AuthService
-from windchimes_backend.core.services.other_platform_import.tracks_import import (
+from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
-from windchimes_backend.core.services.other_platforms.cross_platform_aggregator import (
+from windchimes_backend.core.services.external_platforms.cross_platform_aggregator import (
     CrossPlatformAggregatorService,
 )
-from windchimes_backend.core.services.other_platforms.soundcloud import (
+from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
 )
 from windchimes_backend.core.services.playlists import PlaylistsService
