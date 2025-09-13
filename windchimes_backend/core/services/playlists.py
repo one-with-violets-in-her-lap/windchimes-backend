@@ -56,9 +56,13 @@ class PlaylistDeleteOrUpdateFailed(Exception):
         )
 
 
-class TrackToAddToPlaylists(BaseModel):
+class TrackToAddToPlaylist(BaseModel):
     id: int
     playlists_ids_to_add_to: Annotated[list[int], Len(min_length=1)]
+
+
+class TracksToAddToPlaylistsWrapper(BaseModel):
+    tracks: list[TrackToAddToPlaylist]
 
 
 class PlaylistsService:
@@ -196,11 +200,13 @@ class PlaylistsService:
             if result.rowcount == 0:
                 raise PlaylistDeleteOrUpdateFailed()
 
-    async def add_tracks_to_playlists(self, tracks: list[TrackToAddToPlaylists]):
+    async def add_tracks_to_playlists(
+        self, tracks_to_add_wrapper: TracksToAddToPlaylistsWrapper
+    ):
         async with self._database.create_session() as database_session:
             new_playlist_tracks_associations: list[PlaylistTrack] = []
 
-            for track in tracks:
+            for track in tracks_to_add_wrapper.tracks:
                 new_playlist_tracks_associations.extend(
                     [
                         PlaylistTrack(playlist_id=playlist_id, track_id=track.id)

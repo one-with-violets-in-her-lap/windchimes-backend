@@ -1,15 +1,18 @@
+from pydantic import ValidationError
 import strawberry
 
 from windchimes_backend.core.services.playlists import (
     PlaylistsFilters,
-    TrackToAddToPlaylists,
+    TracksToAddToPlaylistsWrapper,
 )
 from windchimes_backend.graphql_api.mutations.playlists import TrackToAddGraphQL
 from windchimes_backend.graphql_api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
     UnauthorizedErrorGraphQL,
+    ValidationErrorGraphQL,
 )
+from windchimes_backend.graphql_api.utils.dictionaries import convert_to_dictionary
 from windchimes_backend.graphql_api.utils.graphql import (
     GraphQLRequestInfo,
 )
@@ -17,7 +20,7 @@ from windchimes_backend.graphql_api.utils.graphql import (
 
 async def __add_tracks_to_playlists(
     info: GraphQLRequestInfo, tracks: list[TrackToAddGraphQL]
-) -> None | GraphQLApiError:
+) -> None | ValidationErrorGraphQL | GraphQLApiError:
     if len(tracks) == 0:
         return GraphQLApiError(
             name="empty-playlist-tracks-list-specified-error",
@@ -46,9 +49,14 @@ async def __add_tracks_to_playlists(
                 technical_explanation="You don't have access to some playlists you want to add tracks to",
             )
 
-    await playlists_service.add_tracks_to_playlists(
-        [TrackToAddToPlaylists.model_validate(vars(track)) for track in tracks]
-    )
+    try:
+        validated_tracks = TracksToAddToPlaylistsWrapper.model_validate(
+            {"tracks": convert_to_dictionary(tracks)}
+        )
+    except ValidationError as error:
+        return ValidationErrorGraphQL.create_from_pydantic_validation_error(error)
+
+    await playlists_service.add_tracks_to_playlists(validated_tracks)
 
 
 add_tracks_to_playlists_mutation = strawberry.mutation(
