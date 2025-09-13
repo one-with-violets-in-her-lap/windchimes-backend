@@ -43,47 +43,53 @@ async def fetch_audio_as_proxy(url: str, request: Request):
     async with httpx.AsyncClient(proxy=app_config.proxy.url) as client:
         logger.info("Fetching HLS resource: %s. Proxy: %s", url, app_config.proxy.url)
 
-        response = await client.get(
-            url,
+        async with client.stream(
+            url=url,
+            method="GET",
             headers={
                 "Accept": "*/*",
                 "Accept-language": "en-US,en;q=0.9",
                 "User-Agent": "Mozilla/5.0",
             },
-        )
+        ) as response:
+            if response.is_error:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Youtube CDN returned an error: {response.text}",
+                )
 
-        if response.is_error:
-            raise HTTPException(
-                status_code=response.status_code,
-                detail=f"Youtube CDN returned an error: {response.text}",
+            content_type = response.headers.get("Content-Type")
+
+            logger.info(
+                "Fetched HLS resource, content type: %s with code %s",
+                content_type,
+                response.status_code,
             )
 
-        content_type = response.headers.get("Content-Type")
+            await response.aread()
 
-        logger.info("Fetched HLS resource, content type: %s", content_type)
+            if "application/vnd.apple.mpegurl" in content_type:
+                m3u8_data_with_proxied_urls = "\n".join(
+                    [
+                        (
+                            str(request.url.include_query_params(url=m3u8_line))
+                            if not m3u8_line.startswith("#")
+                            else m3u8_line
+                        )
+                        for m3u8_line in response.text.splitlines()
+                    ]
+                )
 
-        if "application/vnd.apple.mpegurl" in content_type:
-            m3u8_data_with_proxied_urls = "\n".join(
-                [
-                    (
-                        str(request.url.include_query_params(url=m3u8_line))
-                        if not m3u8_line.startswith("#")
-                        else m3u8_line
-                    )
-                    for m3u8_line in response.text.splitlines()
-                ]
-            )
-
-            return Response(
-                content=m3u8_data_with_proxied_urls,
-                media_type="application/vnd.apple.mpegurl",
-            )
-        elif "application/octet-stream" in content_type:
-            return StreamingResponse(
-                response.aiter_raw(),
-                media_type=content_type,
-            )
-        else:
-            raise HTTPException(
-                status_code=500, detail=f"Unexpected content type: {content_type}"
-            )
+                return Response(
+                    content=m3u8_data_with_proxied_urls,
+                    media_type="application/vnd.apple.mpegurl",
+                )
+            elif "application/octet-stream" in content_type:
+                return StreamingResponse(
+                    response.aiter_bytes(),
+                    media_type=content_type,
+                )
+            else:
+                raise HTTPException(
+                    status_code=500, detail=f"Unexpected content type: {content_type}"
+                )
