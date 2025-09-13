@@ -2,13 +2,12 @@ import logging
 import re
 import urllib.parse
 
-import pytubefix
-
 from windchimes_backend.api_clients.youtube.models import YoutubeVideo
 from windchimes_backend.api_clients.youtube.youtube_data_api_client import (
     MAX_YOUTUBE_TRACKS_PER_REQUEST,
     YoutubeDataApiClient,
 )
+from windchimes_backend.api_clients.youtube.youtube_downloader import YoutubeDownloader
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
     PlaylistToCreate,
@@ -28,9 +27,14 @@ logger = logging.getLogger()
 
 
 class YoutubeService(ExternalPlatformService):
-    def __init__(self, youtube_data_api_client: YoutubeDataApiClient):
+    def __init__(
+        self,
+        youtube_data_api_client: YoutubeDataApiClient,
+        downloader: YoutubeDownloader,
+    ):
         # self._setup_proxy()
         self.client = youtube_data_api_client
+        self.downloader = downloader
 
     async def load_tracks(self, tracks_to_load):
         tracks_ids = [track.id for track in tracks_to_load]
@@ -56,19 +60,14 @@ class YoutubeService(ExternalPlatformService):
                 + "youtube audio file getting"
             )
 
-        try:
-            video = pytubefix.YouTube(f"http://youtube.com/watch?v={track_platform_id}")
+        audio_file_url = await self.downloader.get_audio_download_url(
+            f"http://youtube.com/watch?v={track_platform_id}"
+        )
 
-            audio_format = video.streams.get_audio_only(subtype="mp4")
+        if audio_file_url is None:
+            raise NoSuitableFormatError()
 
-            if audio_format is None:
-                raise NoSuitableFormatError()
-
-            return audio_format.url
-        except ValueError:
-            return None
-        except KeyError:
-            return None
+        return audio_file_url
 
     async def get_playlist_by_url(self, url: str):
         playlist_id_query_param = urllib.parse.parse_qs(

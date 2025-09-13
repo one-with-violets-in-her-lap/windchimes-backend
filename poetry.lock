@@ -1746,17 +1746,6 @@ files = [
 ]
 
 [[package]]
-name = "pytubefix"
-version = "8.11.0"
-description = "Python3 library for downloading YouTube Videos."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pytubefix-8.11.0-py3-none-any.whl", hash = "sha256:36971d3a1e31d5357731a7b5ff179a46830fb978bbb6093e79096c1b99edd4f7"},
-    {file = "pytubefix-8.11.0.tar.gz", hash = "sha256:3f7d47ba0e666a8bc8c11b9515cae764ca59d513b3a2f2de6eca4243428559d5"},
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.2"
 description = "YAML parser and emitter for Python"
@@ -2514,7 +2503,28 @@ idna = ">=2.0"
 multidict = ">=4.0"
 propcache = ">=0.2.0"
 
+[[package]]
+name = "yt-dlp"
+version = "2024.12.23"
+description = "A feature-rich command-line audio/video downloader"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "yt_dlp-2024.12.23-py3-none-any.whl", hash = "sha256:2fc08a5221a0379628ac4e7324c6c69a95b9fdfa7a7ca3187444b3b7451e38be"},
+    {file = "yt_dlp-2024.12.23.tar.gz", hash = "sha256:ac0e72b5a9017ba104b4258546201a7cedc38e8bd20727e0c63b77c829b425e9"},
+]
+
+[package.extras]
+build = ["build", "hatchling", "pip", "setuptools (>=71.0.2)", "wheel"]
+curl-cffi = ["curl-cffi (==0.5.10)", "curl-cffi (>=0.5.10,!=0.6.*,<0.7.2)"]
+default = ["brotli", "brotlicffi", "certifi", "mutagen", "pycryptodomex", "requests (>=2.32.2,<3)", "urllib3 (>=1.26.17,<3)", "websockets (>=13.0)"]
+dev = ["autopep8 (>=2.0,<3.0)", "pre-commit", "pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)", "ruff (>=0.8.0,<0.9.0)"]
+pyinstaller = ["pyinstaller (>=6.11.1)"]
+secretstorage = ["cffi", "secretstorage"]
+static-analysis = ["autopep8 (>=2.0,<3.0)", "ruff (>=0.8.0,<0.9.0)"]
+test = ["pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "1fc1fbe150f3c7d1e25c6277fc12916fbfb7762fc0795901e75e1d5b3187f648"
+content-hash = "05e61583efbfaeeef13a144ba7efd572fe71c4ee156db7d9d081d2283c06193f"
