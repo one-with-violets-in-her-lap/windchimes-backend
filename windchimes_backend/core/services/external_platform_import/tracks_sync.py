@@ -6,10 +6,14 @@ from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.external_playlist_reference import (
     ExternalPlaylistReference,
 )
+from windchimes_backend.core.database.models.playlist import PlaylistTrack
 from windchimes_backend.core.errors.external_platform_import import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.playlist import ExternalPlaylistReferenceSchema
+from windchimes_backend.core.services.external_platform_import.tracks_import import (
+    TracksImportService,
+)
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,
 )
@@ -29,10 +33,14 @@ class ExternalPlaylistNotLinkedError(Exception):
 
 class TracksSyncService:
     def __init__(
-        self, database: Database, platform_aggregator_service: PlatformAggregatorService
+        self,
+        database: Database,
+        platform_aggregator_service: PlatformAggregatorService,
+        tracks_import_service: TracksImportService,
     ) -> None:
         self.database = database
         self.platform_aggregator_service = platform_aggregator_service
+        self.tracks_import_service = tracks_import_service
 
     async def link_external_playlist_for_sync(
         self,
@@ -112,4 +120,10 @@ class TracksSyncService:
             len(external_playlist_data.track_references),
             external_playlist_to_sync_with_reference.platform.value,
             external_playlist_to_sync_with_reference.platform_id,
+        )
+
+        await self.tracks_import_service.add_tracks_to_playlist(
+            playlist_to_sync.id,
+            external_playlist_data.track_references,
+            replace_existing_tracks=True,
         )

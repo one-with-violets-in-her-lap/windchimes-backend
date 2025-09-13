@@ -68,24 +68,34 @@ class TracksImportService:
         if playlist_to_import_from_data is None:
             raise ExternalPlaylistNotFoundError()
 
+        await self.add_tracks_to_playlist(
+            playlist_to_import_to_id,
+            playlist_to_import_from_data.track_references,
+            replace_existing_tracks,
+        )
+
+    async def add_tracks_to_playlist(
+        self,
+        playlist_id: int,
+        track_references: list[TrackReferenceSchema],
+        replace_existing_tracks: bool,
+    ):
         if replace_existing_tracks:
             async with self.database.create_session() as database_session:
                 logger.info(
                     "Deleting existing tracks of playlist %s to replace with "
                     + "imported ones",
-                    playlist_to_import_to_id,
+                    playlist_id,
                 )
 
                 delete_existing_tracks_statement = delete(PlaylistTrack).where(
-                    PlaylistTrack.playlist_id == playlist_to_import_to_id
+                    PlaylistTrack.playlist_id == playlist_id
                 )
                 await database_session.execute(delete_existing_tracks_statement)
                 await database_session.commit()
 
         already_existing_track_references = (
-            await self._get_already_existing_track_references(
-                playlist_to_import_from_data.track_references
-            )
+            await self._get_already_existing_track_references(track_references)
         )
         already_existing_track_references_ids = [
             track_reference.id for track_reference in already_existing_track_references
@@ -93,7 +103,7 @@ class TracksImportService:
 
         new_track_references_to_add = [
             track_reference
-            for track_reference in playlist_to_import_from_data.track_references
+            for track_reference in track_references
             if track_reference.id not in already_existing_track_references_ids
         ]
         new_track_references_to_add_ids = [
@@ -103,7 +113,7 @@ class TracksImportService:
         track_references_to_associate_with_playlist = (
             self._get_track_references_not_in_playlist(
                 already_existing_track_references,
-                playlist_to_import_to_id,
+                playlist_id,
             )
         )
         track_references_ids_to_associate_with_playlist = list(
@@ -126,7 +136,6 @@ class TracksImportService:
                 TrackReference(**track_reference.model_dump())
                 for track_reference in new_track_references_to_add
             ]
-
             database_session.add_all(track_references_to_add_to_database)
 
             await database_session.commit()
@@ -134,9 +143,7 @@ class TracksImportService:
             # Links already existing and new track references (added above) to the
             # playlist
             new_playlist_tracks_associations = [
-                PlaylistTrack(
-                    playlist_id=playlist_to_import_to_id, track_id=track_reference_id
-                )
+                PlaylistTrack(playlist_id=playlist_id, track_id=track_reference_id)
                 for track_reference_id in [
                     *new_track_references_to_add_ids,
                     *track_references_ids_to_associate_with_playlist,

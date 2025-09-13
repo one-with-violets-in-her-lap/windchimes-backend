@@ -73,7 +73,9 @@ class GraphQLRequestContext(BaseContext):
 
     @cached_property
     def tracks_sync_service(self):
-        return TracksSyncService(self.database, self.platform_aggregator_service)
+        return TracksSyncService(
+            self.database, self.platform_aggregator_service, self.tracks_import_service
+        )
 
     @cached_property
     def picture_storage_service(self):
