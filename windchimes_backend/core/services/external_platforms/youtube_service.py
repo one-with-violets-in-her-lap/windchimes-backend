@@ -10,6 +10,9 @@ from windchimes_backend.api_clients.youtube_data_api.youtube_data_api_client imp
 from windchimes_backend.api_clients.youtube_internal_api.youtube_downloader import (
     YoutubeDownloader,
 )
+from windchimes_backend.api_clients.youtube_internal_api.youtube_internal_api_client import (
+    YoutubeInternalApiClient,
+)
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
     PlaylistToImport,
@@ -31,17 +34,20 @@ class YoutubeService(ExternalPlatformService):
     def __init__(
         self,
         youtube_data_api_client: YoutubeDataApiClient,
+        youtube_internal_api_client: YoutubeInternalApiClient,
         downloader: YoutubeDownloader,
     ):
-        # self._setup_proxy()
-        self.client = youtube_data_api_client
+        self.youtube_data_api_client = youtube_data_api_client
+        self.youtube_internal_api_client = youtube_internal_api_client
         self.downloader = downloader
 
     async def load_tracks(self, tracks_to_load):
         tracks_ids = [track.id for track in tracks_to_load]
         platform_ids = [track.platform_id for track in tracks_to_load]
 
-        youtube_tracks = await self.client.get_videos_by_ids(platform_ids)
+        youtube_tracks = await self.youtube_data_api_client.get_videos_by_ids(
+            platform_ids
+        )
 
         return [
             (
@@ -78,7 +84,7 @@ class YoutubeService(ExternalPlatformService):
         if playlist_id_query_param is None:
             return None
 
-        youtube_playlist = await self.client.get_playlist_by_id(
+        youtube_playlist = await self.youtube_data_api_client.get_playlist_by_id(
             playlist_id_query_param[0]
         )
 
@@ -98,7 +104,24 @@ class YoutubeService(ExternalPlatformService):
         )
 
     async def search_tracks(self, search_query):
-        return []
+        found_videos_ids = (
+            await self.youtube_internal_api_client.search_videos_and_get_ids(
+                search_query
+            )
+        )
+
+        loaded_tracks = await self.load_tracks(
+            [
+                TrackReferenceSchema(
+                    id=f"{Platform.YOUTUBE}/{video_id}",
+                    platform=Platform.YOUTUBE,
+                    platform_id=video_id,
+                )
+                for video_id in found_videos_ids
+            ]
+        )
+
+        return [track for track in loaded_tracks if track is not None]
 
     async def _fetch_all_videos_as_tracks(self, playlist_id: str):
         """
@@ -133,8 +156,10 @@ class YoutubeService(ExternalPlatformService):
             ):
                 break
 
-            youtube_videos_result = await self.client.get_playlist_videos_portion(
-                playlist_id, current_page["token"]
+            youtube_videos_result = (
+                await self.youtube_data_api_client.get_playlist_videos_portion(
+                    playlist_id, current_page["token"]
+                )
             )
 
             tracks_references.extend(
