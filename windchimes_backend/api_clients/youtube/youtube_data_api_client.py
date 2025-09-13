@@ -38,7 +38,9 @@ class YoutubeDataApiClient:
 
         comma_separated_ids = reduce(lambda result, id: f"{result},{id}", ids)
 
-        async with aiohttp.ClientSession(base_url=_YOUTUBE_DATA_API_BASE_URL) as aiohttp_session:
+        async with aiohttp.ClientSession(
+            base_url=_YOUTUBE_DATA_API_BASE_URL
+        ) as aiohttp_session:
             async with aiohttp_session.get(
                 f"/youtube/v3/videos?id={comma_separated_ids}"
                 + f"&key={self.api_key}&part=snippet,contentDetails"
@@ -51,7 +53,9 @@ class YoutubeDataApiClient:
                 ]
 
     async def get_playlist_by_id(self, playlist_id: str):
-        async with aiohttp.ClientSession(base_url=_YOUTUBE_DATA_API_BASE_URL) as aiohttp_session:
+        async with aiohttp.ClientSession(
+            base_url=_YOUTUBE_DATA_API_BASE_URL
+        ) as aiohttp_session:
             async with aiohttp_session.get(
                 f"/youtube/v3/playlists?id={playlist_id}"
                 + f"&key={self.api_key}&part=snippet,contentDetails,id"
@@ -82,7 +86,9 @@ class YoutubeDataApiClient:
         if next_page_token is not None:
             query_params["page_token"] = next_page_token
 
-        async with aiohttp.ClientSession(base_url=_YOUTUBE_DATA_API_BASE_URL) as aiohttp_session:
+        async with aiohttp.ClientSession(
+            base_url=_YOUTUBE_DATA_API_BASE_URL
+        ) as aiohttp_session:
             async with aiohttp_session.get(
                 "/youtube/v3/playlistItems",
                 params=query_params,

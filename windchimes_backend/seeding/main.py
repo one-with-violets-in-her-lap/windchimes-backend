@@ -77,7 +77,9 @@ async def add_playlists(database_session: AsyncSession):
                 else None
             ),
             owner_user_id=random.choice(FAKE_USERS_IDS),
-            track_references=random.sample(database_track_references, k=random.randint(200, 300)),
+            track_references=random.sample(
+                database_track_references, k=random.randint(200, 300)
+            ),
         )
         for playlist in playlists
     ]

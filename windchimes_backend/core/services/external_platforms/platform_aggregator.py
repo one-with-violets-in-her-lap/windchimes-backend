@@ -7,7 +7,9 @@ from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSche
 from windchimes_backend.core.services.external_platforms.soundcloud import (
     SoundcloudService,
 )
-from windchimes_backend.core.services.external_platforms.youtube_service import YoutubeService
+from windchimes_backend.core.services.external_platforms.youtube_service import (
+    YoutubeService,
+)
 
 
 class PlatformAggregatorService:
@@ -18,7 +20,9 @@ class PlatformAggregatorService:
         - `YoutubeService`
     """
 
-    def __init__(self, soundcloud_service: SoundcloudService, youtube_service: YoutubeService):
+    def __init__(
+        self, soundcloud_service: SoundcloudService, youtube_service: YoutubeService
+    ):
         self.platform_services = {
             Platform.SOUNDCLOUD: soundcloud_service,
             Platform.YOUTUBE: youtube_service,
