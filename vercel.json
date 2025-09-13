@@ -1,8 +1,8 @@
 {
   "builds": [
-    {"src": "/proxy/main.py", "use": "@vercel/python"}
+    {"src": "/windchimes/api/main.py", "use": "@vercel/python"}
   ],
   "routes": [
-    {"src": "/(.*)", "dest": "/proxy/main.py"}
+    {"src": "/(.*)", "dest": "/windchimes/api/main.py"}
   ]
 }
