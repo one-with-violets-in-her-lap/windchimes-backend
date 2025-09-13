@@ -39,6 +39,7 @@ class Playlist(BaseDatabaseModel):
     description: Mapped[Optional[str]]
     picture_url: Mapped[Optional[str]]
 
+    public: Mapped[bool] = mapped_column(default=False)
     owner_user_id: Mapped[str]
 
     track_references: Mapped[list[Any]] = relationship(
