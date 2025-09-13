@@ -11,7 +11,7 @@ ENV POETRY_NO_INTERACTION=1 \
 
 WORKDIR /windchimes-graphql-api
 
-COPY pyproject.toml poetry.lock README.md ./
+COPY pyproject.toml poetry.lock ./
 
 RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
 
