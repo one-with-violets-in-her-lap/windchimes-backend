@@ -1,4 +1,5 @@
 import logging
+from typing import Sequence
 
 from pydantic import BaseModel, HttpUrl
 from sqlalchemy import delete, select
@@ -78,7 +79,8 @@ class TracksImportService:
         if replace_existing_tracks:
             async with self.database.create_session() as database_session:
                 logger.info(
-                    "Deleting existing tracks of playlist %s to replace with imported ones",
+                    "Deleting existing tracks of playlist %s to replace with "
+                    + "imported ones",
                     playlist_to_import_to_id,
                 )
 
@@ -93,7 +95,6 @@ class TracksImportService:
                 playlist_to_import_from_data.track_references
             )
         )
-
         already_existing_track_references_ids = [
             track_reference.id for track_reference in already_existing_track_references
         ]
@@ -107,17 +108,12 @@ class TracksImportService:
             track_reference.id for track_reference in new_track_references_to_add
         ]
 
-        track_references_ids_to_associate_with_playlist = [
-            track_reference.id
-            for track_reference in already_existing_track_references
-            if len(
-                [
-                    playlist
-                    for playlist in track_reference.playlists
-                    if playlist.id != playlist_to_import_to_id
-                ]
+        track_references_ids_to_associate_with_playlist = (
+            self._get_track_references_not_in_playlist(
+                already_existing_track_references,
+                playlist_to_import_to_id,
             )
-        ]
+        )
 
         logger.info(
             "%s tracks references already exist, to be linked: %s, to be added: %s",
@@ -174,3 +170,25 @@ class TracksImportService:
             already_existing_track_references = result.scalars().unique().all()
 
             return already_existing_track_references
+
+    def _get_track_references_not_in_playlist(
+        self,
+        already_existing_track_references: Sequence[TrackReference],
+        playlist_id: int,
+    ):
+        track_references_not_in_playlist = []
+
+        for track_reference in already_existing_track_references:
+            matching_playlists = list(
+                filter(
+                    lambda playlist: playlist.id == playlist_id,
+                    track_reference.playlists,
+                )
+            )
+
+            if len(matching_playlists) > 0:
+                continue
+            else:
+                track_references_not_in_playlist.append(track_reference)
+
+        return track_references_not_in_playlist

@@ -2,7 +2,6 @@ from pydantic import ValidationError
 import strawberry
 
 from windchimes_backend.core.models.platform import Platform
-from windchimes_backend.core.models.user import User
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     PlaylistToImport,
 )
@@ -58,7 +57,7 @@ async def _import_external_playlist_tracks(
         )
     )
 
-    if is_playlist_owned_by_user == False:
+    if not is_playlist_owned_by_user:
         return ForbiddenErrorGraphQL()
 
     tracks_import_service = info.context.tracks_import_service
