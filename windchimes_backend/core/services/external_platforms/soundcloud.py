@@ -3,6 +3,9 @@ import logging
 from windchimes_backend.api_clients.platform_api_error import PlatformApiError
 from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.api_clients.soundcloud.models import SoundcloudTrack
+from windchimes_backend.core.errors.external_platforms import (
+    ExternalPlatformAudioFetchingError,
+)
 from windchimes_backend.core.models.platform_specific_params import (
     PlatformSpecificParams,
 )
@@ -12,9 +15,6 @@ from windchimes_backend.core.models.external_playlist import (
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
-from windchimes_backend.core.services.external_platforms.no_suitable_format_error import (
-    NoSuitableFormatError,
-)
 
 
 logger = logging.getLogger()
@@ -68,7 +68,9 @@ class SoundcloudService(ExternalPlatformService):
         )
 
         if "url" not in format_data:
-            raise NoSuitableFormatError()
+            raise ExternalPlatformAudioFetchingError(
+                "Couldn't find suitable format for Soundcloud track"
+            )
 
         return format_data["url"]
 
@@ -150,7 +152,9 @@ class SoundcloudService(ExternalPlatformService):
         ]
 
         if len(suitable_formats) == 0:
-            raise NoSuitableFormatError()
+            raise ExternalPlatformAudioFetchingError(
+                "Couldn't find suitable format for Soundcloud track"
+            )
 
         format_url = suitable_formats[0]["url"]
         return format_url.replace("/preview/", "/stream/")
@@ -162,7 +166,7 @@ class SoundcloudService(ExternalPlatformService):
             audio_file_endpoint_url = self._get_suitable_format_url(
                 resource_to_convert.media["transcodings"]
             )
-        except NoSuitableFormatError:
+        except ExternalPlatformAudioFetchingError:
             audio_file_endpoint_url = None
 
         return LoadedTrack.model_validate(

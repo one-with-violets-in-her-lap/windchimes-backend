@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 import strawberry
 
-from windchimes_backend.core.errors.external_platform_import import (
+from windchimes_backend.core.errors.external_platforms import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.platform import Platform

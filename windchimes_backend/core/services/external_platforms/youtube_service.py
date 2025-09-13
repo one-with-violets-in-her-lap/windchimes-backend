@@ -19,9 +19,6 @@ from windchimes_backend.core.models.platform_specific_params import (
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms import ExternalPlatformService
-from windchimes_backend.core.services.external_platforms.no_suitable_format_error import (
-    NoSuitableFormatError,
-)
 
 
 MAX_YOUTUBE_TRACKS_REQUESTS = 4
@@ -66,7 +63,9 @@ class YoutubeService(ExternalPlatformService):
                 + "youtube audio file getting"
             )
 
-        return ""
+        return await self.youtube_internal_api_client.fetch_video_download_url(
+            f"http://youtube.com/watch?v={track_platform_id}"
+        )
 
     async def get_playlist_by_url(self, url: str):
         playlist_id_query_param = urllib.parse.parse_qs(

@@ -7,7 +7,7 @@ from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.external_playlist_reference import (
     ExternalPlaylistReference,
 )
-from windchimes_backend.core.errors.external_platform_import import (
+from windchimes_backend.core.errors.external_platforms import (
     ExternalPlaylistNotFoundError,
 )
 from windchimes_backend.core.models.external_playlist import ExternalPlaylistToLink
