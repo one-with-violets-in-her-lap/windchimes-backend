@@ -67,8 +67,10 @@ class ImagekitApiClient:
             ) as response:
                 try:
                     response_data = await response.json()
-                except json.JSONDecodeError:
-                    raise ImagekitApiError(await response.text(), response.status)
+                except json.JSONDecodeError as error:
+                    raise ImagekitApiError(
+                        await response.text(), response.status
+                    ) from error
 
                 if response.status == 400:
                     logger.error(

@@ -53,4 +53,4 @@ class PictureStorageService:
         except ImagekitApiError as error:
             raise PictureUploadError(
                 f"Upload failed. {str(error)}. Status code: {error.status_code or '-'}"
-            )
+            ) from error
