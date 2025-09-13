@@ -37,7 +37,7 @@ async def _import_external_playlist_tracks(
     playlist_to_import_from: PlaylistToImportFromGraphQL,
     playlist_to_import_to_id: int,
     replace_existing_tracks: bool = False,
-) -> PlaylistImportResult | ValidationErrorGraphQL | GraphQLApiError:
+) -> None | ValidationErrorGraphQL | GraphQLApiError:
     try:
         validated_playlist_to_import_from = PlaylistToImport.model_validate(
             {**vars(playlist_to_import_from)}
@@ -62,22 +62,17 @@ async def _import_external_playlist_tracks(
 
     tracks_import_service = info.context.tracks_import_service
 
-    imported_track_references = await tracks_import_service.import_playlist_tracks(
+    await tracks_import_service.import_playlist_tracks(
         validated_playlist_to_import_from,
         playlist_to_import_to_id,
         replace_existing_tracks,
-    )
-
-    return PlaylistImportResult(
-        imported_tracks=[
-            TrackReferenceToReadGraphQL(**track_reference.model_dump())
-            for track_reference in imported_track_references
-        ]
     )
 
 
 import_external_playlist_tracks_mutation = strawberry.mutation(
     resolver=_import_external_playlist_tracks,
     extensions=[AuthorizedOnlyExtension()],
-    description="Imports tracks from external platform playlist (Soundcloud/Youtube/etc.) to a playlist in this app\n\nReturns n",
+    description="Imports tracks from external platform playlist (Soundcloud/Youtube"
+    + "/etc.) to a playlist in this app\n\nReturns nothing if tracks successfully "
+    + "imported (will return the playlist in the future)",
 )

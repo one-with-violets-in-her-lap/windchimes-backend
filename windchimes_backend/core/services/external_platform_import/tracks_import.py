@@ -155,8 +155,6 @@ class TracksImportService:
 
             await database_session.commit()
 
-            return playlist_to_import_from_data.track_references
-
     async def _get_already_existing_track_references(
         self,
         track_references: list[TrackReferenceSchema],
