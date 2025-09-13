@@ -2,7 +2,7 @@ import logging
 
 import aiohttp
 
-from windchimes_backend.core.stores.soundcloud_api_client_id import set_soundcloud_api_client_id
+from windchimes_backend.core.stores.soundcloud_api_client_id_store import set_soundcloud_api_client_id
 
 
 MOBILE_SOUNDCLOUD_WEBSITE_URL = "https://m.soundcloud.com"

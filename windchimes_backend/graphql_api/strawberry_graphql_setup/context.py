@@ -20,7 +20,7 @@ from windchimes_backend.core.services.playlists.playlists_access_management impo
     PlaylistsAccessManagementService,
 )
 from windchimes_backend.core.services.tracks_service import TracksService
-from windchimes_backend.core.stores.soundcloud_api_client_id import (
+from windchimes_backend.core.stores.soundcloud_api_client_id_store import (
     get_soundcloud_api_client_id,
 )
 
