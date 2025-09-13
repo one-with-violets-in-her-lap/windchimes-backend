@@ -38,9 +38,9 @@ async def _get_track_audio_file(
         return None
 
     if platform in PLATFORMS_TO_PROXY:
-        print(audio_proxy_router.prefix)
+        api_public_base_url = str(app_config.api.public_base_url).rstrip("/")
         audio_file_url = (
-            f"{str(app_config.api.public_base_url).rstrip('/')}{audio_proxy_router.prefix}"
+            f"{api_public_base_url}{audio_proxy_router.prefix}"
             + f"?url={urllib.parse.quote(audio_file_url)}"
         )
 
