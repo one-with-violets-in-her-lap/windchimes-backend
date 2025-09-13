@@ -97,7 +97,25 @@ class SoundcloudService(ExternalPlatformService):
         )
 
     async def get_playlist_by_id(self, playlist_id):
-        return None
+        soundcloud_playlist = await self.soundcloud_api_client.get_playlist_by_id(
+            playlist_id
+        )
+
+        return PlaylistToImport(
+            external_platform_id=str(soundcloud_playlist.id),
+            name=soundcloud_playlist.title,
+            description=soundcloud_playlist.description,
+            picture_url=soundcloud_playlist.artwork_url,
+            publicly_available=False,
+            track_references=[
+                TrackReferenceSchema(
+                    id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',
+                    platform_id=str(track["id"]),
+                    platform=Platform.SOUNDCLOUD,
+                )
+                for track in soundcloud_playlist.tracks
+            ],
+        )
 
     async def search_tracks(self, search_query):
         tracks = await self.soundcloud_api_client.search_tracks(search_query)

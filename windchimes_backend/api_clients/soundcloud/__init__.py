@@ -120,6 +120,16 @@ class SoundcloudApiClient:
                 f"/playlists/{playlist_id}", params={"client_id": self.client_id}
             )
 
+            try:
+                response.raise_for_status()
+            except httpx.HTTPStatusError as http_status_error:
+                raise PlatformApiError(
+                    "Error occurred on soundcloud api request "
+                    + f"with status code {response.status_code}"
+                ) from http_status_error
+
+            return SoundcloudPlaylist(**response.json())
+
     async def search_tracks(self, search_query: str, limit=35):
         """Searches tracks by provided search query
 
