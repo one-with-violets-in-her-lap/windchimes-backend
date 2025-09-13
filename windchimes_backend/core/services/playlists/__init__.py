@@ -101,7 +101,7 @@ class PlaylistsService:
                 statement = statement.where(
                     Playlist.track_references.any(
                         TrackReference.id
-                        == filters.exclude_containing_track_reference_id
+                        == filters.containing_track_reference_id
                     )
                 )
 
