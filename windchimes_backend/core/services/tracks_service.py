@@ -1,5 +1,8 @@
 from typing import Optional, Sequence
 
+from windchimes_backend.core.constants.external_api_usage_limits import (
+    MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST,
+)
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.track import TrackReferenceSchema
@@ -10,9 +13,6 @@ from windchimes_backend.core.services.playlists import (
     PlaylistToReadWithTrackReferences,
 )
 from windchimes_backend.core.utils.lists import find_item
-
-
-_MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST = 50
 
 
 class TracksService:
@@ -51,10 +51,10 @@ class TracksService:
         """
 
         if track_references_ids_to_load is not None:
-            if len(track_references_ids_to_load) > _MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST:
+            if len(track_references_ids_to_load) > MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST:
                 raise ValueError(
                     "Cannot retrieve more than "
-                    + f"{_MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST} tracks"
+                    + f"{MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST} tracks"
                 )
 
             return [
@@ -66,7 +66,7 @@ class TracksService:
                 for track_reference_id in track_references_ids_to_load
             ]
         elif load_first_tracks:
-            return playlist.track_references[0:_MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST]
+            return playlist.track_references[0:MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST]
         else:
             return []
 
