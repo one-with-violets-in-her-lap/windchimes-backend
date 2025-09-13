@@ -38,20 +38,32 @@ class ImagekitApiClient:
             (private_key + ":").encode()
         ).decode("utf-8")
 
-    async def upload_image(self, image_data: bytes, filename: str, folder="/"):
+    async def upload_image(
+        self,
+        image_data: bytes,
+        filename: str,
+        folder="/",
+        append_unique_suffix_to_filename=True,
+    ):
         """Uploads an image to an external storage via Imagekit
 
         Raises:
             ImagekitApiError: if there is an error in API response (upload failed)
         """
-        form_data = {"file": image_data, "fileName": filename, "folder": folder}
+
+        form_data = {
+            "file": image_data,
+            "fileName": filename,
+            "folder": folder,
+            "useUniqueFileName": str(append_unique_suffix_to_filename).lower(),
+        }
 
         async with aiohttp.ClientSession(
             base_url=_IMAGEKIT_API_BASE_URL,
             headers={"Authorization": f"Basic {self.encoded_private_key}"},
         ) as aiohttp_session:
             async with aiohttp_session.post(
-                "/api/v1/files/upload", data=form_data
+                "/api/v1/files/uplcoad", data=form_data
             ) as response:
                 try:
                     response_data = await response.json()
