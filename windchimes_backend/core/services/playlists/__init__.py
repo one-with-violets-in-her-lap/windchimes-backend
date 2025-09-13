@@ -19,6 +19,12 @@ class PlaylistsFilters(BaseModel):
     exclude_owner_user_id: Optional[str] = None
     ids: Optional[list[int]] = None
 
+    exclude_containing_track_reference_id: Optional[str] = None
+    """
+    If specified, playlists that contain track reference with
+    specified id are excluded from the output
+    """
+
 
 class PlaylistUpdate(BaseModel):
     name: Optional[str] = None
@@ -81,6 +87,14 @@ class PlaylistsService:
 
             if filters.ids is not None:
                 statement = statement.where(Playlist.id.in_(filters.ids))
+
+            if filters.exclude_containing_track_reference_id is not None:
+                statement = statement.where(
+                    ~Playlist.track_references.any(
+                        TrackReference.id
+                        == filters.exclude_containing_track_reference_id
+                    )
+                )
 
             playlists_result = await database_session.execute(statement)
 
