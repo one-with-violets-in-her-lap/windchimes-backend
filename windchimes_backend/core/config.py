@@ -37,6 +37,10 @@ class SoundcloudApiSettings(BaseModel):
     """
 
 
+class ImagekitApiSettings(BaseModel):
+    private_key: str
+
+
 class ProxySettings(BaseModel):
     url: Optional[str] = None
 
@@ -61,6 +65,8 @@ class AppConfig(BaseSettings):
     youtube_data_api: YoutubeDataApiSettings
 
     soundcloud_api: SoundcloudApiSettings = SoundcloudApiSettings()
+
+    imagekit_api: ImagekitApiSettings
 
     proxy: ProxySettings = ProxySettings()
 
