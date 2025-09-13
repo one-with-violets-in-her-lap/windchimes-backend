@@ -56,12 +56,12 @@ async def _add_tracks_to_playlists(
     for track in tracks:
         playlists_ids_to_update.extend(track.playlists_ids_to_add_to)
 
-    user_owns_all_playlists = (
+    access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
             playlists_ids_to_update
         )
     )
-    if not user_owns_all_playlists:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL(
             explanation="You don't have access to playlists you want to add "
             + "tracks to",
@@ -92,12 +92,12 @@ async def _delete_track_from_playlists(
     except ValidationError as error:
         return ValidationErrorGraphQL.create_from_pydantic_validation_error(error)
 
-    user_owns_all_playlists = (
+    access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
             playlists_ids
         )
     )
-    if not user_owns_all_playlists:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL(
             explanation="You don't have access to playlists you want to delete "
             + "tracks from",

@@ -37,10 +37,8 @@ async def _import_external_playlist_tracks(
     replace_existing_tracks: bool = False,
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
     try:
-        validated_playlist_to_import_from = (
-            ExternalPlaylistToLink.model_validate(
-                {**vars(playlist_to_import_from)}
-            )
+        validated_playlist_to_import_from = ExternalPlaylistToLink.model_validate(
+            {**vars(playlist_to_import_from)}
         )
     except ValidationError as error:
         return ValidationErrorGraphQL.create_from_pydantic_validation_error(
@@ -51,13 +49,13 @@ async def _import_external_playlist_tracks(
         info.context.playlists_access_management_service
     )
 
-    is_playlist_owned_by_user = (
+    access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
             [playlist_to_import_to_id]
         )
     )
 
-    if not is_playlist_owned_by_user:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL()
 
     tracks_import_service = info.context.tracks_import_service

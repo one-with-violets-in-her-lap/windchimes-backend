@@ -68,13 +68,13 @@ async def _set_playlist_for_tracks_sync(
             validation_error
         )
 
-    user_owns_the_playlist = (
+    access_check_result = (
         await playlist_access_management_service.check_if_user_owns_the_playlists(
             [playlist_to_link_to_id]
         )
     )
 
-    if not user_owns_the_playlist:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL()
 
     try:
@@ -113,13 +113,13 @@ async def _disable_tracks_sync(
         info.context.playlists_access_management_service
     )
 
-    user_owns_the_playlist = (
+    access_check_result = (
         await playlist_access_management_service.check_if_user_owns_the_playlists(
             [playlist_id]
         )
     )
 
-    if not user_owns_the_playlist:
+    if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL()
 
     await tracks_sync_service.disable_external_playlist_sync(playlist_id)
