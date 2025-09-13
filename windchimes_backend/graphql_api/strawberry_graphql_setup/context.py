@@ -5,7 +5,7 @@ from strawberry.fastapi import BaseContext
 
 from windchimes_backend.core.api_clients.soundcloud import SoundcloudApiClient
 from windchimes_backend.core.database import database
-from windchimes_backend.core.services.auth import AuthService
+from windchimes_backend.core.services.auth_service import AuthService
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
     TracksImportService,
 )
@@ -19,7 +19,7 @@ from windchimes_backend.core.services.playlists import PlaylistsService
 from windchimes_backend.core.services.playlists.playlists_access_management import (
     PlaylistsAccessManagementService,
 )
-from windchimes_backend.core.services.tracks import TracksService
+from windchimes_backend.core.services.tracks_service import TracksService
 
 
 logger = logging.getLogger(__name__)

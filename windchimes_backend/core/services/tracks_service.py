@@ -1,6 +1,7 @@
 from typing import Optional, Sequence
 
 from windchimes_backend.core.database import Database
+from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.track import TrackReferenceSchema
 from windchimes_backend.core.services.external_platforms.platform_aggregator import (
     PlatformAggregatorService,
@@ -68,3 +69,13 @@ class TracksService:
             return playlist.track_references[0:_MAXIMUM_TRACKS_TO_LOAD_PER_REQUEST]
         else:
             return []
+
+    async def get_track_audio_file_url(
+        self,
+        platform_id: str,
+        platform: Platform,
+        audio_file_endpoint_url: Optional[str],
+    ):
+        return await self.platform_aggregator_service.get_track_audio_file_url(
+            platform_id, platform, audio_file_endpoint_url
+        )

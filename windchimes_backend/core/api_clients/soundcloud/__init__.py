@@ -69,7 +69,9 @@ class SoundcloudApiClient:
         """
 
         async with aiohttp.ClientSession() as aiohttp_session:
-            async with aiohttp_session.get(format_url) as format_data_response:
+            async with aiohttp_session.get(
+                format_url, params={"client_id": self.client_id}
+            ) as format_data_response:
                 format_data = await format_data_response.json()
                 return format_data
 
