@@ -91,7 +91,7 @@ class YoutubeService(ExternalPlatformService):
             name=youtube_playlist.snippet.title,
             description=youtube_playlist.snippet.description,
             picture_url=youtube_playlist.snippet.thumbnails["default"]["url"],
-            public=False,
+            publiclyAvailable=False,
             track_references=tracks_references,
         )
 

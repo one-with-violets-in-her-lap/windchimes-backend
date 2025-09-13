@@ -8,7 +8,7 @@ from windchimes_backend.core.models.track import TrackReferenceSchema
 class PlaylistToCreate(BaseModel):
     name: str
     description: Optional[str]
-    public: bool
+    publiclyAvailable: bool
     picture_url: Optional[str]
 
 
