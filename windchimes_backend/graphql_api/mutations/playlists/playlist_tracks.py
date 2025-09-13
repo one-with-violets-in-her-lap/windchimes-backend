@@ -2,7 +2,6 @@ from pydantic import ValidationError
 import strawberry
 
 from windchimes_backend.core.services.playlists import (
-    PlaylistsFilters,
     TracksToAddToPlaylistsWrapper,
 )
 from windchimes_backend.graphql_api.mutations.playlists import TrackToAddGraphQL
@@ -36,7 +35,7 @@ async def _add_tracks_to_playlists(
 
     if current_user is None:
         return UnauthorizedErrorGraphQL()
-    
+
     try:
         validated_tracks = TracksToAddToPlaylistsWrapper.model_validate(
             {"tracks": convert_to_dictionary(tracks)}

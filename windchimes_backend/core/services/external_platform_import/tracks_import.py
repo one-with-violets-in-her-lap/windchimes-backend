@@ -18,13 +18,13 @@ class TracksImportService:
         self,
         playlist_to_import_from: PlaylistToImport,
         playlist_to_import_to_id: int,
-        replace_existing_tracks=False
+        replace_existing_tracks=False,
     ):
         logger.info(
-            "Importing tracks from %s playlist - %s to internal playlist with id %s",
+            "Importing tracks from %s playlist - %s to internal playlist with id %s. "
+            + "Replace existing tracks: %s",
             playlist_to_import_from.platform.value,
             playlist_to_import_from.url,
-            playlist_to_import_to_id
+            playlist_to_import_to_id,
+            replace_existing_tracks
         )
-
-        

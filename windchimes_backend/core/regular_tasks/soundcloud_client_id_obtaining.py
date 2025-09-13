@@ -21,7 +21,8 @@ async def obtain_soundcloud_client_id():
         async with aiohttp_session.get("/") as response:
             if not response.ok:
                 logger.error(
-                    'Failed to fetch soundcloud client. Their mobile website page request failed with status code "%s"',
+                    "Failed to fetch soundcloud client. Their mobile website page "
+                    + 'request failed with status code "%s"',
                     response.status,
                 )
 

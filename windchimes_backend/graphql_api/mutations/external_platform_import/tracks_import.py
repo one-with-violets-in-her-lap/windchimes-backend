@@ -54,7 +54,9 @@ async def _import_external_playlist_tracks(
 
     tracks_import_service = info.context.tracks_import_service
     await tracks_import_service.import_playlist_tracks(
-        validated_playlist_to_import_from, playlist_to_import_to_id
+        validated_playlist_to_import_from,
+        playlist_to_import_to_id,
+        replace_existing_tracks,
     )
 
     return None

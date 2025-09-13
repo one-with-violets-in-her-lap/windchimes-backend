@@ -91,7 +91,8 @@ class SoundcloudApiClient:
                     url = str(redirect_url)
 
             async with aiohttp_session.get(
-                f"{_SOUNDCLOUD_API_BASE_URL}/resolve?url={url}&client_id={self.client_id}",
+                f"{_SOUNDCLOUD_API_BASE_URL}/resolve?url={url}"
+                + f"&client_id={self.client_id}",
             ) as response:
                 if not response.ok:
                     raise PlatformApiError(
