@@ -77,8 +77,6 @@ async def _get_one_playlist(
         list(track_references_to_load)
     )
 
-    print(f"loaded tracks: {loaded_tracks}")
-
     return PlaylistWithLoadedTracksGraphQL(
         **playlist.model_dump(exclude={"track_references": True}),
         track_references=[
