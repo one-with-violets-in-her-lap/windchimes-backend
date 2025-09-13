@@ -51,6 +51,7 @@ async def fetch_audio_as_proxy(url: str, request: Request):
                 "Accept-language": "en-US,en;q=0.9",
                 "User-Agent": "Mozilla/5.0",
             },
+            follow_redirects=True,
         ) as response:
             if response.is_error:
                 raise HTTPException(
