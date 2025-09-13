@@ -19,6 +19,7 @@ from windchimes_backend.core.services.playlists import PlaylistsService
 from windchimes_backend.core.services.playlists.playlists_access_management import (
     PlaylistsAccessManagementService,
 )
+from windchimes_backend.core.services.tracks import TracksService
 
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,10 @@ class GraphQLRequestContext(BaseContext):
     @cached_property
     def playlists_service(self):
         return PlaylistsService(self.database)
+
+    @cached_property
+    def tracks_service(self):
+        return TracksService(self.database, self.platform_aggregator_service)
 
     @cached_property
     def playlists_access_management_service(self):

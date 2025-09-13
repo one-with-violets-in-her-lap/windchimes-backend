@@ -5,7 +5,6 @@ import strawberry
 from windchimes_backend.core.services.playlists import PlaylistsFilters
 from windchimes_backend.graphql_api.reusable_schemas.playlists import (
     PlaylistToReadGraphQL,
-    PlaylistToReadWithTracksGraphQL,
 )
 from windchimes_backend.graphql_api.utils.graphql import (
     GraphQLRequestInfo,
@@ -34,14 +33,4 @@ async def _get_playlists(info: GraphQLRequestInfo, filters: PlaylistsFiltersGrap
 
 playlists_query = strawberry.field(
     resolver=_get_playlists, graphql_type=list[PlaylistToReadGraphQL]
-)
-
-
-async def _get_one_playlist(info: GraphQLRequestInfo, playlist_id: int):
-    playlists_service = info.context.playlists_service
-    return await playlists_service.get_playlist_with_track_references(playlist_id)
-
-
-playlist_query = strawberry.field(
-    resolver=_get_one_playlist, graphql_type=Optional[PlaylistToReadWithTracksGraphQL]
 )

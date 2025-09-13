@@ -18,7 +18,10 @@ class PlatformAggregatorService:
     """
 
     def __init__(self, soundcloud_service: SoundcloudService):
-        self.platform_services = {Platform.SOUNDCLOUD: soundcloud_service}
+        self.platform_services = {
+            Platform.SOUNDCLOUD: soundcloud_service,
+            Platform.YOUTUBE: soundcloud_service,
+        }
 
     async def load_tracks(self, tracks_to_load: list[TrackReferenceSchema]):
         # groups tracks by platform to query them from api in batches
