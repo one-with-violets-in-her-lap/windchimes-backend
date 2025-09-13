@@ -38,13 +38,19 @@ class PlaylistsFiltersGraphQL:
     )
 
 
-async def _get_playlists(info: GraphQLRequestInfo, filters: PlaylistsFiltersGraphQL):
+async def _get_playlists(
+    info: GraphQLRequestInfo,
+    filters: PlaylistsFiltersGraphQL,
+    limit: Optional[int] = None,
+):
     playlists_service = info.context.playlists_service
     playlists_access_management_service = (
         info.context.playlists_access_management_service
     )
 
-    playlists = await playlists_service.get_playlists(PlaylistsFilters(**vars(filters)))
+    playlists = await playlists_service.get_playlists(
+        PlaylistsFilters(**vars(filters)), limit
+    )
 
     playlists_user_can_view = (
         playlists_access_management_service.get_playlists_user_can_view(playlists)

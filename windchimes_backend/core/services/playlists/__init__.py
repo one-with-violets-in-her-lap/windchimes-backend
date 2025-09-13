@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 from annotated_types import Len
 from pydantic import BaseModel
-from sqlalchemy import and_, delete, not_, select, update
+from sqlalchemy import and_, delete, desc, not_, select, update
 from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
@@ -83,7 +83,11 @@ class PlaylistsService:
         self._database = database
 
     # TODO: optimize, do not query all of playlists' tracks just to count them
-    async def get_playlists(self, filters: PlaylistsFilters = PlaylistsFilters()):
+    async def get_playlists(
+        self,
+        filters: PlaylistsFilters = PlaylistsFilters(),
+        limit: Optional[int] = None,
+    ):
         async with self._database.create_session() as database_session:
             statement = select(Playlist).options(joinedload(Playlist.track_references))
 
@@ -116,6 +120,11 @@ class PlaylistsService:
                         )
                     )
                 )
+
+            if limit is not None:
+                statement = statement.limit(limit)
+
+            statement = statement.order_by(desc(Playlist.created_at))
 
             playlists_result = await database_session.execute(statement)
 
