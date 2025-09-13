@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import functions
 
 from windchimes_backend.core.database.models.base import BaseDatabaseModel
+from windchimes_backend.core.models.platform import Platform
 
 
 class PlaylistTrack(BaseDatabaseModel):
@@ -45,6 +46,9 @@ class Playlist(BaseDatabaseModel):
     track_references: Mapped[list[Any]] = relationship(
         "TrackReference", secondary="playlist_track", back_populates="playlists"
     )
+
+    sync_platform: Mapped[Optional[Platform]]
+    sync_playlist_url: Mapped[Optional[str]]
 
     def __repr__(self) -> str:
         return f"playlist {self.id} - '{self.name}'"
