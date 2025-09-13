@@ -15,6 +15,6 @@ COPY pyproject.toml poetry.lock ./
 
 RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
 
-COPY windchimes_backend ./windchimes_backend
+COPY windchimes ./windchimes
 
-ENTRYPOINT ["poetry", "run", "python", "-m", "windchimes_backend.api.main"]
+ENTRYPOINT ["poetry", "run", "python", "-m", "windchimes.api.main"]
