@@ -2,6 +2,7 @@ import logging
 
 from pydantic import BaseModel, HttpUrl
 from sqlalchemy import delete, select
+from sqlalchemy.orm import joinedload
 
 from windchimes_backend.core.database import Database
 from windchimes_backend.core.database.models.playlist import PlaylistTrack
@@ -49,6 +50,10 @@ class TracksImportService:
             playlist_to_import_from: external playlist platform and url to obtain the
                 tracks data
             playlist_to_import_to_id: app (internal) playlist to import tracks to
+
+        Raises:
+            ExternalPlaylistNotFoundError: if external playlist to import from
+                cannot be found
         """
 
         logger.info(
@@ -83,33 +88,49 @@ class TracksImportService:
                 await database_session.execute(delete_existing_tracks_statement)
                 await database_session.commit()
 
-        already_existing_track_references_ids = [
-            track_reference.id
-            for track_reference in await self._get_already_existing_track_references(
+        already_existing_track_references = (
+            await self._get_already_existing_track_references(
                 playlist_to_import_from_data.track_references
             )
+        )
+
+        already_existing_track_references_ids = [
+            track_reference.id for track_reference in already_existing_track_references
         ]
 
-        new_track_references = [
+        new_track_references_to_add = [
             track_reference
             for track_reference in playlist_to_import_from_data.track_references
             if track_reference.id not in already_existing_track_references_ids
         ]
-        new_track_references_ids = [
-            track_reference.id for track_reference in new_track_references
+        new_track_references_to_add_ids = [
+            track_reference.id for track_reference in new_track_references_to_add
+        ]
+
+        track_references_ids_to_associate_with_playlist = [
+            track_reference.id
+            for track_reference in already_existing_track_references
+            if len(
+                [
+                    playlist
+                    for playlist in track_reference.playlists
+                    if playlist.id != playlist_to_import_to_id
+                ]
+            )
         ]
 
         logger.info(
-            "%s tracks references already exist, %s to be added",
+            "%s tracks references already exist, to be linked: %s, to be added: %s",
             len(already_existing_track_references_ids),
-            len(new_track_references),
+            len(track_references_ids_to_associate_with_playlist),
+            len(new_track_references_to_add),
         )
 
         async with self.database.create_session() as database_session:
             # Adds track references that was never imported before in the db
             track_references_to_add_to_database = [
                 TrackReference(**track_reference.model_dump())
-                for track_reference in new_track_references
+                for track_reference in new_track_references_to_add
             ]
 
             database_session.add_all(track_references_to_add_to_database)
@@ -123,14 +144,16 @@ class TracksImportService:
                     playlist_id=playlist_to_import_to_id, track_id=track_reference_id
                 )
                 for track_reference_id in [
-                    *new_track_references_ids,
-                    *already_existing_track_references_ids,
+                    *new_track_references_to_add_ids,
+                    *track_references_ids_to_associate_with_playlist,
                 ]
             ]
 
             database_session.add_all(new_playlist_tracks_associations)
 
             await database_session.commit()
+
+            return playlist_to_import_from_data.track_references
 
     async def _get_already_existing_track_references(
         self,
@@ -141,11 +164,13 @@ class TracksImportService:
                 track_reference.id for track_reference in track_references
             ]
 
-            statement = select(TrackReference).where(
-                TrackReference.id.in_(track_references_ids)
+            statement = (
+                select(TrackReference)
+                .where(TrackReference.id.in_(track_references_ids))
+                .options(joinedload(TrackReference.playlists))
             )
             result = await database_session.execute(statement)
 
-            already_existing_track_references = result.scalars().all()
+            already_existing_track_references = result.scalars().unique().all()
 
             return already_existing_track_references
