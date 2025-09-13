@@ -76,7 +76,13 @@ class TracksSyncService:
             database_session.add(external_playlist_reference)
             await database_session.commit()
 
-            return external_playlist_data
+        await self.tracks_import_service.add_tracks_to_playlist(
+            playlist_to_link_to_id,
+            external_playlist_data.track_references,
+            replace_existing_tracks=True,
+        )
+
+        return external_playlist_data
 
     async def disable_external_playlist_sync(self, playlist_id: int):
         logger.info("Disabling sync for playlist %s", playlist_id)
