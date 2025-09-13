@@ -9,6 +9,13 @@ from windchimes_backend.graphql_api.reusable_schemas.track_reference import (
 
 
 @strawberry.type
+class ExternalPlaylistToReadGraphQL:
+    name: str
+    description: Optional[str]
+    picture_url: Optional[str]
+
+
+@strawberry.type
 class PlaylistToReadGraphQL:
     id: int
     created_at: datetime

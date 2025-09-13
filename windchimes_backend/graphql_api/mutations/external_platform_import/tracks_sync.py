@@ -12,6 +12,9 @@ from windchimes_backend.graphql_api.reusable_schemas.errors import (
     GraphQLApiError,
     ValidationErrorGraphQL,
 )
+from windchimes_backend.graphql_api.reusable_schemas.playlists import (
+    ExternalPlaylistToReadGraphQL,
+)
 from windchimes_backend.graphql_api.strawberry_graphql_setup.auth import (
     AuthorizedOnlyExtension,
 )
@@ -30,13 +33,18 @@ class ExternalPlaylistNotFoundErrorGraphQL(GraphQLApiError):
         )
 
 
+@strawberry.type
+class SetPlaylistForTracksSyncMutationResult:
+    external_playlist_linked: ExternalPlaylistToReadGraphQL
+
+
 async def _set_playlist_for_tracks_sync(
     info: GraphQLRequestInfo,
     playlist_to_link_to_id: int,
     external_playlist_platform: Platform,
     external_playlist_url: str,
 ) -> (
-    None
+    SetPlaylistForTracksSyncMutationResult
     | ValidationErrorGraphQL
     | GraphQLApiError
     | ExternalPlaylistNotFoundErrorGraphQL
@@ -65,8 +73,18 @@ async def _set_playlist_for_tracks_sync(
         return ForbiddenErrorGraphQL()
 
     try:
-        return await tracks_sync_service.link_external_playlist_for_sync(
-            playlist_to_link_to_id, external_playlist_reference
+        external_playlist_linked = (
+            await tracks_sync_service.link_external_playlist_for_sync(
+                playlist_to_link_to_id, external_playlist_reference
+            )
+        )
+
+        return SetPlaylistForTracksSyncMutationResult(
+            external_playlist_linked=ExternalPlaylistToReadGraphQL(
+                **external_playlist_linked.model_dump(
+                    exclude={"external_platform_id", "track_references"}
+                )
+            )
         )
     except ExternalPlaylistNotFoundError:
         return ExternalPlaylistNotFoundErrorGraphQL()
@@ -102,3 +120,22 @@ disable_playlist_sync_mutation = strawberry.mutation(
     resolver=_disable_tracks_sync,
     extensions=[AuthorizedOnlyExtension()],
 )
+
+
+async def _sync_playlist_tracks_with_external_playlist(
+    info: GraphQLRequestInfo, playlist_id: int
+):
+    playlist_access_management_service = (
+        info.context.playlists_access_management_service
+    )
+
+    user_owns_the_playlist = (
+        await playlist_access_management_service.check_if_user_owns_the_playlists(
+            [playlist_id]
+        )
+    )
+
+    if not user_owns_the_playlist:
+        return ForbiddenErrorGraphQL()
+
+    return

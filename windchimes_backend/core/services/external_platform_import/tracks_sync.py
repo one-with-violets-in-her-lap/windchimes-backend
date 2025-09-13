@@ -60,6 +60,8 @@ class TracksSyncService:
             await database_session.execute(statement)
             await database_session.commit()
 
+            return external_playlist_data
+
     async def disable_external_playlist_sync(self, playlist_id: int):
         logger.info("Disabling sync for playlist %s", playlist_id)
 
