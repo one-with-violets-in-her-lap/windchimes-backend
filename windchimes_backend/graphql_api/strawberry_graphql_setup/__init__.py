@@ -1,6 +1,6 @@
 import strawberry
 from strawberry.fastapi import GraphQLRouter
-from strawberry.extensions import MaxAliasesLimiter, MaxTokensLimiter
+from strawberry.extensions import MaxAliasesLimiter, MaxTokensLimiter, MaskErrors
 from strawberry.file_uploads import Upload
 from fastapi import UploadFile
 
@@ -17,6 +17,7 @@ if app_config.mode == "PROD":
     security_extensions = [
         MaxAliasesLimiter(max_alias_count=15),
         MaxTokensLimiter(max_token_count=1000),
+        MaskErrors(),
     ]
 
 __schema = strawberry.Schema(
