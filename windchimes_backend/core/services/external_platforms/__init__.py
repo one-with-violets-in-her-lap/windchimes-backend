@@ -47,9 +47,7 @@ class ExternalPlatformService(ABC):
         pass
 
     @abstractmethod
-    async def get_playlist_by_url(
-        self, url: str
-    ) -> Optional[ExternalPlaylistInfo]:
+    async def get_playlist_by_url(self, url: str) -> Optional[ExternalPlaylistInfo]:
         pass
 
     @abstractmethod
