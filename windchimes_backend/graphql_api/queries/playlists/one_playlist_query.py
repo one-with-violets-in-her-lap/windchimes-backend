@@ -54,7 +54,7 @@ async def _get_one_playlist(
 
     if playlist is None:
         return None
-    
+
     current_user_can_view_playlist = (
         len(playlists_access_management_service.get_playlists_user_can_view([playlist]))
         > 0

@@ -103,8 +103,7 @@ class PlaylistsService:
             if filters.containing_track_reference_id is not None:
                 statement = statement.where(
                     Playlist.track_references.any(
-                        TrackReference.id
-                        == filters.containing_track_reference_id
+                        TrackReference.id == filters.containing_track_reference_id
                     )
                 )
 

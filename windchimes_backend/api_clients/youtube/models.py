@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from typing import Literal, Optional
+from typing import Optional
 
 
 class YoutubeVideoSnippet(BaseModel):

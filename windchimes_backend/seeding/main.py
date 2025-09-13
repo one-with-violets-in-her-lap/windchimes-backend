@@ -3,7 +3,6 @@ import asyncio
 import json
 import random
 
-from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -103,10 +102,8 @@ async def start_seeding():
                 await database_session.commit()
 
             await add_playlists(database_session)
-    except Exception as error:
-        print(error)
-
-    await database.close()
+    finally:
+        await database.close()
 
 
 asyncio.run(start_seeding())

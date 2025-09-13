@@ -10,7 +10,6 @@ from windchimes_backend.api_clients.youtube.youtube_data_api_client import (
 from windchimes_backend.api_clients.youtube.youtube_downloader import YoutubeDownloader
 from windchimes_backend.core.models.platform import Platform
 from windchimes_backend.core.models.playlist import (
-    PlaylistToCreate,
     PlaylistToCreateWithTracks,
 )
 from windchimes_backend.core.models.track import LoadedTrack, TrackReferenceSchema
