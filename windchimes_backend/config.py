@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,6 +21,14 @@ class YoutubeDataApiSettings(BaseModel):
     key: str
 
 
+class SoundcloudApiSettings(BaseModel):
+    fallback_client_id: Optional[str] = None
+    """Fallback API key for Soundcloud API
+
+    Used when scraping it automatically does not work
+    """
+
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=["./prod.env", "./.env"],
@@ -36,6 +45,8 @@ class AppConfig(BaseSettings):
     auth0: Auth0Settings
 
     youtube_data_api: YoutubeDataApiSettings
+
+    soundcloud_api: SoundcloudApiSettings = SoundcloudApiSettings()
 
     @staticmethod
     def load_from_env():

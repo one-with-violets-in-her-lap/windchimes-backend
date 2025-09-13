@@ -1,0 +1,2 @@
+class PlatformApiError(Exception):
+    pass
