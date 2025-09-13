@@ -5,10 +5,10 @@ from strawberry.fastapi import BaseContext
 
 from windchimes_backend.api_clients.imagekit_api_client import ImagekitApiClient
 from windchimes_backend.api_clients.soundcloud import SoundcloudApiClient
-from windchimes_backend.api_clients.youtube.youtube_data_api_client import (
+from windchimes_backend.api_clients.youtube_data_api.youtube_data_api_client import (
     YoutubeDataApiClient,
 )
-from windchimes_backend.api_clients.youtube.youtube_downloader import YoutubeDownloader
+from windchimes_backend.api_clients.youtube_internal_api.youtube_downloader import YoutubeDownloader
 from windchimes_backend.core.database import database
 from windchimes_backend.core.services.auth_service import AuthService
 from windchimes_backend.core.services.external_platform_import.tracks_import import (
