@@ -4,12 +4,6 @@ from typing import cast
 import strawberry
 from fastapi import UploadFile
 
-from windchimes.core.models.user import User
-from windchimes.core.services.picture_storage_service import (
-    PictureTooLargeError,
-    PictureUploadError,
-)
-from windchimes.core.services.playlists import PlaylistUpdate
 from windchimes.api.reusable_schemas.errors import (
     ForbiddenErrorGraphQL,
     GraphQLApiError,
@@ -18,6 +12,12 @@ from windchimes.api.strawberry_graphql_setup.auth import (
     AuthorizedOnlyExtension,
 )
 from windchimes.api.utils.graphql import GraphQLRequestInfo
+from windchimes.core.models.user import User
+from windchimes.core.services.picture_storage_service import (
+    PictureTooLargeError,
+    PictureUploadError,
+)
+from windchimes.core.services.playlists import PlaylistUpdate
 
 
 @strawberry.type
@@ -39,13 +39,13 @@ _SUPPORTED_PICTURE_MIME_TYPES = [
 async def _update_playlist_picture(
     info: GraphQLRequestInfo, playlist_id: int, picture: UploadFile
 ) -> PlaylistNewPicture | GraphQLApiError:
-    current_user = cast(User, info.context.current_user)
+    current_user = cast(User, info.context["current_user"])
 
-    picture_storage_service = info.context.picture_storage_service
-    playlists_access_management_service = (
-        info.context.playlists_access_management_service
-    )
-    playlists_service = info.context.playlists_service
+    picture_storage_service = info.context["picture_storage_service"]
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
+    playlists_service = info.context["playlists_service"]
 
     access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
@@ -111,12 +111,12 @@ update_playlist_picture_mutation = strawberry.mutation(
 async def _delete_playlist_picture(
     info: GraphQLRequestInfo, playlist_id: int
 ) -> None | GraphQLApiError:
-    current_user = cast(User, info.context.current_user)
+    current_user = cast(User, info.context["current_user"])
 
-    playlists_access_management_service = (
-        info.context.playlists_access_management_service
-    )
-    playlists_service = info.context.playlists_service
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
+    playlists_service = info.context["playlists_service"]
 
     access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(

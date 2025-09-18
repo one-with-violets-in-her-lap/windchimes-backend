@@ -22,7 +22,7 @@ from windchimes.api.utils.graphql import GraphQLRequestInfo
 async def _get_loaded_tracks(
     info: GraphQLRequestInfo, tracks_filter: LoadedTracksFilter
 ) -> LoadedTracksWrapper | GraphQLApiError:
-    platform_aggregator_service = info.context.platform_aggregator_service
+    platform_aggregator_service = info.context["platform_aggregator_service"]
 
     loaded_tracks: Optional[Sequence[LoadedTrack | None]] = None
 
@@ -79,7 +79,7 @@ loaded_tracks_query = strawberry.field(resolver=_get_loaded_tracks)
 async def _get_one_loaded_track(
     info: GraphQLRequestInfo, track_reference: TrackReferenceToLoadGraphQL
 ) -> Optional[LoadedTrackGraphQL]:
-    platform_aggregator_service = info.context.platform_aggregator_service
+    platform_aggregator_service = info.context["platform_aggregator_service"]
 
     loaded_tracks = await platform_aggregator_service.load_tracks(
         [TrackReferenceSchema(**vars(track_reference))]

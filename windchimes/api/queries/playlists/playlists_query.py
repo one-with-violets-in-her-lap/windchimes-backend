@@ -43,10 +43,10 @@ async def _get_playlists(
     filters: PlaylistsFiltersGraphQL,
     limit: Optional[int] = None,
 ):
-    playlists_service = info.context.playlists_service
-    playlists_access_management_service = (
-        info.context.playlists_access_management_service
-    )
+    playlists_service = info.context["playlists_service"]
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     playlists = await playlists_service.get_playlists(
         PlaylistsFilters(**vars(filters)), limit

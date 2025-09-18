@@ -50,12 +50,12 @@ async def _get_one_playlist(
     tracks_to_load_ids: Optional[list[str]] = None,
     load_first_tracks: bool = False,
 ) -> Optional[PlaylistDetailedWithLoadedTracksGraphQL] | GraphQLApiError:
-    tracks_service = info.context.tracks_service
-    playlists_service = info.context.playlists_service
-    playlists_access_management_service = (
-        info.context.playlists_access_management_service
-    )
-    platform_aggregator_service = info.context.platform_aggregator_service
+    tracks_service = info.context["tracks_service"]
+    playlists_service = info.context["playlists_service"]
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
+    platform_aggregator_service = info.context["platform_aggregator_service"]
 
     playlist = await playlists_service.get_playlist_detailed(playlist_id)
 

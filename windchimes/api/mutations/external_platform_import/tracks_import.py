@@ -45,9 +45,9 @@ async def _import_external_playlist_tracks(
             error, field_prefix="playlist_to_import_from"
         )
 
-    playlists_access_management_service = (
-        info.context.playlists_access_management_service
-    )
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(
@@ -58,7 +58,7 @@ async def _import_external_playlist_tracks(
     if not access_check_result.user_owns_all_playlists:
         return ForbiddenErrorGraphQL()
 
-    tracks_import_service = info.context.tracks_import_service
+    tracks_import_service = info.context["tracks_import_service"]
 
     await tracks_import_service.import_playlist_tracks(
         validated_playlist_to_import_from,

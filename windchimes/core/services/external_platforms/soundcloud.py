@@ -92,7 +92,7 @@ class SoundcloudService(ExternalPlatformService):
             picture_url=soundcloud_playlist.artwork_url,
             track_references=[
                 TrackReferenceSchema(
-                    id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',
+                    id=f"{Platform.SOUNDCLOUD.value}/{track['id']}",
                     platform_id=str(track["id"]),
                     platform=Platform.SOUNDCLOUD,
                 )
@@ -125,7 +125,7 @@ class SoundcloudService(ExternalPlatformService):
             picture_url=soundcloud_playlist.artwork_url,
             track_references=[
                 TrackReferenceSchema(
-                    id=f'{Platform.SOUNDCLOUD.value}/{track["id"]}',
+                    id=f"{Platform.SOUNDCLOUD.value}/{track['id']}",
                     platform_id=str(track["id"]),
                     platform=Platform.SOUNDCLOUD,
                 )

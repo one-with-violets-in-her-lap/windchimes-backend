@@ -1,7 +1,7 @@
 """create track reference model
 
 Revision ID: 2e09ad600d7d
-Revises: 
+Revises:
 Create Date: 2025-01-04 12:37:51.846719
 
 """
