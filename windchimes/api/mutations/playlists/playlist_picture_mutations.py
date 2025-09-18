@@ -113,9 +113,9 @@ async def _delete_playlist_picture(
 ) -> None | GraphQLApiError:
     current_user = cast(User, info.context["current_user"])
 
-    playlists_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
     playlists_service = info.context["playlists_service"]
 
     access_check_result = (

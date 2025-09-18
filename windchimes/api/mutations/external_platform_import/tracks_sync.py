@@ -55,9 +55,9 @@ async def _set_playlist_for_tracks_sync(
     | ExternalPlaylistNotAvailableErrorGraphQL
 ):
     tracks_sync_service = info.context["tracks_sync_service"]
-    playlist_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlist_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     try:
         external_playlist_reference = ExternalPlaylistToLink.model_validate(
@@ -110,9 +110,9 @@ async def _disable_tracks_sync(
     info: GraphQLRequestInfo, playlist_id: int
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
     tracks_sync_service = info.context["tracks_sync_service"]
-    playlist_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlist_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     access_check_result = (
         await playlist_access_management_service.check_if_user_owns_the_playlists(
@@ -145,9 +145,9 @@ async def _sync_playlist_tracks_with_external_playlist(
     | GraphQLApiError
     | ExternalPlaylistNotAvailableErrorGraphQL
 ):
-    playlist_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlist_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
     tracks_sync_service = info.context["tracks_sync_service"]
 
     access_check_result = (

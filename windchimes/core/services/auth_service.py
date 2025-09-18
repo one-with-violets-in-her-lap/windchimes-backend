@@ -19,4 +19,3 @@ class AuthService:
         except TokenValidationError as error:
             logger.error("auth failed: %s", error)
             return None
-

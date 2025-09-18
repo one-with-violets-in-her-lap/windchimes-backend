@@ -37,9 +37,9 @@ async def _add_tracks_to_playlists(
 
     current_user = info.context["current_user"]
     playlists_service = info.context["playlists_service"]
-    playlists_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     if current_user is None:
         return UnauthorizedErrorGraphQL()
@@ -79,9 +79,9 @@ add_tracks_to_playlists_mutation = strawberry.mutation(
 async def _delete_track_from_playlists(
     info: GraphQLRequestInfo, track_id: str, playlists_ids: list[int]
 ) -> DeleteTrackFromPlaylistsResponse | ValidationErrorGraphQL | GraphQLApiError:
-    playlists_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
     playlists_service = info.context["playlists_service"]
 
     try:

@@ -18,9 +18,9 @@ async def _get_external_playlist_linked_for_sync(
     info: GraphQLRequestInfo, playlist_id: int
 ) -> GraphQLApiError | Optional[ExternalPlaylistToReadGraphQL]:
     tracks_sync_service = info.context["tracks_sync_service"]
-    playlist_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlist_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     playlist_access_check_result = (
         await playlist_access_management_service.check_if_user_owns_the_playlists(

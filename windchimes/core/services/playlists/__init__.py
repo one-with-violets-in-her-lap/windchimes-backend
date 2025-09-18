@@ -136,7 +136,7 @@ class PlaylistsService:
             return [
                 PlaylistToReadWithTrackCount(
                     **vars(playlist_and_track_count[0]),
-                    track_count=playlist_and_track_count[1]
+                    track_count=playlist_and_track_count[1],
                 )
                 for playlist_and_track_count in playlists_result.unique().all()
             ]

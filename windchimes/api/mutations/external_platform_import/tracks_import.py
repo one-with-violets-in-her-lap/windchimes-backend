@@ -45,9 +45,9 @@ async def _import_external_playlist_tracks(
             error, field_prefix="playlist_to_import_from"
         )
 
-    playlists_access_management_service = (
-        info.context["playlists_access_management_service"]
-    )
+    playlists_access_management_service = info.context[
+        "playlists_access_management_service"
+    ]
 
     access_check_result = (
         await playlists_access_management_service.check_if_user_owns_the_playlists(

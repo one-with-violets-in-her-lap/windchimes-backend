@@ -1,18 +1,17 @@
-from functools import reduce
 import logging
+from functools import reduce
 from typing import Optional
 
 import aiohttp
 import httpx
 
-from windchimes.core.config import app_config
 from windchimes.common.api_clients.platform_api_error import PlatformApiError
 from windchimes.common.api_clients.soundcloud.models import (
     SoundcloudPlaylist,
     SoundcloudTrack,
 )
 from windchimes.common.utils.lists import set_items_order
-
+from windchimes.core.config import app_config
 
 _SOUNDCLOUD_API_BASE_URL = "https://api-v2.soundcloud.com"
 _NO_REDIRECT_ERROR_MESSAGE = (
