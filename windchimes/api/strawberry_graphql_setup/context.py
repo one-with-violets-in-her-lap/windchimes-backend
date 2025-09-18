@@ -3,6 +3,7 @@ from typing import Optional, TypedDict
 
 from fastapi import Request
 
+from windchimes.api.lifespan import get_lifespan_state
 from windchimes.common.api_clients.imagekit_api_client import (
     ImagekitApiClient,
 )
@@ -69,7 +70,7 @@ class GraphQLRequestContext(TypedDict):
     current_user: Optional[User]
 
 
-def get_user_from_request(auth_service: AuthService, request: Request):
+async def get_user_from_request(auth_service: AuthService, request: Request):
     logger.info("Getting current user via auth service")
 
     if not request:
@@ -87,7 +88,7 @@ def get_user_from_request(auth_service: AuthService, request: Request):
 
     token = auth_header_parts[1]
 
-    return auth_service.get_user_from_token(token)
+    return await auth_service.get_user_from_token(token)
 
 
 async def get_graphql_context(request: Request):
@@ -109,9 +110,9 @@ async def get_graphql_context(request: Request):
 
     tracks_import_service = TracksImportService(database, platform_aggregator_service)
 
-    auth_service = AuthService()
+    auth_service = AuthService(get_lifespan_state(request).token_verifier)
 
-    current_user = get_user_from_request(auth_service, request)
+    current_user = await get_user_from_request(auth_service, request)
 
     return GraphQLRequestContext(
         database=database,
@@ -121,7 +122,7 @@ async def get_graphql_context(request: Request):
             playlists_service, current_user
         ),
         tracks_import_service=tracks_import_service,
-        auth_service=AuthService(),
+        auth_service=auth_service,
         picture_storage_service=PictureStorageService(
             ImagekitApiClient(app_config.imagekit_api.private_key)
         ),
