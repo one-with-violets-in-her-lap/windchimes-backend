@@ -54,9 +54,9 @@ async def _set_playlist_for_tracks_sync(
     | GraphQLApiError
     | ExternalPlaylistNotAvailableErrorGraphQL
 ):
-    tracks_sync_service = info.context.tracks_sync_service
+    tracks_sync_service = info.context["tracks_sync_service"]
     playlist_access_management_service = (
-        info.context.playlists_access_management_service
+        info.context["playlists_access_management_service"]
     )
 
     try:
@@ -109,9 +109,9 @@ set_playlist_for_tracks_sync_mutation = strawberry.mutation(
 async def _disable_tracks_sync(
     info: GraphQLRequestInfo, playlist_id: int
 ) -> None | ValidationErrorGraphQL | GraphQLApiError:
-    tracks_sync_service = info.context.tracks_sync_service
+    tracks_sync_service = info.context["tracks_sync_service"]
     playlist_access_management_service = (
-        info.context.playlists_access_management_service
+        info.context["playlists_access_management_service"]
     )
 
     access_check_result = (
@@ -146,9 +146,9 @@ async def _sync_playlist_tracks_with_external_playlist(
     | ExternalPlaylistNotAvailableErrorGraphQL
 ):
     playlist_access_management_service = (
-        info.context.playlists_access_management_service
+        info.context["playlists_access_management_service"]
     )
-    tracks_sync_service = info.context.tracks_sync_service
+    tracks_sync_service = info.context["tracks_sync_service"]
 
     access_check_result = (
         await playlist_access_management_service.check_if_user_owns_the_playlists(

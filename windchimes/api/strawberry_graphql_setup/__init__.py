@@ -1,16 +1,15 @@
 import strawberry
-from strawberry.fastapi import GraphQLRouter
-from strawberry.extensions import MaxAliasesLimiter, MaxTokensLimiter, MaskErrors
-from strawberry.file_uploads import Upload
 from fastapi import UploadFile
+from strawberry.extensions import MaskErrors, MaxAliasesLimiter, MaxTokensLimiter
+from strawberry.fastapi import GraphQLRouter
+from strawberry.file_uploads import Upload
 
-from windchimes.core.config import app_config
-from windchimes.api.strawberry_graphql_setup.context import (
-    GraphQLRequestContext,
-)
 from windchimes.api.mutations import Mutation
 from windchimes.api.queries import Query
-
+from windchimes.api.strawberry_graphql_setup.context import (
+    get_graphql_context,
+)
+from windchimes.core.config import app_config
 
 security_extensions = []
 if app_config.mode == "PROD":
@@ -29,7 +28,7 @@ __schema = strawberry.Schema(
 
 graphql_router = GraphQLRouter(
     __schema,
-    context_getter=GraphQLRequestContext,
+    context_getter=get_graphql_context,
     graphql_ide="apollo-sandbox" if app_config.mode == "DEV" else None,
     multipart_uploads_enabled=True,
 )

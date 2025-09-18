@@ -1,7 +1,7 @@
-from functools import cached_property
 import logging
+from typing import Optional, TypedDict
 
-from strawberry.fastapi import BaseContext
+from fastapi import Request
 
 from windchimes.common.api_clients.imagekit_api_client import (
     ImagekitApiClient,
@@ -13,7 +13,9 @@ from windchimes.common.api_clients.youtube_data_api.youtube_data_api_client impo
 from windchimes.common.api_clients.youtube_internal_api.youtube_internal_api_client import (
     YoutubeInternalApiClient,
 )
-from windchimes.core.database import database
+from windchimes.core.config import app_config
+from windchimes.core.database import Database, database
+from windchimes.core.models.user import User
 from windchimes.core.services.auth_service import AuthService
 from windchimes.core.services.external_platform_import.tracks_import import (
     TracksImportService,
@@ -41,86 +43,91 @@ from windchimes.core.services.tracks_service import TracksService
 from windchimes.core.stores.soundcloud_api_client_id_store import (
     get_soundcloud_api_client_id,
 )
-from windchimes.core.config import app_config
-
 
 logger = logging.getLogger(__name__)
 
 
-class GraphQLRequestContext(BaseContext):
-    @cached_property
-    def database(self):
-        return database
+class GraphQLRequestContext(TypedDict):
+    database: Database
 
-    @cached_property
-    def playlists_service(self):
-        return PlaylistsService(self.database)
+    playlists_service: PlaylistsService
 
-    @cached_property
-    def tracks_service(self):
-        return TracksService(self.database, self.platform_aggregator_service)
+    tracks_service: TracksService
 
-    @cached_property
-    def playlists_access_management_service(self):
-        return PlaylistsAccessManagementService(
-            self.playlists_service, self.current_user
-        )
+    playlists_access_management_service: PlaylistsAccessManagementService
 
-    @cached_property
-    def tracks_import_service(self):
-        return TracksImportService(self.database, self.platform_aggregator_service)
+    tracks_import_service: TracksImportService
 
-    @cached_property
-    def tracks_sync_service(self):
-        return TracksSyncService(
-            self.database, self.platform_aggregator_service, self.tracks_import_service
-        )
+    tracks_sync_service: TracksSyncService
 
-    @cached_property
-    def picture_storage_service(self):
-        imagekit_api_client = ImagekitApiClient(app_config.imagekit_api.private_key)
-        return PictureStorageService(imagekit_api_client)
+    picture_storage_service: PictureStorageService
 
-    @cached_property
-    def soundcloud_service(self):
-        soundcloud_api_client = SoundcloudApiClient(get_soundcloud_api_client_id())
-        return SoundcloudService(soundcloud_api_client)
+    platform_aggregator_service: PlatformAggregatorService
 
-    @cached_property
-    def youtube_service(self):
-        youtube_data_api_client = YoutubeDataApiClient(app_config.youtube_data_api.key)
-        youtube_internal_api_client = YoutubeInternalApiClient(app_config.proxy.url)
+    auth_service: AuthService
 
-        return YoutubeService(youtube_data_api_client, youtube_internal_api_client)
+    current_user: Optional[User]
 
-    @cached_property
-    def platform_aggregator_service(self):
-        return PlatformAggregatorService(
-            soundcloud_service=self.soundcloud_service,
-            youtube_service=self.youtube_service,
-        )
 
-    @cached_property
-    def auth_service(self):
-        return AuthService()
+def get_user_from_request(auth_service: AuthService, request: Request):
+    logger.info("Getting current user via auth service")
 
-    @cached_property
-    def current_user(self):
-        logger.info("Getting current user via auth service")
+    if not request:
+        return None
 
-        if not self.request:
-            return None
+    auth_header = request.headers.get("Authorization")
 
-        auth_header = self.request.headers.get("Authorization")
+    if auth_header is None:
+        return None
 
-        if auth_header is None:
-            return None
+    auth_header_parts = auth_header.split(" ")
 
-        auth_header_parts = auth_header.split(" ")
+    if len(auth_header_parts) != 2 or auth_header_parts[0] != "Bearer":
+        return None
 
-        if len(auth_header_parts) != 2 or auth_header_parts[0] != "Bearer":
-            return None
+    token = auth_header_parts[1]
 
-        token = auth_header_parts[1]
+    return auth_service.get_user_from_token(token)
 
-        return self.auth_service.get_user_from_token(token)
+
+async def get_graphql_context(request: Request):
+    soundcloud_service = SoundcloudService(
+        SoundcloudApiClient(get_soundcloud_api_client_id())
+    )
+
+    youtube_data_api_client = YoutubeDataApiClient(app_config.youtube_data_api.key)
+    youtube_internal_api_client = YoutubeInternalApiClient(app_config.proxy.url)
+    youtube_service = YoutubeService(
+        youtube_data_api_client, youtube_internal_api_client
+    )
+
+    platform_aggregator_service = PlatformAggregatorService(
+        soundcloud_service, youtube_service
+    )
+
+    playlists_service = PlaylistsService(database)
+
+    tracks_import_service = TracksImportService(database, platform_aggregator_service)
+
+    auth_service = AuthService()
+
+    current_user = get_user_from_request(auth_service, request)
+
+    return GraphQLRequestContext(
+        database=database,
+        playlists_service=playlists_service,
+        tracks_service=TracksService(database, platform_aggregator_service),
+        playlists_access_management_service=PlaylistsAccessManagementService(
+            playlists_service, current_user
+        ),
+        tracks_import_service=tracks_import_service,
+        auth_service=AuthService(),
+        picture_storage_service=PictureStorageService(
+            ImagekitApiClient(app_config.imagekit_api.private_key)
+        ),
+        tracks_sync_service=TracksSyncService(
+            database, platform_aggregator_service, tracks_import_service
+        ),
+        platform_aggregator_service=platform_aggregator_service,
+        current_user=current_user,
+    )

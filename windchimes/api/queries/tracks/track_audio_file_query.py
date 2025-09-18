@@ -26,7 +26,7 @@ async def _get_track_audio_file(
     platform_id: str,
     audio_file_endpoint_url: Optional[str] = None,
 ) -> Optional[TrackAudioFileGraphQL] | GraphQLApiError:
-    tracks_service = info.context.tracks_service
+    tracks_service = info.context["tracks_service"]
 
     audio_file_url = await tracks_service.get_track_audio_file_url(
         platform_id,

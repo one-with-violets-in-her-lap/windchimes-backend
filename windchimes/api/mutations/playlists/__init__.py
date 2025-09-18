@@ -43,8 +43,8 @@ class TrackToAddGraphQL:
 async def _create_playlist(
     info: GraphQLRequestInfo, playlist: PlaylistToCreateGraphQL
 ) -> PlaylistDetailedGraphQL | UnauthorizedErrorGraphQL:
-    playlists_service = info.context.playlists_service
-    current_user = info.context.current_user
+    playlists_service = info.context["playlists_service"]
+    current_user = info.context["current_user"]
 
     if current_user is None:
         return UnauthorizedErrorGraphQL()
@@ -64,8 +64,8 @@ create_playlist_mutation = strawberry.mutation(
 async def _delete_playlist(
     info: GraphQLRequestInfo, playlist_to_delete_id: int
 ) -> None | GraphQLApiError:
-    playlists_service = info.context.playlists_service
-    current_user = info.context.current_user
+    playlists_service = info.context["playlists_service"]
+    current_user = info.context["current_user"]
 
     if current_user is None:
         return UnauthorizedErrorGraphQL()
@@ -91,8 +91,8 @@ async def _update_playlist(
     playlist_to_update_id: int,
     playlist_data_to_update: PlaylistUpdateGraphQL,
 ) -> None | GraphQLApiError:
-    playlists_service = info.context.playlists_service
-    current_user = info.context.current_user
+    playlists_service = info.context["playlists_service"]
+    current_user = info.context["current_user"]
 
     if current_user is None:
         return UnauthorizedErrorGraphQL()
