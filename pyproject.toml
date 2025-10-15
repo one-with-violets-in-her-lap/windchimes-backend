@@ -14,7 +14,7 @@ dependencies = [
     "asyncpg>=0.30.0,<0.31",
     "auth0-python>=4.7.2,<5",
     "apscheduler>=3.11.0,<4",
-    "yt-dlp>=2024.12.23,<2025",
+    "yt-dlp>=2025.10.14",
     "httpx[socks]>=0.28.1,<0.29",
 ]
 
