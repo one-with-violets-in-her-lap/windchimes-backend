@@ -1,0 +1,8 @@
+{
+  "builds": [
+    {"src": "/windchimes/api/main.py", "use": "@vercel/python"}
+  ],
+  "routes": [
+    {"src": "/(.*)", "dest": "/windchimes/api/main.py"}
+  ]
+}
